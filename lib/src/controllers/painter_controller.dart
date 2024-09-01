@@ -8,7 +8,11 @@ import 'dart:ui';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
+import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
+import 'package:flutter_painter/src/models/position_model.dart';
+import 'package:flutter_painter/src/models/size_model.dart';
 
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
@@ -21,6 +25,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterBackground background = PainterBackground();
   bool isErasing = false;
   bool isDrawing = false;
+  bool editingText = false;
+  bool addingText = false;
 
   PainterController.fromValue(PainterControllerValue value)
       : background = PainterBackground(
@@ -115,14 +121,39 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   Future<void> setBackgroundImage(Uint8List imageData) async {
-    try {
-      final completer = Completer<ui.Image>();
-      ui.decodeImageFromList(imageData, completer.complete);
-      background.image = await completer.future;
-      background = background;
-    } catch (e) {
-      print('Error loading image: $e');
+    final completer = Completer<ui.Image>();
+    ui.decodeImageFromList(imageData, completer.complete);
+    background.image = await completer.future;
+    background = background;
+  }
+
+  void addText() {
+    value = value.copyWith(
+        items: value.items.toList()
+          ..add(TextItem(position: PositionModel(), text: 'Hello World')));
+  }
+
+  void setItemPosition(int index, PositionModel position) {
+    final items = value.items.toList();
+    print(items[index].runtimeType);
+    var item = items[index];
+    if (item is TextItem) {
+      item = item.copyWith(position: position);
+    } else {
+      item = item.copyWith(position: position);
     }
+    value = value.copyWith(items: items);
+  }
+
+  void setItemSize(int index, SizeModel size) {
+    final items = value.items.toList();
+    var item = items[index];
+    if (item is TextItem) {
+      item = item.copyWith(size: size);
+    } else {
+      item = item.copyWith(size: size);
+    }
+    value = value.copyWith(items: items);
   }
 }
 
@@ -132,24 +163,28 @@ class PainterControllerValue {
     this.scale,
     this.paintPaths = const <List<Offset?>>[],
     this.currentPaintPath = const <Offset?>[],
+    this.items = const <PainterItem>[],
   });
   final PainterSettings settings;
   final Size? scale;
   List<List<Offset?>> paintPaths =
       <List<Offset?>>[]; // Çizim yollarını saklamak için
   List<Offset?> currentPaintPath = <Offset?>[]; // Geçici çizim yolu
+  List<PainterItem> items = <PainterItem>[];
 
   PainterControllerValue copyWith({
     PainterSettings? settings,
     Size? scale,
     List<List<Offset?>>? paintPaths,
     List<Offset?>? currentPaintPath,
+    List<PainterItem>? items,
   }) {
     return PainterControllerValue(
       settings: settings ?? this.settings,
       scale: scale ?? this.scale,
       paintPaths: paintPaths ?? this.paintPaths,
       currentPaintPath: currentPaintPath ?? this.currentPaintPath,
+      items: items ?? this.items,
     );
   }
 }

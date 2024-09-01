@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/custom_paint.dart';
+import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:flutter_painter/src/controllers/items/text_item.dart';
+import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';
 
 import 'package:flutter_painter/src/views/widgets/painter_container.dart';
 
@@ -12,7 +15,6 @@ class PainterWidget extends StatelessWidget {
     return ValueListenableBuilder<PainterControllerValue>(
       valueListenable: controller,
       builder: (context, value, child) {
-        print('PainterWidget');
         return viewerWidget(controller);
       },
     );
@@ -66,13 +68,46 @@ class PainterWidget extends StatelessWidget {
           backgroundImage: controller.background.image,
         ),
         child: Stack(
-          children: [
-            PainterContainer(
-              height: controller.background.height,
-            ),
-          ],
+          children: controller.value.items.map((item) {
+            return getItemWidget(item);
+          }).toList(),
         ),
       ),
     );
+  }
+
+  Widget getItemWidget(
+    PainterItem item,
+  ) {
+    if (item is TextItem) {
+      return TextItemWidget(
+          item: item,
+          height: controller.background.height,
+          onPositionChange: (position) {
+            var newItem = controller.value.items.firstWhere(
+              //Position veya size değiştiğinde eski item geliyor,
+              //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi için tekrardan size üzerinden itemi
+              //bulup onun üzeirinden indeks alıyorum.
+              (element) => element.size == item.size,
+              orElse: () => item,
+            );
+            final itemIndex = controller.value.items.indexOf(newItem);
+            controller.setItemPosition(itemIndex, position);
+          },
+          onSizeChange: (size) {
+            var newItem = controller.value.items.firstWhere(
+              //Position veya size değiştiğinde eski item geliyor,
+              //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi için tekrardan size üzerinden itemi
+              //bulup onun üzeirinden indeks alıyorum.
+              (element) => element.size == item.size,
+              orElse: () => item,
+            );
+            final itemIndex = controller.value.items.indexOf(newItem);
+            controller.setItemSize(itemIndex, size);
+          });
+    } else {
+      print('rn1');
+      return Container();
+    }
   }
 }
