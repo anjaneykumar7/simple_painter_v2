@@ -6,12 +6,13 @@ import 'package:flutter_painter/src/views/widgets/measure_size.dart';
 import 'package:flutter_painter/src/views/widgets/painter_container.dart';
 
 class TextItemWidget extends StatefulWidget {
-  const TextItemWidget(
-      {super.key,
-      required this.item,
-      required this.height,
-      this.onPositionChange,
-      this.onSizeChange});
+  const TextItemWidget({
+    required this.item,
+    required this.height,
+    super.key,
+    this.onPositionChange,
+    this.onSizeChange,
+  });
   final TextItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
@@ -22,35 +23,39 @@ class TextItemWidget extends StatefulWidget {
 
 class _TextItemWidgetState extends State<TextItemWidget> {
   double? widgetHeight;
+  ValueNotifier<PositionModel> position =
+      ValueNotifier(PositionModel(x: 50, y: 50));
   @override
   Widget build(BuildContext context) {
-    return Opacity(
-      opacity: widgetHeight == null
-          ? 0
-          : 1, // Hide the widget until the height is calculated
-      child: PainterContainer(
-        selectedItem: true,
-        height: widget.height,
-        minimumContainerHeight: widgetHeight,
-        onPositionChange: (position) {
-          widget.onPositionChange?.call(position);
-        },
-        onSizeChange: (size) {
-          widget.onSizeChange?.call(size);
-        },
-        child: MeasureSize(
-          onChange: (size) {
-            if (widgetHeight != null) return;
-            setState(() {
-              widgetHeight = size.height;
-            });
+    return ValueListenableBuilder(
+      valueListenable: position,
+      builder: (context, value, child) {
+        return PainterContainer(
+          selectedItem: true,
+          height: widget.height,
+          minimumContainerHeight: widgetHeight,
+          onPositionChange: (positionValue) {
+            position.value = positionValue;
+            widget.onPositionChange?.call(positionValue);
           },
-          child: Text(
-            widget.item.text,
-            style: widget.item.textStyle,
+          onSizeChange: (size) {
+            widget.onSizeChange?.call(size);
+          },
+          enabled: widgetHeight != null,
+          child: MeasureSize(
+            onChange: (size) {
+              if (widgetHeight != null) return;
+              setState(() {
+                widgetHeight = size.height;
+              });
+            },
+            child: Text(
+              widget.item.text,
+              style: widget.item.textStyle,
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

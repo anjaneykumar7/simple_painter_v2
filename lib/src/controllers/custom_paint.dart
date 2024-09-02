@@ -34,8 +34,12 @@ class PainterCustomPaint extends CustomPainter {
     if (backgroundImage != null) {
       canvas.drawImageRect(
         backgroundImage!,
-        Rect.fromLTWH(0, 0, backgroundImage!.width.toDouble(),
-            backgroundImage!.height.toDouble()),
+        Rect.fromLTWH(
+          0,
+          0,
+          backgroundImage!.width.toDouble(),
+          backgroundImage!.height.toDouble(),
+        ),
         rect,
         Paint(),
       );
@@ -48,7 +52,7 @@ class PainterCustomPaint extends CustomPainter {
     for (final path in paths) {
       if (path.isEmpty) continue;
 
-      for (int i = 0; i < path.length - 1; i++) {
+      for (var i = 0; i < path.length - 1; i++) {
         if (path[i] != null && path[i + 1] != null) {
           canvas.drawLine(path[i]!, path[i + 1]!, paint);
         }
@@ -56,7 +60,7 @@ class PainterCustomPaint extends CustomPainter {
     }
 
     // Kullanıcının geçici yolunu çiz
-    for (int i = 0; i < points.length - 1; i++) {
+    for (var i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
         canvas.drawLine(points[i]!, points[i + 1]!, paint);
       }

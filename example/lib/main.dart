@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -39,7 +40,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
     super.initState();
     controller = PainterController(
       settings: const PainterSettings(
-          scale: Size(800, 800), itemDragHandleColor: Colors.blue),
+        scale: Size(800, 800),
+        itemDragHandleColor: Colors.blue,
+      ),
     );
   }
 
@@ -51,7 +54,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
       appBar: appBar,
       bottomNavigationBar: bottomBar,
       body: SizedBox(
-          height: height, child: PainterWidget(controller: controller)),
+        height: height,
+        child: PainterWidget(controller: controller),
+      ),
     );
   }
 
@@ -71,21 +76,24 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
           ),
           // Delete the selected drawable
           IconButton(
-              icon: const Icon(
-                Icons.flip,
-              ),
-              onPressed: () {}),
+            icon: const Icon(
+              Icons.flip,
+            ),
+            onPressed: () {},
+          ),
           // Redo action
           IconButton(
-              icon: const Icon(
-                PhosphorIconsRegular.arrowCounterClockwise,
-              ),
-              onPressed: () {}),
+            icon: const Icon(
+              PhosphorIconsRegular.arrowCounterClockwise,
+            ),
+            onPressed: () {},
+          ),
           IconButton(
-              icon: const Icon(
-                PhosphorIconsRegular.arrowClockwise,
-              ),
-              onPressed: () {}),
+            icon: const Icon(
+              PhosphorIconsRegular.arrowClockwise,
+            ),
+            onPressed: () {},
+          ),
           // Undo action
         ],
       ),
@@ -131,25 +139,25 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
           button(
             PhosphorIconsRegular.image,
             () {},
-            enabled: false,
           ),
           button(
             PhosphorIconsRegular.polygon,
             () {},
-            enabled: false,
           ),
           button(
             PhosphorIconsRegular.listBullets,
             () {},
-            enabled: false,
           ),
         ],
       ),
     );
   }
 
-  Widget button(IconData icon, void Function()? onPressed,
-      {bool enabled = false}) {
+  Widget button(
+    IconData icon,
+    void Function()? onPressed, {
+    bool enabled = false,
+  }) {
     return IntrinsicHeight(
       child: Column(
         children: [
@@ -160,11 +168,12 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
-                icon: Icon(
-                  icon,
-                  color: enabled ? Colors.white : Colors.grey.shade500,
-                ),
-                onPressed: onPressed),
+              icon: Icon(
+                icon,
+                color: enabled ? Colors.white : Colors.grey.shade500,
+              ),
+              onPressed: onPressed,
+            ),
           ),
           Opacity(
             opacity: enabled ? 1 : 0,

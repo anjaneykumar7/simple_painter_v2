@@ -17,9 +17,17 @@ import 'package:flutter_painter/src/models/size_model.dart';
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
     PainterSettings settings = const PainterSettings(),
-  }) : this.fromValue(PainterControllerValue(
-          settings: settings,
-        ));
+  }) : this.fromValue(
+          PainterControllerValue(
+            settings: settings,
+          ),
+        );
+
+  PainterController.fromValue(super.value)
+      : background = PainterBackground(
+          height: value.settings.scale?.height ?? 0,
+          width: value.settings.scale?.width ?? 0,
+        );
 
   final GlobalKey repaintBoundaryKey = GlobalKey();
   PainterBackground background = PainterBackground();
@@ -27,13 +35,6 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   bool isDrawing = false;
   bool editingText = false;
   bool addingText = false;
-
-  PainterController.fromValue(PainterControllerValue value)
-      : background = PainterBackground(
-          height: value.settings.scale?.height ?? 0,
-          width: value.settings.scale?.width ?? 0,
-        ),
-        super(value);
 
   Future<Uint8List?> capturePng() async {
     try {
@@ -61,6 +62,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     if (!isErasing && value.currentPaintPath.toList().isNotEmpty) {
       value.paintPaths = value.paintPaths.toList()
         ..add(List.from(value.currentPaintPath.toList()));
+      // ignore: cascade_invocations
       value.currentPaintPath = value.currentPaintPath.toList()..clear();
     }
   }
@@ -87,8 +89,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     for (final path in value.paintPaths.toList()) {
       final updatedPath = <Offset?>[];
 
-      bool isInEraseRegion = false;
-      for (int i = 0; i < path.length; i++) {
+      var isInEraseRegion = false;
+      for (var i = 0; i < path.length; i++) {
         final point = path[i];
         if (point == null) continue;
 
@@ -124,18 +126,17 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     final completer = Completer<ui.Image>();
     ui.decodeImageFromList(imageData, completer.complete);
     background.image = await completer.future;
-    background = background;
   }
 
   void addText() {
     value = value.copyWith(
-        items: value.items.toList()
-          ..add(TextItem(position: PositionModel(), text: 'Hello World')));
+      items: value.items.toList()
+        ..add(const TextItem(position: PositionModel(), text: 'Hello World')),
+    );
   }
 
   void setItemPosition(int index, PositionModel position) {
     final items = value.items.toList();
-    print(items[index].runtimeType);
     var item = items[index];
     if (item is TextItem) {
       item = item.copyWith(position: position);

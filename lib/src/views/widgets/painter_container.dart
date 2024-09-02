@@ -4,24 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 
+import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:flutter_painter/src/models/position_model.dart';
+import 'package:flutter_painter/src/models/size_model.dart';
+
 class PainterContainer extends StatefulWidget {
-  const PainterContainer(
-      {required this.height,
-      super.key,
-      this.dragHandleColor,
-      required this.selectedItem,
-      this.onTapItem,
-      this.child,
-      this.minimumContainerHeight,
-      this.minimumContainerWidth,
-      this.onPositionChange,
-      this.onSizeChange,
-      this.itemPosition,
-      this.itemSize});
+  const PainterContainer({
+    required this.height,
+    required this.selectedItem,
+    super.key,
+    this.dragHandleColor,
+    this.onTapItem,
+    this.child,
+    this.minimumContainerHeight,
+    this.minimumContainerWidth,
+    this.onPositionChange,
+    this.onSizeChange,
+    this.itemPosition,
+    this.itemSize,
+    this.enabled,
+  });
   final double height;
   final Color? dragHandleColor;
   final bool selectedItem;
-  final void Function(bool)? onTapItem;
+  final void Function({bool tapItem})? onTapItem;
   final void Function(PositionModel)? onPositionChange;
   final void Function(SizeModel)? onSizeChange;
   final Widget? child;
@@ -29,18 +36,20 @@ class PainterContainer extends StatefulWidget {
   final double? minimumContainerWidth;
   final PositionModel? itemPosition;
   final SizeModel? itemSize;
+  final bool? enabled;
   @override
   State<PainterContainer> createState() => _PainterContainerState();
 }
 
 class _PainterContainerState extends State<PainterContainer> {
-  var position = PositionModel(x: 50, y: 50);
+  PositionModel position = const PositionModel(x: 50, y: 50);
+  PositionModel oldPosition = const PositionModel(x: 50, y: 50);
   double containerWidth = 100;
   double containerHeight = 100;
   final handleWidgetWidth = 15.0;
   final handleWidgetHeight = 15.0;
-  double minimumContainerWidth = 50.0;
-  double minimumContainerHeight = 50.0;
+  double minimumContainerWidth = 50;
+  double minimumContainerHeight = 50;
   double scaleCurrentHeight = -1;
   double currentRotateAngel = -1;
   double rotateAngle = 0;
@@ -48,186 +57,241 @@ class _PainterContainerState extends State<PainterContainer> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
+    final screenWidth = MediaQuery.of(context).size.width;
     controlHeights();
+    if (widget.onPositionChange != null && position != oldPosition) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onPositionChange?.call(position);
+      });
 
-    return Transform.rotate(
-      angle: rotateAngle,
-      child: Stack(
-        children: [
-          Positioned(
-            left: position.x,
-            top: position.y,
-            child: GestureDetector(
-              onTap: () {
-                if (widget.onTapItem != null) {
-                  widget.onTapItem!(!widget.selectedItem);
-                }
-              },
-              onScaleStart: (details) {
-                if (!widget.selectedItem) {
-                  return;
-                }
-                scaleCurrentHeight = -1;
-              },
-              onScaleEnd: (details) {
-                if (widget.onPositionChange != null) {
-                  widget.onPositionChange!(
-                      PositionModel(x: position.x, y: position.y));
-                }
-                if (widget.onSizeChange != null) {
-                  widget.onSizeChange!(SizeModel(
-                      width: containerWidth, height: containerHeight));
-                }
-                currentRotateAngel = rotateAngle;
-              },
-              onScaleUpdate: (details) {
-                if (!widget.selectedItem) {
-                  return;
-                }
-                if (details.pointerCount == 1) {
-                  final pos = details.focalPointDelta;
-                  setState(() {
-                    position = position.copyWith(
-                        x: _isXCoordinateMoreThanScreenWidth(pos, screenWidth)
-                            ? screenWidth -
-                                containerWidth // stick to right edge of the screen
-                            : _isXCoordinateLessThanZero(pos)
-                                ? 0 // stick to left edge, of the screen
-                                : position.x + pos.dx,
-                        y: _isYCoordinateMoreThanScreenHeight(
-                                pos, widget.height)
-                            ? (widget.height / 2) -
-                                containerHeight // stick to bottom edge of the screen
-                            : _isYCoordinateLessThanZero(pos)
-                                ? 0 // stick to top edge of the screen
-                                : position.y + pos.dy);
-                  });
-                } else if (details.pointerCount == 2) {
-                  if (scaleCurrentHeight == -1) {
-                    scaleCurrentHeight = containerHeight;
-                  }
-                  if (currentRotateAngel == -1) {
-                    currentRotateAngel = rotateAngle;
-                  }
-                  final realScale =
-                      (scaleCurrentHeight * details.scale) / containerHeight;
-                  final realRotateAngle = currentRotateAngel + details.rotation;
-                  final oldWidth = containerWidth;
-                  final oldHeight = containerHeight;
-                  setState(() {
-                    rotateAngle = realRotateAngle; // set rotation
-                    if (containerWidth * realScale < minimumContainerWidth ||
-                        containerHeight * realScale < minimumContainerHeight) {
-                      return;
-                    } else {
-                      containerWidth = containerWidth * realScale;
-                      containerHeight = containerHeight * realScale;
+      oldPosition = position;
+    }
+    return Positioned(
+      left: position.x,
+      top: position.y,
+      child: Opacity(
+        opacity: widget.enabled != null && widget.enabled! ? 1 : 0,
+        child: Transform.rotate(
+          angle: rotateAngle,
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: handleWidgetHeight,
+                    vertical: handleWidgetWidth),
+                child: GestureDetector(
+                  onTap: () {
+                    if (widget.onTapItem != null) {
+                      widget.onTapItem?.call(tapItem: !widget.selectedItem);
                     }
-                    position = position.copyWith(
-                      x: position.x - (containerWidth - oldWidth) / 2,
-                      y: position.y - (containerHeight - oldHeight) / 2,
-                    );
-                  });
-                }
-              },
-              child: Container(
-                width: containerWidth,
-                height: containerHeight,
-                child: Center(child: widget.child),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: widget.selectedItem
-                        ? widget.dragHandleColor ?? Colors.blue ?? Colors.blue
-                        : Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          if (widget.selectedItem)
-            for (_HandlePosition handlePosition in _HandlePosition.values)
-              if (handlePosition != _HandlePosition.middleCenter)
-                Positioned(
-                  left: getHandleLeft(handlePosition),
-                  top: getHandleTop(handlePosition),
-                  child: GestureDetector(
-                    onPanUpdate: (details) {
+                  },
+                  onScaleStart: (details) {
+                    if (!widget.selectedItem) {
+                      return;
+                    }
+                    scaleCurrentHeight = -1;
+                  },
+                  onScaleEnd: (details) {
+                    if (widget.onPositionChange != null) {
+                      widget.onPositionChange?.call(
+                        PositionModel(x: position.x, y: position.y),
+                      );
+                    }
+                    if (widget.onSizeChange != null) {
+                      widget.onSizeChange?.call(
+                        SizeModel(
+                          width: containerWidth,
+                          height: containerHeight,
+                        ),
+                      );
+                    }
+                    currentRotateAngel = rotateAngle;
+                  },
+                  onScaleUpdate: (details) {
+                    if (!widget.selectedItem) {
+                      return;
+                    }
+                    if (details.pointerCount == 1) {
+                      final pos = details.focalPointDelta;
                       setState(() {
-                        if (handlePosition == _HandlePosition.left) {
-                          if (containerWidth <= minimumContainerWidth &&
-                              details.delta.dx > 0) {
-                            //container genişliği minimum genişlikten küçükse ve sola doğru kaydırma yapılıyorsa
-                            containerWidth = minimumContainerWidth;
-                            return;
-                          }
-                          containerWidth -= details.delta.dx;
+                        final cosAngle = cos(rotateAngle);
+                        final sinAngle = sin(rotateAngle);
 
-                          position = position.copyWith(
-                              x: position.x + details.delta.dx);
-                        } else if (handlePosition == _HandlePosition.right) {
-                          print(details.delta.dx);
-                          if (containerWidth <= minimumContainerWidth &&
-                              details.delta.dx < 0) {
-                            //container genişliği minimum genişlikten küçükse ve sağa doğru kaydırma yapılıyorsa
-                            containerWidth = minimumContainerWidth;
-                            return;
-                          }
-                          if (position.x + containerWidth + details.delta.dx >
-                              screenWidth) {
-                            containerWidth = screenWidth - position.x;
-                          }
-                          containerWidth += details.delta.dx;
-                        } else if (handlePosition == _HandlePosition.top) {
-                          if (containerHeight <= minimumContainerHeight &&
-                              details.delta.dy > 0) {
-                            //container yüksekliği minimum yükseklikten küçükse ve yukarı doğru kaydırma yapılıyorsa
-                            containerHeight = minimumContainerHeight;
-                            return;
-                          }
-                          if (position.y < 0) {
-                            //eğer container en yukarı kaydırıldıysa position.y 0.1 sabitler
-                            position = position.copyWith(y: 0.1);
-                          } else {
-                            if (position.y == 0.1 && details.delta.dy > 0) {
-                              //eğer container en yukarı kaydırıldıysa ve aşağı doğru kaydırma yapılıyorsa
-                              containerHeight -= details.delta.dy;
-                              position = position.copyWith(
-                                  y: position.y + details.delta.dy);
-                            } else if (position.y == 0.1) {
-                              //eğer container en yukarı kaydırıldıysa ve yukarı doğru kaydırma yapılıyorsa
-                              return;
-                            }
-                            containerHeight -= details.delta.dy;
-                            position = position.copyWith(
-                                y: position.y + details.delta.dy);
-                          }
-                        } else if (handlePosition == _HandlePosition.bottom) {
-                          if (containerHeight <= minimumContainerHeight &&
-                              details.delta.dy < 0) {
-                            //container yüksekliği minimum yükseklikten küçükse ve aşağı doğru kaydırma yapılıyorsa
-                            containerHeight = minimumContainerHeight;
-                            return;
-                          }
-                          if (position.y + containerHeight + details.delta.dy >
-                              (widget.height / 2)) {
-                            //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
-                            containerHeight = widget.height / 2 - position.y;
-                          } else {
-                            containerHeight += details.delta.dy;
-                          }
-                        }
+                        final deltaX = pos.dx * cosAngle - pos.dy * sinAngle;
+                        final deltaY = pos.dx * sinAngle + pos.dy * cosAngle;
+
+                        position = position.copyWith(
+                          x: _isXCoordinateMoreThanScreenWidth(
+                                  Offset(deltaX, deltaY), screenWidth)
+                              ? screenWidth -
+                                  containerWidth // stick to right edge of the screen
+                              : _isXCoordinateLessThanZero(
+                                      Offset(deltaX, deltaY))
+                                  ? 0 // stick to left edge, of the screen
+                                  : position.x + deltaX,
+                          y: _isYCoordinateMoreThanScreenHeight(
+                                  Offset(deltaX, deltaY), widget.height)
+                              ? (widget.height / 2) -
+                                  containerHeight // stick to bottom edge of the screen
+                              : _isYCoordinateLessThanZero(
+                                      Offset(deltaX, deltaY))
+                                  ? 0 // stick to top edge of the screen
+                                  : position.y + deltaY,
+                        );
                       });
-                    },
-                    child: _HandleWidget(
-                      handlePosition: handlePosition,
-                      height: getHandleWidgetHeight(handlePosition),
-                      width: getHandleWidgetWidth(handlePosition),
-                      backgroundColor: widget.dragHandleColor ?? Colors.blue,
+                    } else if (details.pointerCount == 2) {
+                      if (scaleCurrentHeight == -1) {
+                        scaleCurrentHeight = containerHeight;
+                      }
+                      if (currentRotateAngel == -1) {
+                        currentRotateAngel = rotateAngle;
+                      }
+                      final realScale = (scaleCurrentHeight * details.scale) /
+                          containerHeight;
+                      final realRotateAngle =
+                          currentRotateAngel + details.rotation;
+                      final oldWidth = containerWidth;
+                      final oldHeight = containerHeight;
+                      setState(() {
+                        rotateAngle = realRotateAngle; // set rotation
+                        if (containerWidth * realScale <
+                                minimumContainerWidth ||
+                            containerHeight * realScale <
+                                minimumContainerHeight) {
+                          return;
+                        } else {
+                          containerWidth = containerWidth * realScale;
+                          containerHeight = containerHeight * realScale;
+                        }
+                        position = position.copyWith(
+                          x: position.x - (containerWidth - oldWidth) / 2,
+                          y: position.y - (containerHeight - oldHeight) / 2,
+                        );
+                      });
+                    }
+                  },
+                  child: SizedBox(
+                    width: containerWidth,
+                    height: containerHeight,
+                    child: Container(
+                      width: containerWidth,
+                      height: containerHeight,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: widget.selectedItem
+                              ? widget.dragHandleColor ?? Colors.blue
+                              : Colors.transparent,
+                        ),
+                      ),
+                      child: Center(child: widget.child),
                     ),
                   ),
                 ),
-        ],
+              ),
+              if (widget.selectedItem)
+                Positioned.fill(
+                    child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: handleWidgetHeight / 2,
+                    vertical: handleWidgetWidth / 2,
+                  ),
+                  child: Stack(
+                    children: _HandlePosition.values.map((handlePosition) {
+                      return Align(
+                        alignment: handlePosition == _HandlePosition.top
+                            ? Alignment.topCenter
+                            : handlePosition == _HandlePosition.bottom
+                                ? Alignment.bottomCenter
+                                : handlePosition == _HandlePosition.left
+                                    ? Alignment.centerLeft
+                                    : handlePosition == _HandlePosition.right
+                                        ? Alignment.centerRight
+                                        : Alignment.center,
+                        child: GestureDetector(
+                          onPanUpdate: (details) {
+                            setState(() {
+                              final deltaX = details.delta.dx;
+                              final deltaY = details.delta.dy;
+
+                              // Dönüş açısını hesaba katarak delta değerlerini güncelle
+                              final transformedDeltaX =
+                                  deltaX * cos(-rotateAngle) -
+                                      deltaY * sin(-rotateAngle);
+                              final transformedDeltaY =
+                                  deltaX * sin(-rotateAngle) +
+                                      deltaY * cos(-rotateAngle);
+
+                              if (handlePosition == _HandlePosition.left) {
+                                if (containerWidth > minimumContainerWidth ||
+                                    transformedDeltaX > 0) {
+                                  containerWidth -= transformedDeltaX;
+                                  position = position.copyWith(
+                                    x: position.x +
+                                        transformedDeltaX * cos(rotateAngle),
+                                    y: position.y +
+                                        transformedDeltaX * sin(rotateAngle),
+                                  );
+                                } else {
+                                  containerWidth = minimumContainerWidth;
+                                }
+                              } else if (handlePosition ==
+                                  _HandlePosition.right) {
+                                if (containerWidth > minimumContainerWidth ||
+                                    transformedDeltaX > 0) {
+                                  containerWidth += transformedDeltaX;
+                                } else {
+                                  containerWidth = minimumContainerWidth;
+                                }
+
+                                if (position.x + containerWidth > screenWidth) {
+                                  containerWidth = screenWidth - position.x;
+                                }
+                              } else if (handlePosition ==
+                                  _HandlePosition.top) {
+                                if (containerHeight > minimumContainerHeight ||
+                                    transformedDeltaY > 0) {
+                                  containerHeight -= transformedDeltaY;
+                                  position = position.copyWith(
+                                    x: position.x -
+                                        transformedDeltaY * sin(rotateAngle),
+                                    y: position.y +
+                                        transformedDeltaY * cos(rotateAngle),
+                                  );
+                                } else {
+                                  containerHeight = minimumContainerHeight;
+                                }
+                              } else if (handlePosition ==
+                                  _HandlePosition.bottom) {
+                                if (containerHeight > minimumContainerHeight ||
+                                    transformedDeltaY > 0) {
+                                  containerHeight += transformedDeltaY;
+                                } else {
+                                  containerHeight = minimumContainerHeight;
+                                }
+
+                                if (position.y + containerHeight >
+                                    (widget.height / 2)) {
+                                  containerHeight =
+                                      (widget.height / 2) - position.y;
+                                }
+                              }
+                            });
+                          },
+                          child: _HandleWidget(
+                            handlePosition: handlePosition,
+                            height: getHandleWidgetHeight(handlePosition),
+                            width: getHandleWidgetWidth(handlePosition),
+                            backgroundColor:
+                                widget.dragHandleColor ?? Colors.blue,
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                )),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -241,6 +305,7 @@ class _PainterContainerState extends State<PainterContainer> {
       minimumContainerWidth =
           widget.minimumContainerWidth ?? minimumContainerWidth;
       containerHeight = minimumContainerHeight;
+
       setHeights = true;
     }
   }
@@ -253,8 +318,6 @@ class _PainterContainerState extends State<PainterContainer> {
       case _HandlePosition.left:
       case _HandlePosition.right:
         return containerHeight / 7;
-      case _HandlePosition.middleCenter:
-        return containerHeight;
     }
   }
 
@@ -266,35 +329,30 @@ class _PainterContainerState extends State<PainterContainer> {
       case _HandlePosition.left:
       case _HandlePosition.right:
         return handleWidgetWidth;
-      case _HandlePosition.middleCenter:
-        return containerWidth / 7;
     }
   }
 
   double? getHandleLeft(_HandlePosition handlePosition) {
     switch (handlePosition) {
       case _HandlePosition.left:
-        return position.x - handleWidgetWidth / 2;
+        return 0;
       case _HandlePosition.right:
-        return position.x + containerWidth - handleWidgetWidth / 2;
+        return containerWidth - handleWidgetWidth / 2;
       case _HandlePosition.top:
       case _HandlePosition.bottom:
-        return position.x + containerWidth / 2 - (containerWidth / 7) / 2;
-      case _HandlePosition.middleCenter:
-        return position.x + containerWidth / 2 - 5.0;
+        return containerWidth / 2 - (containerWidth / 7) / 2;
     }
   }
 
   double? getHandleTop(_HandlePosition handlePosition) {
     switch (handlePosition) {
       case _HandlePosition.top:
-        return position.y - handleWidgetHeight / 2;
+        return 0;
       case _HandlePosition.bottom:
-        return position.y + containerHeight - handleWidgetHeight / 2;
+        return containerHeight - handleWidgetHeight / 2;
       case _HandlePosition.left:
       case _HandlePosition.right:
-      case _HandlePosition.middleCenter:
-        return position.y + containerHeight / 2 - (containerHeight / 7) / 2;
+        return containerHeight;
     }
   }
 
@@ -322,15 +380,15 @@ enum _HandlePosition {
   left,
   right,
   bottom,
-  middleCenter,
 }
 
 class _HandleWidget extends StatelessWidget {
-  const _HandleWidget(
-      {required this.height,
-      required this.width,
-      required this.handlePosition,
-      required this.backgroundColor});
+  const _HandleWidget({
+    required this.height,
+    required this.width,
+    required this.handlePosition,
+    required this.backgroundColor,
+  });
   final double height;
   final double width;
   final _HandlePosition handlePosition;
@@ -357,7 +415,7 @@ class _HandleWidget extends StatelessWidget {
   double getHeightFromPosition() {
     if (handlePosition == _HandlePosition.top ||
         handlePosition == _HandlePosition.bottom) {
-      return height / 3;
+      return 3;
     } else {
       return height;
     }
@@ -366,7 +424,7 @@ class _HandleWidget extends StatelessWidget {
   double getWidthFromPosition() {
     if (handlePosition == _HandlePosition.left ||
         handlePosition == _HandlePosition.right) {
-      return width / 3;
+      return 3;
     } else {
       return width;
     }

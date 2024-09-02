@@ -4,10 +4,10 @@ import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 
 class TextItem extends PainterItem {
-  TextItem({
+  const TextItem({
     required this.text,
-    this.textStyle = const TextStyle(),
     required super.position,
+    this.textStyle = const TextStyle(),
     super.size,
     super.enabled = true,
   });
@@ -15,6 +15,7 @@ class TextItem extends PainterItem {
   final String text;
   final TextStyle textStyle;
 
+  @override
   TextItem copyWith({
     String? text,
     TextStyle? textStyle,

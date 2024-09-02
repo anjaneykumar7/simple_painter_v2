@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class PositionModel extends Equatable {
-  PositionModel({this.x = 0, this.y = 0});
+  const PositionModel({this.x = 0, this.y = 0});
 
   final double y;
   final double x;
