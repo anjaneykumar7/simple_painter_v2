@@ -210,69 +210,76 @@ class _PainterContainerState extends State<PainterContainer> {
                         child: GestureDetector(
                           onPanUpdate: (details) {
                             setState(() {
-                              final deltaX = details.delta.dx;
-                              final deltaY = details.delta.dy;
-
-                              // Dönüş açısını hesaba katarak delta değerlerini güncelle
-                              final transformedDeltaX =
-                                  deltaX * cos(-rotateAngle) -
-                                      deltaY * sin(-rotateAngle);
-                              final transformedDeltaY =
-                                  deltaX * sin(-rotateAngle) +
-                                      deltaY * cos(-rotateAngle);
-
                               if (handlePosition == _HandlePosition.left) {
-                                if (containerWidth > minimumContainerWidth ||
-                                    transformedDeltaX > 0) {
-                                  containerWidth -= transformedDeltaX;
-                                  position = position.copyWith(
-                                    x: position.x +
-                                        transformedDeltaX * cos(rotateAngle),
-                                    y: position.y +
-                                        transformedDeltaX * sin(rotateAngle),
-                                  );
-                                } else {
+                                if (containerWidth <= minimumContainerWidth &&
+                                    details.delta.dx > 0) {
+                                  //container genişliği minimum genişlikten küçükse ve sola doğru kaydırma yapılıyorsa
                                   containerWidth = minimumContainerWidth;
+                                  return;
                                 }
+                                containerWidth -= details.delta.dx;
+
+                                position = position.copyWith(
+                                    x: position.x + details.delta.dx);
                               } else if (handlePosition ==
                                   _HandlePosition.right) {
-                                if (containerWidth > minimumContainerWidth ||
-                                    transformedDeltaX > 0) {
-                                  containerWidth += transformedDeltaX;
-                                } else {
+                                print(details.delta.dx);
+                                if (containerWidth <= minimumContainerWidth &&
+                                    details.delta.dx < 0) {
+                                  //container genişliği minimum genişlikten küçükse ve sağa doğru kaydırma yapılıyorsa
                                   containerWidth = minimumContainerWidth;
+                                  return;
                                 }
-
-                                if (position.x + containerWidth > screenWidth) {
+                                if (position.x +
+                                        containerWidth +
+                                        details.delta.dx >
+                                    screenWidth) {
                                   containerWidth = screenWidth - position.x;
                                 }
+                                containerWidth += details.delta.dx;
                               } else if (handlePosition ==
                                   _HandlePosition.top) {
-                                if (containerHeight > minimumContainerHeight ||
-                                    transformedDeltaY > 0) {
-                                  containerHeight -= transformedDeltaY;
-                                  position = position.copyWith(
-                                    x: position.x -
-                                        transformedDeltaY * sin(rotateAngle),
-                                    y: position.y +
-                                        transformedDeltaY * cos(rotateAngle),
-                                  );
-                                } else {
+                                if (containerHeight <= minimumContainerHeight &&
+                                    details.delta.dy > 0) {
+                                  //container yüksekliği minimum yükseklikten küçükse ve yukarı doğru kaydırma yapılıyorsa
                                   containerHeight = minimumContainerHeight;
+                                  return;
+                                }
+                                if (position.y < 0) {
+                                  //eğer container en yukarı kaydırıldıysa position.y 0.1 sabitler
+                                  position = position.copyWith(y: 0.1);
+                                } else {
+                                  if (position.y == 0.1 &&
+                                      details.delta.dy > 0) {
+                                    //eğer container en yukarı kaydırıldıysa ve aşağı doğru kaydırma yapılıyorsa
+                                    containerHeight -= details.delta.dy;
+                                    position = position.copyWith(
+                                        y: position.y + details.delta.dy);
+                                  } else if (position.y == 0.1) {
+                                    //eğer container en yukarı kaydırıldıysa ve yukarı doğru kaydırma yapılıyorsa
+                                    return;
+                                  }
+                                  containerHeight -= details.delta.dy;
+                                  position = position.copyWith(
+                                      y: position.y + details.delta.dy);
                                 }
                               } else if (handlePosition ==
                                   _HandlePosition.bottom) {
-                                if (containerHeight > minimumContainerHeight ||
-                                    transformedDeltaY > 0) {
-                                  containerHeight += transformedDeltaY;
-                                } else {
+                                if (containerHeight <= minimumContainerHeight &&
+                                    details.delta.dy < 0) {
+                                  //container yüksekliği minimum yükseklikten küçükse ve aşağı doğru kaydırma yapılıyorsa
                                   containerHeight = minimumContainerHeight;
+                                  return;
                                 }
-
-                                if (position.y + containerHeight >
+                                if (position.y +
+                                        containerHeight +
+                                        details.delta.dy >
                                     (widget.height / 2)) {
+                                  //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
                                   containerHeight =
-                                      (widget.height / 2) - position.y;
+                                      widget.height / 2 - position.y;
+                                } else {
+                                  containerHeight += details.delta.dy;
                                 }
                               }
                             });
