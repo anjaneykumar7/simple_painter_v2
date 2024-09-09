@@ -24,7 +24,7 @@ class TextItemWidget extends StatefulWidget {
 class _TextItemWidgetState extends State<TextItemWidget> {
   double? widgetHeight;
   ValueNotifier<PositionModel> position =
-      ValueNotifier(PositionModel(x: 50, y: 50));
+      ValueNotifier(const PositionModel(x: 50, y: 50));
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(

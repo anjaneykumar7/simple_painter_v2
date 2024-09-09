@@ -3,19 +3,18 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/src/models/position_model.dart';
 
-class PainterContainer extends StatefulWidget {
-  const PainterContainer({required this.height, super.key});
+class PainterContainerStable extends StatefulWidget {
+  const PainterContainerStable({required this.height, super.key});
   final double height;
   @override
-  State<PainterContainer> createState() => _PainterContainerState();
+  State<PainterContainerStable> createState() => _PainterContainerStableState();
 }
 
-class _PainterContainerState extends State<PainterContainer> {
-  double yPosition = 0;
-  double xPosition = 0;
-  double stackYPosition = 0;
-  double stackXPosition = 0;
+class _PainterContainerStableState extends State<PainterContainerStable> {
+  PositionModel position = const PositionModel();
+  PositionModel stackPosition = const PositionModel();
   double containerWidth = 100;
   double containerHeight = 100;
   final handleWidgetWidth = 15.0;
@@ -35,14 +34,31 @@ class _PainterContainerState extends State<PainterContainer> {
     double stackWidth = screenWidth;
 
     if (stackPositionControl == false) {
-      stackYPosition = stackHeight / 2 - containerHeight / 2;
-      stackXPosition = stackWidth / 2 - containerWidth / 2;
+      stackPosition = PositionModel(
+        x: stackWidth / 2 - containerWidth / 2,
+        y: stackHeight / 2 - containerHeight / 2,
+      );
+
       stackPositionControl = true;
     }
 
+    print('position $position');
+    print('stackPosition $stackPosition');
+    print('containerWidth $containerWidth');
+    print('containerHeight $containerHeight');
+    print('stackHeight $stackHeight');
+    print('stackWidth $stackWidth');
+    print('rotateAngle $rotateAngle');
+    print('minimumContainerWidth $minimumContainerWidth');
+    print('minimumContainerHeight $minimumContainerHeight');
+    print('scaleCurrentHeight $scaleCurrentHeight');
+    print('currentRotateAngel $currentRotateAngel');
+    print('setHeights $setHeights');
+    print('stackPositionControl $stackPositionControl');
+    print('--------------------------------------------------');
     return Positioned(
-      left: xPosition,
-      top: yPosition,
+      left: position.x,
+      top: position.y,
       child: SizedBox(
         height: stackHeight,
         width: stackWidth,
@@ -53,8 +69,8 @@ class _PainterContainerState extends State<PainterContainer> {
             child: Stack(
               children: [
                 Positioned(
-                  left: stackXPosition,
-                  top: stackYPosition,
+                  left: stackPosition.x,
+                  top: stackPosition.y,
                   child: GestureDetector(
                     onScaleStart: (details) {
                       scaleCurrentHeight = -1;
@@ -72,12 +88,13 @@ class _PainterContainerState extends State<PainterContainer> {
                           final deltaX = pos.dx * cosAngle - pos.dy * sinAngle;
                           final deltaY = pos.dx * sinAngle + pos.dy * cosAngle;
 
-                          xPosition = xPosition + deltaX;
-                          yPosition = yPosition + deltaY;
+                          position = position.copyWith(
+                              x: position.x + deltaX, y: position.y + deltaY);
 
-                          stackXPosition = stackWidth / 2 - containerWidth / 2;
-                          stackYPosition =
-                              stackHeight / 2 - containerHeight / 2;
+                          stackPosition = stackPosition.copyWith(
+                            x: stackWidth / 2 - containerWidth / 2,
+                            y: stackHeight / 2 - containerHeight / 2,
+                          );
                         });
                       } else if (details.pointerCount == 2) {
                         if (scaleCurrentHeight == -1) {
@@ -103,20 +120,30 @@ class _PainterContainerState extends State<PainterContainer> {
                             containerWidth = containerWidth * realScale;
                             containerHeight = containerHeight * realScale;
                           }
-                          final oldStackXPosition = stackXPosition;
-                          final oldStackYPosition = stackYPosition;
+                          final oldStackXPosition = stackPosition.x;
+                          final oldStackYPosition = stackPosition.y;
                           final newStackXPosition =
                               stackWidth / 2 - containerWidth / 2;
                           final newStackYPosition =
                               stackHeight / 2 - containerHeight / 2;
-                          xPosition =
-                              xPosition - (containerWidth - oldWidth) / 2;
-                          yPosition =
-                              yPosition - (containerHeight - oldHeight) / 2;
-                          xPosition += oldStackXPosition - newStackXPosition;
-                          yPosition += oldStackYPosition - newStackYPosition;
-                          stackXPosition = newStackXPosition;
-                          stackYPosition = newStackYPosition;
+                          position = position.copyWith(
+                            x: position.x - (containerWidth - oldWidth) / 2,
+                            y: position.y - (containerHeight - oldHeight) / 2,
+                          );
+
+                          position = position.copyWith(
+                            x: position.x +
+                                oldStackXPosition -
+                                newStackXPosition,
+                            y: position.y +
+                                oldStackYPosition -
+                                newStackYPosition,
+                          );
+
+                          stackPosition = stackPosition.copyWith(
+                            x: newStackXPosition,
+                            y: newStackYPosition,
+                          );
                         });
                       }
                     },
@@ -136,29 +163,30 @@ class _PainterContainerState extends State<PainterContainer> {
                   ),
                 ),
                 Positioned(
-                  left: stackXPosition,
-                  top: stackYPosition,
+                  left: stackPosition.x,
+                  top: stackPosition.y,
                   child: Container(
                     width: containerWidth,
                     height: containerHeight,
                     child: Stack(
                       children: _HandlePosition.values
                           .map(
-                            (position) => Align(
-                              alignment: position == _HandlePosition.top
+                            (handlePosition) => Align(
+                              alignment: handlePosition == _HandlePosition.top
                                   ? Alignment.topCenter
-                                  : position == _HandlePosition.bottom
+                                  : handlePosition == _HandlePosition.bottom
                                       ? Alignment.bottomCenter
-                                      : position == _HandlePosition.left
+                                      : handlePosition == _HandlePosition.left
                                           ? Alignment.centerLeft
-                                          : position == _HandlePosition.right
+                                          : handlePosition ==
+                                                  _HandlePosition.right
                                               ? Alignment.centerRight
                                               : Alignment.center,
                               child: GestureDetector(
                                 onPanEnd: (details) {
                                   setState(() {
-                                    final oldStackXPosition = stackXPosition;
-                                    final oldStackYPosition = stackYPosition;
+                                    final oldStackXPosition = stackPosition.x;
+                                    final oldStackYPosition = stackPosition.y;
                                     final newStackXPosition =
                                         stackWidth / 2 - containerWidth / 2;
                                     final newStackYPosition =
@@ -173,25 +201,37 @@ class _PainterContainerState extends State<PainterContainer> {
                                       final cosAngle = cos(rotateAngle);
                                       final sinAngle = sin(rotateAngle);
 
-                                      xPosition +=
-                                          deltaX * cosAngle - deltaY * sinAngle;
-                                      yPosition +=
-                                          deltaX * sinAngle + deltaY * cosAngle;
+                                      position = position.copyWith(
+                                        x: position.x +
+                                            (deltaX * cosAngle -
+                                                deltaY * sinAngle),
+                                        y: position.y +
+                                            (deltaX * sinAngle +
+                                                deltaY * cosAngle),
+                                      );
                                     } else {
                                       // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
-                                      xPosition +=
-                                          oldStackXPosition - newStackXPosition;
-                                      yPosition +=
-                                          oldStackYPosition - newStackYPosition;
+
+                                      position = position.copyWith(
+                                        x: position.x +
+                                            (oldStackXPosition -
+                                                newStackXPosition),
+                                        y: position.y +
+                                            (oldStackYPosition -
+                                                newStackYPosition),
+                                      );
                                     }
 
-                                    stackXPosition = newStackXPosition;
-                                    stackYPosition = newStackYPosition;
+                                    stackPosition = stackPosition.copyWith(
+                                      x: newStackXPosition,
+                                      y: newStackYPosition,
+                                    );
                                   });
                                 },
                                 onPanUpdate: (details) {
                                   setState(() {
-                                    if (position == _HandlePosition.left) {
+                                    if (handlePosition ==
+                                        _HandlePosition.left) {
                                       if (containerWidth <=
                                               minimumContainerWidth &&
                                           details.delta.dx > 0) {
@@ -200,8 +240,11 @@ class _PainterContainerState extends State<PainterContainer> {
                                         return;
                                       }
                                       containerWidth -= details.delta.dx;
-                                      stackXPosition += details.delta.dx;
-                                    } else if (position ==
+
+                                      stackPosition = stackPosition.copyWith(
+                                        x: stackPosition.x + details.delta.dx,
+                                      );
+                                    } else if (handlePosition ==
                                         _HandlePosition.right) {
                                       if (containerWidth <=
                                               minimumContainerWidth &&
@@ -211,7 +254,7 @@ class _PainterContainerState extends State<PainterContainer> {
                                         return;
                                       }
                                       containerWidth += details.delta.dx;
-                                    } else if (position ==
+                                    } else if (handlePosition ==
                                         _HandlePosition.top) {
                                       if (containerHeight <=
                                               minimumContainerHeight &&
@@ -222,9 +265,11 @@ class _PainterContainerState extends State<PainterContainer> {
                                         return;
                                       } else {
                                         containerHeight -= details.delta.dy;
-                                        stackYPosition += details.delta.dy;
+                                        stackPosition = stackPosition.copyWith(
+                                          y: stackPosition.y + details.delta.dy,
+                                        );
                                       }
-                                    } else if (position ==
+                                    } else if (handlePosition ==
                                         _HandlePosition.bottom) {
                                       if (containerHeight <=
                                               minimumContainerHeight &&
@@ -234,13 +279,13 @@ class _PainterContainerState extends State<PainterContainer> {
                                             minimumContainerHeight;
                                         return;
                                       }
-                                      if (yPosition +
+                                      if (position.y +
                                               containerHeight +
                                               details.delta.dy >
                                           widget.height) {
                                         //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
                                         containerHeight =
-                                            widget.height - yPosition;
+                                            widget.height - position.y;
                                       } else {
                                         containerHeight += details.delta.dy;
                                       }
@@ -253,9 +298,9 @@ class _PainterContainerState extends State<PainterContainer> {
                                   });
                                 },
                                 child: _HandleWidget(
-                                  handlePosition: position,
-                                  height: getHandleWidgetHeight(position),
-                                  width: getHandleWidgetWidth(position),
+                                  handlePosition: handlePosition,
+                                  height: getHandleWidgetHeight(handlePosition),
+                                  width: getHandleWidgetWidth(handlePosition),
                                 ),
                               ),
                             ),
@@ -294,27 +339,27 @@ class _PainterContainerState extends State<PainterContainer> {
     }
   }
 
-  double? getHandleLeft(_HandlePosition position) {
-    switch (position) {
+  double? getHandleLeft(_HandlePosition handlePosition) {
+    switch (handlePosition) {
       case _HandlePosition.left:
-        return xPosition - handleWidgetWidth / 2;
+        return position.x - handleWidgetWidth / 2;
       case _HandlePosition.right:
-        return xPosition + containerWidth - handleWidgetWidth / 2;
+        return position.x + containerWidth - handleWidgetWidth / 2;
       case _HandlePosition.top:
       case _HandlePosition.bottom:
-        return xPosition + containerWidth / 2 - 5.0;
+        return position.x + containerWidth / 2 - 5.0;
     }
   }
 
-  double? getHandleTop(_HandlePosition position) {
-    switch (position) {
+  double? getHandleTop(_HandlePosition handlePosition) {
+    switch (handlePosition) {
       case _HandlePosition.top:
-        return yPosition - handleWidgetHeight / 2;
+        return position.y - handleWidgetHeight / 2;
       case _HandlePosition.bottom:
-        return yPosition + containerHeight - handleWidgetHeight / 2;
+        return position.y + containerHeight - handleWidgetHeight / 2;
       case _HandlePosition.left:
       case _HandlePosition.right:
-        return yPosition + containerHeight / 2 - 5.0;
+        return position.y + containerHeight / 2 - 5.0;
     }
   }
 
@@ -340,19 +385,19 @@ class _PainterContainerState extends State<PainterContainer> {
     Offset offset,
     double screenWidth,
   ) {
-    return xPosition + containerWidth + offset.dx > screenWidth;
+    return position.x + containerWidth + offset.dx > screenWidth;
   }
 
-  bool _isXCoordinateLessThanZero(Offset offset) => xPosition + offset.dx <= 0;
+  bool _isXCoordinateLessThanZero(Offset offset) => position.x + offset.dx <= 0;
 
   bool _isYCoordinateMoreThanScreenHeight(
     Offset offset,
     double screenHeight,
   ) {
-    return yPosition + containerHeight + offset.dy > screenHeight;
+    return position.y + containerHeight + offset.dy > screenHeight;
   }
 
-  bool _isYCoordinateLessThanZero(Offset offset) => yPosition + offset.dy <= 0;
+  bool _isYCoordinateLessThanZero(Offset offset) => position.y + offset.dy <= 0;
 }
 
 enum _HandlePosition {
