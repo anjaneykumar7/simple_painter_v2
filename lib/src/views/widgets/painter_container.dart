@@ -43,6 +43,7 @@ class PainterContainer extends StatefulWidget {
 
 class _PainterContainerState extends State<PainterContainer> {
   PositionModel position = const PositionModel();
+  PositionModel oldPosition = const PositionModel();
   PositionModel stackPosition = const PositionModel();
   double containerWidth = 100;
   double containerHeight = 100;
@@ -71,28 +72,14 @@ class _PainterContainerState extends State<PainterContainer> {
       stackPositionControl = true;
     }
 
-    print('position $position');
-    print('stackPosition $stackPosition');
-    print('containerWidth $containerWidth');
-    print('containerHeight $containerHeight');
-    print('stackHeight $stackHeight');
-    print('stackWidth $stackWidth');
-    print('rotateAngle $rotateAngle');
-    print('minimumContainerWidth $minimumContainerWidth');
-    print('minimumContainerHeight $minimumContainerHeight');
-    print('scaleCurrentHeight $scaleCurrentHeight');
-    print('currentRotateAngel $currentRotateAngel');
-    print('setHeights $setHeights');
-    print('stackPositionControl $stackPositionControl');
-    print('--------------------------------------------------');
-    // controlHeights();
-    // if (widget.onPositionChange != null && position != oldPosition) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     widget.onPositionChange?.call(position);
-    //   });
+    controlHeights();
+    if (widget.onPositionChange != null && position != oldPosition) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onPositionChange?.call(position);
+      });
 
-    //   oldPosition = position;
-    // }
+      oldPosition = position;
+    }
     return Positioned(
       left: position.x,
       top: position.y,

@@ -4,7 +4,6 @@ import 'package:flutter_painter/src/controllers/custom_paint.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';
-import 'package:flutter_painter/src/views/widgets/painter_controller_stable.dart';
 
 class PainterWidget extends StatelessWidget {
   const PainterWidget({required this.controller, super.key});

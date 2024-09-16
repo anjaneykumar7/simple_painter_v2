@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
+import 'package:flutter_painter/src/pages/add_edit_text_page.dart';
 
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
@@ -128,11 +130,30 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     background.image = await completer.future;
   }
 
-  void addText() {
-    value = value.copyWith(
-      items: value.items.toList()
-        ..add(const TextItem(position: PositionModel(), text: 'Hello World')),
-    );
+  Future<void> addText() async {
+    var text = '';
+    await Navigator.push(
+        repaintBoundaryKey.currentContext!,
+        PageRouteBuilder<Object>(
+            opaque: false,
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                AddEditTextPage(
+                  onDone: (String textFunction) {
+                    text = textFunction;
+                  },
+                ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) =>
+                    FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    )));
+    if (text.isNotEmpty) {
+      value = value.copyWith(
+        items: value.items.toList()
+          ..add(TextItem(position: const PositionModel(), text: text)),
+      );
+    }
   }
 
   void setItemPosition(int index, PositionModel position) {
