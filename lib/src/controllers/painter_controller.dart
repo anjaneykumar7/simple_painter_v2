@@ -11,6 +11,11 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
@@ -33,6 +38,10 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
 
   final GlobalKey repaintBoundaryKey = GlobalKey();
   PainterBackground background = PainterBackground();
+  // ValueNotifier<List<PaintAction>> changeActions =
+  //     ValueNotifier<List<PaintAction>>(<PaintAction>[]);
+  ValueNotifier<PaintActions> changeActions =
+      ValueNotifier<PaintActions>(PaintActions());
   bool isErasing = false;
   bool isDrawing = false;
   bool editingText = false;
@@ -133,37 +142,56 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   Future<void> addText() async {
     var text = '';
     await Navigator.push(
-        repaintBoundaryKey.currentContext!,
-        PageRouteBuilder<Object>(
-            opaque: false,
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                AddEditTextPage(
-                  onDone: (String textFunction) {
-                    text = textFunction;
-                  },
-                ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) =>
-                    FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    )));
+      repaintBoundaryKey.currentContext!,
+      PageRouteBuilder<Object>(
+        opaque: false,
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            AddEditTextPage(
+          onDone: (String textFunction) {
+            text = textFunction;
+          },
+        ),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+            FadeTransition(
+          opacity: animation,
+          child: child,
+        ),
+      ),
+    );
+
     if (text.isNotEmpty) {
+      final painterItem = TextItem(position: const PositionModel(), text: text);
       value = value.copyWith(
-        items: value.items.toList()
-          ..add(TextItem(position: const PositionModel(), text: text)),
+        items: value.items.toList()..add(painterItem),
+      );
+      addAction(
+        ActionAddItem(
+          item: painterItem,
+          timestamp: DateTime.now(),
+          actionType: ActionType.addedTextItem,
+        ),
       );
     }
   }
 
+  void addAction(PaintAction action) {
+    changeActions.value = changeActions.value.copyWith(
+      changeList: changeActions.value.changeList.toList()..add(action),
+      index: changeActions.value.changeList.length,
+    );
+  }
+
   void setItemPosition(int index, PositionModel position) {
-    final items = value.items.toList();
+    var items = value.items.toList();
     var item = items[index];
     if (item is TextItem) {
       item = item.copyWith(position: position);
     } else {
       item = item.copyWith(position: position);
     }
+    items
+      ..removeAt(index)
+      ..insert(index, item);
     value = value.copyWith(items: items);
   }
 
@@ -177,6 +205,37 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
     value = value.copyWith(items: items);
   }
+
+  void updateActionWithChangeActionIndex(int index) {
+    final currentActions = changeActions.value.changeList;
+    final changeAction = changeActions.value.changeList[index];
+
+    for (var i = index; i < currentActions.length; i++) {
+      if (currentActions[i] is ActionPosition) {
+        var item = value.items
+            .where((element) =>
+                element.id == (currentActions[i] as ActionPosition).item.id)
+            .first;
+        item = item.copyWith(
+            position: (currentActions[i] as ActionPosition).oldPosition);
+
+        final itemIndex = value.items.toList().indexWhere((element) {
+          return element.id == item.id;
+        });
+        print('newposition back ${item.position}');
+        value = value.copyWith(
+          items: value.items.toList()
+            ..removeAt(itemIndex)
+            ..insert(itemIndex, item),
+        );
+      }
+    }
+
+    changeActions.value = changeActions.value.copyWith(index: index);
+  }
+
+  void undo() {}
+  void redo() {}
 }
 
 class PainterControllerValue {

@@ -1,10 +1,7 @@
 // ignore_for_file: lines_longer_than_80_chars
 
-import 'package:flutter/material.dart';
-import 'package:flutter_painter/src/models/position_model.dart';
-import 'package:flutter_painter/src/models/size_model.dart';
-
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
@@ -21,22 +18,38 @@ class PainterContainer extends StatefulWidget {
     this.minimumContainerWidth,
     this.onPositionChange,
     this.onSizeChange,
+    this.onPositionChangeEnd,
+    this.onSizeChangeEnd,
     this.itemPosition,
     this.itemSize,
     this.enabled,
+    this.position,
   });
   final double height;
   final Color? dragHandleColor;
   final bool selectedItem;
   final void Function({bool tapItem})? onTapItem;
-  final void Function(PositionModel)? onPositionChange;
-  final void Function(SizeModel)? onSizeChange;
+  final void Function(PositionModel, PositionModel)? onPositionChange;
+  final void Function(SizeModel, SizeModel)? onSizeChange;
+  final void Function(
+    PositionModel oldPosition,
+    PositionModel newPosition,
+    double oldRotateAngle,
+    double newRotateAngle,
+  )? onPositionChangeEnd;
+  final void Function(
+    PositionModel oldPosition,
+    SizeModel oldSize,
+    PositionModel newPosition,
+    SizeModel newSize,
+  )? onSizeChangeEnd;
   final Widget? child;
   final double? minimumContainerHeight;
   final double? minimumContainerWidth;
   final PositionModel? itemPosition;
   final SizeModel? itemSize;
   final bool? enabled;
+  final PositionModel? position;
   @override
   State<PainterContainer> createState() => _PainterContainerState();
 }
@@ -45,17 +58,22 @@ class _PainterContainerState extends State<PainterContainer> {
   PositionModel position = const PositionModel();
   PositionModel oldPosition = const PositionModel();
   PositionModel stackPosition = const PositionModel();
-  double containerWidth = 100;
-  double containerHeight = 100;
+  SizeModel containerSize = const SizeModel(width: 100, height: 100);
+  SizeModel oldContainerSize = const SizeModel(width: 100, height: 100);
+  double rotateAngle = 0;
+  double oldRotateAngle = 0;
   final handleWidgetWidth = 15.0;
   final handleWidgetHeight = 15.0;
   double minimumContainerWidth = 50;
   double minimumContainerHeight = 50;
   double scaleCurrentHeight = -1;
   double currentRotateAngel = -1;
-  double rotateAngle = 0;
   bool setHeights = false;
   bool stackPositionControl = false;
+  bool endPositionControl = false;
+  bool endSizeControl = false;
+  bool changesFromOutside = false;
+  bool allowOutsideChanges = true;
 
   @override
   Widget build(BuildContext context) {
@@ -66,20 +84,14 @@ class _PainterContainerState extends State<PainterContainer> {
 
     if (stackPositionControl == false) {
       stackPosition = stackPosition.copyWith(
-        x: stackWidth / 2 - containerWidth / 2,
-        y: stackHeight / 2 - containerHeight / 2,
+        x: stackWidth / 2 - containerSize.width / 2,
+        y: stackHeight / 2 - containerSize.height / 2,
       );
       stackPositionControl = true;
     }
 
-    controlHeights();
-    if (widget.onPositionChange != null && position != oldPosition) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        widget.onPositionChange?.call(position);
-      });
-
-      oldPosition = position;
-    }
+    controlHeights(stackWidth, stackHeight);
+    updateEvents();
     return Positioned(
       left: position.x,
       top: position.y,
@@ -97,8 +109,9 @@ class _PainterContainerState extends State<PainterContainer> {
                   top: stackPosition.y,
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                        horizontal: handleWidgetHeight,
-                        vertical: handleWidgetWidth),
+                      horizontal: handleWidgetHeight,
+                      vertical: handleWidgetWidth,
+                    ),
                     child: GestureDetector(
                       onTap: () {
                         if (widget.onTapItem != null) {
@@ -114,20 +127,31 @@ class _PainterContainerState extends State<PainterContainer> {
                       onScaleEnd: (details) {
                         if (widget.onPositionChange != null) {
                           widget.onPositionChange?.call(
+                            PositionModel(x: oldPosition.x, y: oldPosition.y),
                             PositionModel(x: position.x, y: position.y),
                           );
                         }
                         if (widget.onSizeChange != null) {
                           widget.onSizeChange?.call(
                             SizeModel(
-                              width: containerWidth,
-                              height: containerHeight,
+                              width: oldContainerSize.width,
+                              height: oldContainerSize.height,
+                            ),
+                            SizeModel(
+                              width: containerSize.width,
+                              height: containerSize.height,
                             ),
                           );
                         }
                         currentRotateAngel = rotateAngle;
+                        endPositionControl = false;
+                        endSizeControl = false;
+                        allowOutsideChanges = true;
                       },
                       onScaleUpdate: (details) {
+                        allowOutsideChanges = false;
+                        endPositionControl = true;
+                        endSizeControl = true;
                         if (details.pointerCount == 1) {
                           final pos = details.focalPointDelta;
                           setState(() {
@@ -139,47 +163,53 @@ class _PainterContainerState extends State<PainterContainer> {
                             final deltaY =
                                 pos.dx * sinAngle + pos.dy * cosAngle;
                             position = position.copyWith(
-                                x: position.x + deltaX, y: position.y + deltaY);
+                              x: position.x + deltaX,
+                              y: position.y + deltaY,
+                            );
 
                             stackPosition = stackPosition.copyWith(
-                              x: stackWidth / 2 - containerWidth / 2,
-                              y: stackHeight / 2 - containerHeight / 2,
+                              x: stackWidth / 2 - containerSize.width / 2,
+                              y: stackHeight / 2 - containerSize.height / 2,
                             );
                           });
                         } else if (details.pointerCount == 2) {
                           if (scaleCurrentHeight == -1) {
-                            scaleCurrentHeight = containerHeight;
+                            scaleCurrentHeight = containerSize.height;
                           }
                           if (currentRotateAngel == -1) {
                             currentRotateAngel = rotateAngle;
                           }
                           final realScale =
                               (scaleCurrentHeight * details.scale) /
-                                  containerHeight;
+                                  containerSize.height;
                           final realRotateAngle =
                               currentRotateAngel + details.rotation;
-                          final oldWidth = containerWidth;
-                          final oldHeight = containerHeight;
+                          final oldWidth = containerSize.width;
+                          final oldHeight = containerSize.height;
                           setState(() {
                             rotateAngle = realRotateAngle; // set rotation
-                            if (containerWidth * realScale <
+                            if (containerSize.width * realScale <
                                     minimumContainerWidth ||
-                                containerHeight * realScale <
+                                containerSize.height * realScale <
                                     minimumContainerHeight) {
                               return;
                             } else {
-                              containerWidth = containerWidth * realScale;
-                              containerHeight = containerHeight * realScale;
+                              containerSize = containerSize.copyWith(
+                                width: containerSize.width * realScale,
+                                height: containerSize.height * realScale,
+                              );
                             }
                             final oldStackXPosition = stackPosition.x;
                             final oldStackYPosition = stackPosition.y;
                             final newStackXPosition =
-                                stackWidth / 2 - containerWidth / 2;
+                                stackWidth / 2 - containerSize.width / 2;
                             final newStackYPosition =
-                                stackHeight / 2 - containerHeight / 2;
+                                stackHeight / 2 - containerSize.height / 2;
                             position = position.copyWith(
-                              x: position.x - (containerWidth - oldWidth) / 2,
-                              y: position.y - (containerHeight - oldHeight) / 2,
+                              x: position.x -
+                                  (containerSize.width - oldWidth) / 2,
+                              y: position.y -
+                                  (containerSize.height - oldHeight) / 2,
                             );
 
                             position = position.copyWith(
@@ -199,8 +229,8 @@ class _PainterContainerState extends State<PainterContainer> {
                         }
                       },
                       child: Container(
-                        width: containerWidth,
-                        height: containerHeight,
+                        width: containerSize.width,
+                        height: containerSize.height,
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: widget.selectedItem
@@ -215,163 +245,197 @@ class _PainterContainerState extends State<PainterContainer> {
                 ),
                 if (widget.selectedItem)
                   Positioned(
-                      left: stackPosition.x,
-                      top: stackPosition.y,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: handleWidgetHeight / 2,
-                          vertical: handleWidgetWidth / 2,
-                        ),
-                        child: SizedBox(
-                          width: containerWidth + handleWidgetHeight,
-                          height: containerHeight + handleWidgetWidth,
-                          child: Stack(
-                            children:
-                                _HandlePosition.values.map((handlePosition) {
-                              return Align(
-                                alignment: handlePosition == _HandlePosition.top
-                                    ? Alignment.topCenter
-                                    : handlePosition == _HandlePosition.bottom
-                                        ? Alignment.bottomCenter
-                                        : handlePosition == _HandlePosition.left
-                                            ? Alignment.centerLeft
-                                            : handlePosition ==
-                                                    _HandlePosition.right
-                                                ? Alignment.centerRight
-                                                : Alignment.center,
-                                child: GestureDetector(
-                                  onPanEnd: (details) {
-                                    setState(() {
-                                      final oldStackXPosition = stackPosition.x;
-                                      final oldStackYPosition = stackPosition.y;
-                                      final newStackXPosition =
-                                          stackWidth / 2 - containerWidth / 2;
-                                      final newStackYPosition =
-                                          stackHeight / 2 - containerHeight / 2;
+                    left: stackPosition.x,
+                    top: stackPosition.y,
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: handleWidgetHeight / 2,
+                        vertical: handleWidgetWidth / 2,
+                      ),
+                      child: SizedBox(
+                        width: containerSize.width + handleWidgetHeight,
+                        height: containerSize.height + handleWidgetWidth,
+                        child: Stack(
+                          children:
+                              _HandlePosition.values.map((handlePosition) {
+                            return Align(
+                              alignment: handlePosition == _HandlePosition.top
+                                  ? Alignment.topCenter
+                                  : handlePosition == _HandlePosition.bottom
+                                      ? Alignment.bottomCenter
+                                      : handlePosition == _HandlePosition.left
+                                          ? Alignment.centerLeft
+                                          : handlePosition ==
+                                                  _HandlePosition.right
+                                              ? Alignment.centerRight
+                                              : Alignment.center,
+                              child: GestureDetector(
+                                onPanEnd: (details) {
+                                  endSizeControl = false;
+                                  endPositionControl = true;
+                                  setState(() {
+                                    final oldStackXPosition = stackPosition.x;
+                                    final oldStackYPosition = stackPosition.y;
+                                    final newStackXPosition = stackWidth / 2 -
+                                        containerSize.width / 2;
+                                    final newStackYPosition = stackHeight / 2 -
+                                        containerSize.height / 2;
 
-                                      if (rotateAngle != 0) {
-                                        // rotateAngle 0'dan farklı olduğunda trigonometrik dönüşümler kullan
-                                        final deltaX = oldStackXPosition -
-                                            newStackXPosition;
-                                        final deltaY = oldStackYPosition -
-                                            newStackYPosition;
-                                        final cosAngle = cos(rotateAngle);
-                                        final sinAngle = sin(rotateAngle);
+                                    if (rotateAngle != 0) {
+                                      // rotateAngle 0'dan farklı olduğunda trigonometrik dönüşümler kullan
+                                      final deltaX =
+                                          oldStackXPosition - newStackXPosition;
+                                      final deltaY =
+                                          oldStackYPosition - newStackYPosition;
+                                      final cosAngle = cos(rotateAngle);
+                                      final sinAngle = sin(rotateAngle);
 
-                                        position = position.copyWith(
-                                          x: position.x +
-                                              (deltaX * cosAngle -
-                                                  deltaY * sinAngle),
-                                          y: position.y +
-                                              (deltaX * sinAngle +
-                                                  deltaY * cosAngle),
+                                      position = position.copyWith(
+                                        x: position.x +
+                                            (deltaX * cosAngle -
+                                                deltaY * sinAngle),
+                                        y: position.y +
+                                            (deltaX * sinAngle +
+                                                deltaY * cosAngle),
+                                      );
+                                    } else {
+                                      // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
+
+                                      position = position.copyWith(
+                                        x: position.x +
+                                            (oldStackXPosition -
+                                                newStackXPosition),
+                                        y: position.y +
+                                            (oldStackYPosition -
+                                                newStackYPosition),
+                                      );
+                                    }
+
+                                    stackPosition = stackPosition.copyWith(
+                                      x: newStackXPosition,
+                                      y: newStackYPosition,
+                                    );
+                                  });
+                                  allowOutsideChanges = true;
+                                },
+                                onPanUpdate: (details) {
+                                  allowOutsideChanges = false;
+                                  endSizeControl = true;
+                                  setState(() {
+                                    if (handlePosition ==
+                                        _HandlePosition.left) {
+                                      if (containerSize.width <=
+                                              minimumContainerWidth &&
+                                          details.delta.dx > 0) {
+                                        //container genişliği minimum genişlikten küçükse ve sola doğru kaydırma yapılıyorsa
+
+                                        containerSize = containerSize.copyWith(
+                                          width: minimumContainerWidth,
                                         );
-                                      } else {
-                                        // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
-
-                                        position = position.copyWith(
-                                          x: position.x +
-                                              (oldStackXPosition -
-                                                  newStackXPosition),
-                                          y: position.y +
-                                              (oldStackYPosition -
-                                                  newStackYPosition),
-                                        );
+                                        return;
                                       }
+
+                                      containerSize = containerSize.copyWith(
+                                        width: containerSize.width -
+                                            details.delta.dx,
+                                      );
 
                                       stackPosition = stackPosition.copyWith(
-                                        x: newStackXPosition,
-                                        y: newStackYPosition,
+                                        x: stackPosition.x + details.delta.dx,
                                       );
-                                    });
-                                  },
-                                  onPanUpdate: (details) {
-                                    setState(() {
-                                      if (handlePosition ==
-                                          _HandlePosition.left) {
-                                        if (containerWidth <=
-                                                minimumContainerWidth &&
-                                            details.delta.dx > 0) {
-                                          //container genişliği minimum genişlikten küçükse ve sola doğru kaydırma yapılıyorsa
-                                          containerWidth =
-                                              minimumContainerWidth;
-                                          return;
-                                        }
-                                        containerWidth -= details.delta.dx;
+                                    } else if (handlePosition ==
+                                        _HandlePosition.right) {
+                                      if (containerSize.width <=
+                                              minimumContainerWidth &&
+                                          details.delta.dx < 0) {
+                                        //container genişliği minimum genişlikten küçükse ve sağa doğru kaydırma yapılıyorsa
 
-                                        stackPosition = stackPosition.copyWith(
-                                          x: stackPosition.x + details.delta.dx,
+                                        containerSize = containerSize.copyWith(
+                                          width: minimumContainerWidth,
                                         );
-                                      } else if (handlePosition ==
-                                          _HandlePosition.right) {
-                                        if (containerWidth <=
-                                                minimumContainerWidth &&
-                                            details.delta.dx < 0) {
-                                          //container genişliği minimum genişlikten küçükse ve sağa doğru kaydırma yapılıyorsa
-                                          containerWidth =
-                                              minimumContainerWidth;
-                                          return;
-                                        }
-                                        containerWidth += details.delta.dx;
-                                      } else if (handlePosition ==
-                                          _HandlePosition.top) {
-                                        if (containerHeight <=
-                                                minimumContainerHeight &&
-                                            details.delta.dy > 0) {
-                                          //container yüksekliği minimum yükseklikten küçükse ve yukarı doğru kaydırma yapılıyorsa
-                                          containerHeight =
-                                              minimumContainerHeight;
-                                          return;
-                                        } else {
-                                          containerHeight -= details.delta.dy;
-                                          stackPosition =
-                                              stackPosition.copyWith(
-                                            y: stackPosition.y +
-                                                details.delta.dy,
-                                          );
-                                        }
-                                      } else if (handlePosition ==
-                                          _HandlePosition.bottom) {
-                                        if (containerHeight <=
-                                                minimumContainerHeight &&
-                                            details.delta.dy < 0) {
-                                          //container yüksekliği minimum yükseklikten küçükse ve aşağı doğru kaydırma yapılıyorsa
-                                          containerHeight =
-                                              minimumContainerHeight;
-                                          return;
-                                        }
-                                        if (position.y +
-                                                containerHeight +
-                                                details.delta.dy >
-                                            widget.height) {
-                                          //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
-                                          containerHeight =
-                                              widget.height - position.y;
-                                        } else {
-                                          containerHeight += details.delta.dy;
-                                        }
+                                        return;
                                       }
 
-                                      // stackXPosition =
-                                      //     stackWidth / 2 - containerWidth / 2;
-                                      // stackYPosition =
-                                      //     stackHeight / 2 - containerHeight / 2;
-                                    });
-                                  },
-                                  child: _HandleWidget(
-                                    handlePosition: handlePosition,
-                                    height:
-                                        getHandleWidgetHeight(handlePosition),
-                                    width: getHandleWidgetWidth(handlePosition),
-                                    backgroundColor:
-                                        widget.dragHandleColor ?? Colors.blue,
-                                  ),
+                                      containerSize = containerSize.copyWith(
+                                        width: containerSize.width +
+                                            details.delta.dx,
+                                      );
+                                    } else if (handlePosition ==
+                                        _HandlePosition.top) {
+                                      if (containerSize.height <=
+                                              minimumContainerHeight &&
+                                          details.delta.dy > 0) {
+                                        //container yüksekliği minimum yükseklikten küçükse ve yukarı doğru kaydırma yapılıyorsa
+
+                                        containerSize = containerSize.copyWith(
+                                          height: minimumContainerHeight,
+                                        );
+                                        return;
+                                      } else {
+                                        containerSize = containerSize.copyWith(
+                                          height: containerSize.height -
+                                              details.delta.dy,
+                                        );
+                                        stackPosition = stackPosition.copyWith(
+                                          y: stackPosition.y + details.delta.dy,
+                                        );
+                                      }
+                                    } else if (handlePosition ==
+                                        _HandlePosition.bottom) {
+                                      if (containerSize.height <=
+                                              minimumContainerHeight &&
+                                          details.delta.dy < 0) {
+                                        //container yüksekliği minimum yükseklikten küçükse ve aşağı doğru kaydırma yapılıyorsa
+
+                                        containerSize = containerSize.copyWith(
+                                          height: minimumContainerHeight,
+                                        );
+                                        return;
+                                      }
+                                      if (position.y +
+                                              containerSize.height +
+                                              details.delta.dy >
+                                          widget.height) {
+                                        //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
+
+                                        containerSize = containerSize.copyWith(
+                                          height: widget.height - position.y,
+                                        );
+                                      } else {
+                                        containerSize = containerSize.copyWith(
+                                          height: containerSize.height +
+                                              details.delta.dy,
+                                        );
+                                      }
+                                    }
+                                    if (widget.onSizeChange != null) {
+                                      widget.onSizeChange?.call(
+                                        SizeModel(
+                                          width: oldContainerSize.width,
+                                          height: oldContainerSize.height,
+                                        ),
+                                        SizeModel(
+                                          width: containerSize.width,
+                                          height: containerSize.height,
+                                        ),
+                                      );
+                                    }
+                                  });
+                                },
+                                child: _HandleWidget(
+                                  handlePosition: handlePosition,
+                                  height: getHandleWidgetHeight(handlePosition),
+                                  width: getHandleWidgetWidth(handlePosition),
+                                  backgroundColor:
+                                      widget.dragHandleColor ?? Colors.blue,
                                 ),
-                              );
-                            }).toList(),
-                          ),
+                              ),
+                            );
+                          }).toList(),
                         ),
-                      )),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -380,7 +444,7 @@ class _PainterContainerState extends State<PainterContainer> {
     );
   }
 
-  void controlHeights() {
+  void controlHeights(double stackWidth, double stackHeight) {
     if (setHeights == false &&
         (widget.minimumContainerHeight != null ||
             widget.minimumContainerWidth != null)) {
@@ -388,9 +452,72 @@ class _PainterContainerState extends State<PainterContainer> {
           widget.minimumContainerHeight ?? minimumContainerHeight;
       minimumContainerWidth =
           widget.minimumContainerWidth ?? minimumContainerWidth;
-      containerHeight = minimumContainerHeight;
 
+      containerSize = containerSize.copyWith(
+        height: minimumContainerHeight,
+      );
+      stackPosition = stackPosition.copyWith(
+        x: stackWidth / 2 - containerSize.width / 2,
+        y: stackHeight / 2 - containerSize.height / 2,
+      );
       setHeights = true;
+      changesFromOutside = true;
+    }
+
+    if (widget.position != null &&
+        widget.position != position &&
+        allowOutsideChanges) {
+      position = widget.position!;
+      stackPosition = stackPosition.copyWith(
+        x: stackWidth / 2 - containerSize.width / 2,
+        y: stackHeight / 2 - containerSize.height / 2,
+      );
+      changesFromOutside = true;
+    }
+  }
+
+  void updateEvents() {
+    if (position != oldPosition) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (changesFromOutside) {
+          changesFromOutside = false;
+          oldPosition = position;
+          return;
+        }
+        if (widget.onPositionChangeEnd != null &&
+            endPositionControl == false &&
+            !changesFromOutside) {
+          widget.onPositionChangeEnd
+              ?.call(oldPosition, position, oldRotateAngle, rotateAngle);
+          oldPosition = position;
+          oldRotateAngle = rotateAngle;
+        }
+        if (widget.onPositionChange != null) {
+          widget.onPositionChange?.call(oldPosition, position);
+        }
+      });
+    }
+
+    if (containerSize != oldContainerSize) {
+      if (changesFromOutside) {
+        oldPosition = position;
+        oldContainerSize = containerSize;
+        changesFromOutside = false;
+        return;
+      }
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.onSizeChangeEnd != null &&
+            endSizeControl == false &&
+            !changesFromOutside) {
+          widget.onSizeChangeEnd
+              ?.call(oldPosition, oldContainerSize, position, containerSize);
+          oldPosition = position;
+          oldContainerSize = containerSize;
+        }
+        if (widget.onSizeChange != null) {
+          widget.onSizeChange?.call(oldContainerSize, containerSize);
+        }
+      });
     }
   }
 
@@ -401,7 +528,7 @@ class _PainterContainerState extends State<PainterContainer> {
         return handleWidgetHeight;
       case _HandlePosition.left:
       case _HandlePosition.right:
-        return containerHeight / 7;
+        return containerSize.height / 7;
     }
   }
 
@@ -409,7 +536,7 @@ class _PainterContainerState extends State<PainterContainer> {
     switch (handlePosition) {
       case _HandlePosition.top:
       case _HandlePosition.bottom:
-        return containerWidth / 7;
+        return containerSize.width / 7;
       case _HandlePosition.left:
       case _HandlePosition.right:
         return handleWidgetWidth;
@@ -421,10 +548,10 @@ class _PainterContainerState extends State<PainterContainer> {
       case _HandlePosition.left:
         return position.x - handleWidgetWidth / 2;
       case _HandlePosition.right:
-        return position.x + containerWidth - handleWidgetWidth / 2;
+        return position.x + containerSize.width - handleWidgetWidth / 2;
       case _HandlePosition.top:
       case _HandlePosition.bottom:
-        return position.x + containerWidth / 2 - 5.0;
+        return position.x + containerSize.width / 2 - 5.0;
     }
   }
 
@@ -433,30 +560,12 @@ class _PainterContainerState extends State<PainterContainer> {
       case _HandlePosition.top:
         return position.y - handleWidgetHeight / 2;
       case _HandlePosition.bottom:
-        return position.y + containerHeight - handleWidgetHeight / 2;
+        return position.y + containerSize.height - handleWidgetHeight / 2;
       case _HandlePosition.left:
       case _HandlePosition.right:
-        return position.y + containerHeight / 2 - 5.0;
+        return position.y + containerSize.height / 2 - 5.0;
     }
   }
-
-  bool _isXCoordinateMoreThanScreenWidth(
-    Offset offset,
-    double screenWidth,
-  ) {
-    return position.x + containerWidth + offset.dx > screenWidth;
-  }
-
-  bool _isXCoordinateLessThanZero(Offset offset) => position.x + offset.dx <= 0;
-
-  bool _isYCoordinateMoreThanScreenHeight(
-    Offset offset,
-    double screenHeight,
-  ) {
-    return position.y + containerHeight + offset.dy > screenHeight / 2;
-  }
-
-  bool _isYCoordinateLessThanZero(Offset offset) => position.y + offset.dy <= 0;
 }
 
 enum _HandlePosition {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:example/changes_list.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
@@ -35,6 +36,7 @@ class FlutterPainterExample extends StatefulWidget {
 
 class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   late PainterController controller;
+  ValueNotifier<bool> ifOpenChangeList = ValueNotifier(true);
   @override
   void initState() {
     super.initState();
@@ -53,9 +55,24 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
       backgroundColor: Colors.grey.shade800.withOpacity(0.6),
       appBar: appBar,
       bottomNavigationBar: bottomBar,
-      body: SizedBox(
-        height: height,
-        child: PainterWidget(controller: controller),
+      body: Stack(
+        children: [
+          SizedBox(
+            height: height,
+            child: PainterWidget(controller: controller),
+          ),
+          ValueListenableBuilder(
+            valueListenable: ifOpenChangeList,
+            builder: (context, opened, child) => !opened
+                ? const SizedBox()
+                : Positioned.fill(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: ChangesList(controller: controller),
+                    ),
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -68,6 +85,14 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
         elevation: 0,
         actions: [
           // Delete the selected drawable
+          IconButton(
+            icon: const Icon(
+              PhosphorIconsRegular.listNumbers,
+            ),
+            onPressed: () {
+              ifOpenChangeList.value = !ifOpenChangeList.value;
+            },
+          ),
           IconButton(
             icon: const Icon(
               PhosphorIconsRegular.trash,
