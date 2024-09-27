@@ -91,17 +91,19 @@ class PainterWidget extends StatelessWidget {
           final itemIndex = controller.value.items.indexOf(newItem);
           controller.setItemPosition(itemIndex, position);
         },
-        onSizeChange: (size) {
+        onSizeChange: (position, size) {
           final newItem = controller.value.items.firstWhere(
             //Position veya size değiştiğinde eski item geliyor,
             //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi
             //için tekrardan size üzerinden itemi
             //bulup onun üzeirinden indeks alıyorum.
-            (element) => element.size == item.size,
+            (element) => element.id == item.id,
             orElse: () => item,
           );
           final itemIndex = controller.value.items.indexOf(newItem);
-          controller.setItemSize(itemIndex, size);
+          controller
+            ..setItemSize(itemIndex, size)
+            ..setItemPosition(itemIndex, position);
         },
       );
     } else {

@@ -24,13 +24,18 @@ class PainterContainer extends StatefulWidget {
     this.itemSize,
     this.enabled,
     this.position,
+    this.size,
   });
   final double height;
   final Color? dragHandleColor;
   final bool selectedItem;
   final void Function({bool tapItem})? onTapItem;
   final void Function(PositionModel, PositionModel)? onPositionChange;
-  final void Function(SizeModel, SizeModel)? onSizeChange;
+  final void Function(
+    PositionModel newPosition,
+    SizeModel oldSize,
+    SizeModel newSize,
+  )? onSizeChange;
   final void Function(
     PositionModel oldPosition,
     PositionModel newPosition,
@@ -50,6 +55,7 @@ class PainterContainer extends StatefulWidget {
   final SizeModel? itemSize;
   final bool? enabled;
   final PositionModel? position;
+  final SizeModel? size;
   @override
   State<PainterContainer> createState() => _PainterContainerState();
 }
@@ -68,12 +74,12 @@ class _PainterContainerState extends State<PainterContainer> {
   double minimumContainerHeight = 50;
   double scaleCurrentHeight = -1;
   double currentRotateAngel = -1;
-  bool setHeights = false;
-  bool stackPositionControl = false;
+  bool initializeSize = false;
   bool endPositionControl = false;
   bool endSizeControl = false;
   bool changesFromOutside = false;
   bool allowOutsideChanges = true;
+  bool updatingAutoStackPosition = false;
 
   @override
   Widget build(BuildContext context) {
@@ -82,15 +88,8 @@ class _PainterContainerState extends State<PainterContainer> {
     final stackHeight = widget.height / 2;
     final stackWidth = screenWidth;
 
-    if (stackPositionControl == false) {
-      stackPosition = stackPosition.copyWith(
-        x: stackWidth / 2 - containerSize.width / 2,
-        y: stackHeight / 2 - containerSize.height / 2,
-      );
-      stackPositionControl = true;
-    }
-
-    controlHeights(stackWidth, stackHeight);
+    initializeSizeOnce(stackWidth, stackHeight);
+    controlOutsideValues(stackWidth, stackHeight);
     updateEvents();
     return Positioned(
       left: position.x,
@@ -133,6 +132,7 @@ class _PainterContainerState extends State<PainterContainer> {
                         }
                         if (widget.onSizeChange != null) {
                           widget.onSizeChange?.call(
+                            PositionModel(x: position.x, y: position.y),
                             SizeModel(
                               width: oldContainerSize.width,
                               height: oldContainerSize.height,
@@ -147,11 +147,13 @@ class _PainterContainerState extends State<PainterContainer> {
                         endPositionControl = false;
                         endSizeControl = false;
                         allowOutsideChanges = true;
+                        updatingAutoStackPosition = false;
                       },
                       onScaleUpdate: (details) {
                         allowOutsideChanges = false;
                         endPositionControl = true;
                         endSizeControl = true;
+                        updatingAutoStackPosition = true;
                         if (details.pointerCount == 1) {
                           final pos = details.focalPointDelta;
                           setState(() {
@@ -273,49 +275,11 @@ class _PainterContainerState extends State<PainterContainer> {
                                 onPanEnd: (details) {
                                   endSizeControl = false;
                                   endPositionControl = true;
-                                  setState(() {
-                                    final oldStackXPosition = stackPosition.x;
-                                    final oldStackYPosition = stackPosition.y;
-                                    final newStackXPosition = stackWidth / 2 -
-                                        containerSize.width / 2;
-                                    final newStackYPosition = stackHeight / 2 -
-                                        containerSize.height / 2;
-
-                                    if (rotateAngle != 0) {
-                                      // rotateAngle 0'dan farklı olduğunda trigonometrik dönüşümler kullan
-                                      final deltaX =
-                                          oldStackXPosition - newStackXPosition;
-                                      final deltaY =
-                                          oldStackYPosition - newStackYPosition;
-                                      final cosAngle = cos(rotateAngle);
-                                      final sinAngle = sin(rotateAngle);
-
-                                      position = position.copyWith(
-                                        x: position.x +
-                                            (deltaX * cosAngle -
-                                                deltaY * sinAngle),
-                                        y: position.y +
-                                            (deltaX * sinAngle +
-                                                deltaY * cosAngle),
-                                      );
-                                    } else {
-                                      // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
-
-                                      position = position.copyWith(
-                                        x: position.x +
-                                            (oldStackXPosition -
-                                                newStackXPosition),
-                                        y: position.y +
-                                            (oldStackYPosition -
-                                                newStackYPosition),
-                                      );
-                                    }
-
-                                    stackPosition = stackPosition.copyWith(
-                                      x: newStackXPosition,
-                                      y: newStackYPosition,
-                                    );
-                                  });
+                                  calculateSizeAfterChangedSize(
+                                    stackWidth,
+                                    stackHeight,
+                                  );
+                                  updatingAutoStackPosition = true;
                                   allowOutsideChanges = true;
                                 },
                                 onPanUpdate: (details) {
@@ -410,6 +374,10 @@ class _PainterContainerState extends State<PainterContainer> {
                                     }
                                     if (widget.onSizeChange != null) {
                                       widget.onSizeChange?.call(
+                                        PositionModel(
+                                          x: position.x,
+                                          y: position.y,
+                                        ),
                                         SizeModel(
                                           width: oldContainerSize.width,
                                           height: oldContainerSize.height,
@@ -444,8 +412,42 @@ class _PainterContainerState extends State<PainterContainer> {
     );
   }
 
-  void controlHeights(double stackWidth, double stackHeight) {
-    if (setHeights == false &&
+  void calculateSizeAfterChangedSize(double stackWidth, double stackHeight) {
+    setState(() {
+      final oldStackXPosition = stackPosition.x;
+      final oldStackYPosition = stackPosition.y;
+      final newStackXPosition = stackWidth / 2 - containerSize.width / 2;
+      final newStackYPosition = stackHeight / 2 - containerSize.height / 2;
+
+      if (rotateAngle != 0) {
+        // rotateAngle 0'dan farklı olduğunda trigonometrik dönüşümler kullan
+        final deltaX = oldStackXPosition - newStackXPosition;
+        final deltaY = oldStackYPosition - newStackYPosition;
+        final cosAngle = cos(rotateAngle);
+        final sinAngle = sin(rotateAngle);
+
+        position = position.copyWith(
+          x: position.x + (deltaX * cosAngle - deltaY * sinAngle),
+          y: position.y + (deltaX * sinAngle + deltaY * cosAngle),
+        );
+      } else {
+        // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
+
+        position = position.copyWith(
+          x: position.x + (oldStackXPosition - newStackXPosition),
+          y: position.y + (oldStackYPosition - newStackYPosition),
+        );
+      }
+
+      stackPosition = stackPosition.copyWith(
+        x: newStackXPosition,
+        y: newStackYPosition,
+      );
+    });
+  }
+
+  void initializeSizeOnce(double stackWidth, double stackHeight) {
+    if (initializeSize == false &&
         (widget.minimumContainerHeight != null ||
             widget.minimumContainerWidth != null)) {
       minimumContainerHeight =
@@ -460,10 +462,24 @@ class _PainterContainerState extends State<PainterContainer> {
         x: stackWidth / 2 - containerSize.width / 2,
         y: stackHeight / 2 - containerSize.height / 2,
       );
-      setHeights = true;
+      initializeSize = true;
       changesFromOutside = true;
     }
+  }
 
+  void controlOutsideValues(double stackWidth, double stackHeight) {
+    if (updatingAutoStackPosition) {
+      updatingAutoStackPosition = false;
+      return;
+    }
+
+    if (widget.size != null &&
+        widget.size != containerSize &&
+        allowOutsideChanges) {
+      containerSize = widget.size!;
+      calculateSizeAfterChangedSize(stackWidth, stackHeight);
+      changesFromOutside = true;
+    }
     if (widget.position != null &&
         widget.position != position &&
         allowOutsideChanges) {
@@ -515,7 +531,11 @@ class _PainterContainerState extends State<PainterContainer> {
           oldContainerSize = containerSize;
         }
         if (widget.onSizeChange != null) {
-          widget.onSizeChange?.call(oldContainerSize, containerSize);
+          widget.onSizeChange?.call(
+            PositionModel(x: position.x, y: position.y),
+            oldContainerSize,
+            containerSize,
+          );
         }
       });
     }

@@ -20,7 +20,7 @@ class TextItemWidget extends StatefulWidget {
   final TextItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
-  final void Function(SizeModel)? onSizeChange;
+  final void Function(PositionModel, SizeModel)? onSizeChange;
 
   final PainterController painterController;
   @override
@@ -33,7 +33,6 @@ class _TextItemWidgetState extends State<TextItemWidget> {
       ValueNotifier(const PositionModel(x: 50, y: 50));
   @override
   Widget build(BuildContext context) {
-    print('widget item ${widget.item.position}');
     return ValueListenableBuilder(
       valueListenable: position,
       builder: (context, value, child) {
@@ -42,12 +41,13 @@ class _TextItemWidgetState extends State<TextItemWidget> {
           height: widget.height,
           minimumContainerHeight: widgetHeight,
           position: widget.item.position,
+          size: widget.item.size,
           onPositionChange: (oldPosition, newPosition) {
             position.value = newPosition;
             widget.onPositionChange?.call(newPosition);
           },
-          onSizeChange: (oldSize, newSize) {
-            widget.onSizeChange?.call(newSize);
+          onSizeChange: (newPosition, oldSize, newSize) {
+            widget.onSizeChange?.call(newPosition, newSize);
           },
           onPositionChangeEnd:
               (oldPosition, newPosition, oldRotateAngle, newRotateAngle) {
@@ -62,7 +62,6 @@ class _TextItemWidgetState extends State<TextItemWidget> {
                 actionType: ActionType.positionItem,
               ),
             );
-            print('newposition $newPosition');
           },
           onSizeChangeEnd: (oldPosition, oldSize, newPosition, newSize) {
             widget.painterController.addAction(
