@@ -75,11 +75,9 @@ class _PainterContainerState extends State<PainterContainer> {
   double scaleCurrentHeight = -1;
   double currentRotateAngel = -1;
   bool initializeSize = false;
-  bool endPositionControl = false;
-  bool endSizeControl = false;
   bool changesFromOutside = false;
-  bool allowOutsideChanges = true;
-  bool updatingAutoStackPosition = false;
+  bool calculatingPositionForSize = false;
+  bool changedSize = false;
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +86,7 @@ class _PainterContainerState extends State<PainterContainer> {
     final stackHeight = widget.height / 2;
     final stackWidth = screenWidth;
 
-    initializeSizeOnce(stackWidth, stackHeight);
+    initializeWidgetSize(stackWidth, stackHeight);
     controlOutsideValues(stackWidth, stackHeight);
     updateEvents();
     return Positioned(
@@ -144,16 +142,10 @@ class _PainterContainerState extends State<PainterContainer> {
                           );
                         }
                         currentRotateAngel = rotateAngle;
-                        endPositionControl = false;
-                        endSizeControl = false;
-                        allowOutsideChanges = true;
-                        updatingAutoStackPosition = false;
+                        changesFromOutside = true;
                       },
                       onScaleUpdate: (details) {
-                        allowOutsideChanges = false;
-                        endPositionControl = true;
-                        endSizeControl = true;
-                        updatingAutoStackPosition = true;
+                        changesFromOutside = false;
                         if (details.pointerCount == 1) {
                           final pos = details.focalPointDelta;
                           setState(() {
@@ -273,18 +265,17 @@ class _PainterContainerState extends State<PainterContainer> {
                                               : Alignment.center,
                               child: GestureDetector(
                                 onPanEnd: (details) {
-                                  endSizeControl = false;
-                                  endPositionControl = true;
                                   calculateSizeAfterChangedSize(
                                     stackWidth,
                                     stackHeight,
                                   );
-                                  updatingAutoStackPosition = true;
-                                  allowOutsideChanges = true;
+                                  changesFromOutside = true;
+                                  calculatingPositionForSize = true;
+                                  changedSize = true;
                                 },
                                 onPanUpdate: (details) {
-                                  allowOutsideChanges = false;
-                                  endSizeControl = true;
+                                  changesFromOutside = false;
+                                  // endSizeControl = true;
                                   setState(() {
                                     if (handlePosition ==
                                         _HandlePosition.left) {
@@ -446,7 +437,7 @@ class _PainterContainerState extends State<PainterContainer> {
     });
   }
 
-  void initializeSizeOnce(double stackWidth, double stackHeight) {
+  void initializeWidgetSize(double stackWidth, double stackHeight) {
     if (initializeSize == false &&
         (widget.minimumContainerHeight != null ||
             widget.minimumContainerWidth != null)) {
@@ -463,46 +454,38 @@ class _PainterContainerState extends State<PainterContainer> {
         y: stackHeight / 2 - containerSize.height / 2,
       );
       initializeSize = true;
-      changesFromOutside = true;
     }
   }
 
   void controlOutsideValues(double stackWidth, double stackHeight) {
-    if (updatingAutoStackPosition) {
-      updatingAutoStackPosition = false;
+    if (calculatingPositionForSize) {
+      calculatingPositionForSize = false;
       return;
     }
-
     if (widget.size != null &&
         widget.size != containerSize &&
-        allowOutsideChanges) {
+        changesFromOutside) {
       containerSize = widget.size!;
+      oldContainerSize = widget.size!;
       calculateSizeAfterChangedSize(stackWidth, stackHeight);
-      changesFromOutside = true;
     }
     if (widget.position != null &&
         widget.position != position &&
-        allowOutsideChanges) {
+        changesFromOutside) {
       position = widget.position!;
+      oldPosition = widget.position!;
+
       stackPosition = stackPosition.copyWith(
         x: stackWidth / 2 - containerSize.width / 2,
         y: stackHeight / 2 - containerSize.height / 2,
       );
-      changesFromOutside = true;
     }
   }
 
   void updateEvents() {
-    if (position != oldPosition) {
+    if (position != oldPosition && !changedSize) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (changesFromOutside) {
-          changesFromOutside = false;
-          oldPosition = position;
-          return;
-        }
-        if (widget.onPositionChangeEnd != null &&
-            endPositionControl == false &&
-            !changesFromOutside) {
+        if (widget.onPositionChangeEnd != null && changesFromOutside) {
           widget.onPositionChangeEnd
               ?.call(oldPosition, position, oldRotateAngle, rotateAngle);
           oldPosition = position;
@@ -515,16 +498,9 @@ class _PainterContainerState extends State<PainterContainer> {
     }
 
     if (containerSize != oldContainerSize) {
-      if (changesFromOutside) {
-        oldPosition = position;
-        oldContainerSize = containerSize;
-        changesFromOutside = false;
-        return;
-      }
+      changedSize = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (widget.onSizeChangeEnd != null &&
-            endSizeControl == false &&
-            !changesFromOutside) {
+        if (widget.onSizeChangeEnd != null && changesFromOutside) {
           widget.onSizeChangeEnd
               ?.call(oldPosition, oldContainerSize, position, containerSize);
           oldPosition = position;
@@ -532,7 +508,7 @@ class _PainterContainerState extends State<PainterContainer> {
         }
         if (widget.onSizeChange != null) {
           widget.onSizeChange?.call(
-            PositionModel(x: position.x, y: position.y),
+            position,
             oldContainerSize,
             containerSize,
           );
