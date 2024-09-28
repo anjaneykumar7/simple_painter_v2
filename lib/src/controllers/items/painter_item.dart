@@ -8,6 +8,7 @@ class PainterItem extends Equatable {
     required this.position,
     this.size,
     this.enabled = true,
+    this.rotation = 0,
     String? id,
   }) : id = id ?? RandomService.generateRandomId();
 
@@ -15,20 +16,23 @@ class PainterItem extends Equatable {
   final bool enabled;
   final PositionModel position;
   final SizeModel? size;
+  final double rotation;
 
   PainterItem copyWith({
     bool? enabled,
     PositionModel? position,
     SizeModel? size,
+    double? rotation,
   }) {
     return PainterItem(
       id: id,
       enabled: enabled ?? this.enabled,
       position: position ?? this.position,
       size: size ?? this.size,
+      rotation: rotation ?? this.rotation,
     );
   }
 
   @override
-  List<Object?> get props => [id, enabled, position, size];
+  List<Object?> get props => [id, enabled, position, size, rotation];
 }

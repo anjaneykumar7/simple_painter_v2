@@ -3,4 +3,5 @@ enum ActionType {
   addedImageItem,
   positionItem,
   sizeItem,
+  rotationItem,
 }

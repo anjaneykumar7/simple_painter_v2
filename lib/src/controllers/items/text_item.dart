@@ -11,6 +11,7 @@ class TextItem extends PainterItem {
     super.id,
     super.size,
     super.enabled = true,
+    super.rotation,
   });
 
   final String text;
@@ -22,6 +23,7 @@ class TextItem extends PainterItem {
     TextStyle? textStyle,
     PositionModel? position,
     SizeModel? size,
+    double? rotation,
     bool? enabled,
   }) {
     return TextItem(
@@ -29,6 +31,7 @@ class TextItem extends PainterItem {
       text: text ?? this.text,
       textStyle: textStyle ?? this.textStyle,
       position: position ?? this.position,
+      rotation: rotation ?? this.rotation,
       size: size ?? this.size,
       enabled: enabled ?? this.enabled,
     );

@@ -14,6 +14,7 @@ import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
@@ -196,6 +197,20 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     value = value.copyWith(items: items);
   }
 
+  void setItemRotation(int index, double rotation) {
+    final items = value.items.toList();
+    var item = items[index];
+    if (item is TextItem) {
+      item = item.copyWith(rotation: rotation);
+    } else {
+      item = item.copyWith(rotation: rotation);
+    }
+    items
+      ..removeAt(index)
+      ..insert(index, item);
+    value = value.copyWith(items: items);
+  }
+
   void setItemSize(int index, SizeModel size) {
     final items = value.items.toList();
     var item = items[index];
@@ -211,9 +226,22 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   void updateActionWithChangeActionIndex(int index) {
-    final currentActions = changeActions.value.changeList;
+    void updateList(PainterItem item) {
+      final itemIndex = value.items.toList().indexWhere((element) {
+        return element.id == item.id;
+      });
+      value = value.copyWith(
+        items: value.items.toList()
+          ..removeAt(itemIndex)
+          ..insert(itemIndex, item),
+      );
+    }
 
-    for (var i = index; i < currentActions.length; i++) {
+    final currentActions = changeActions.value.changeList;
+    final currentIndex = changeActions.value.index;
+    print('index: $index currentIndex: $currentIndex');
+    for (var i = currentIndex; i > index; i--) {
+      print(currentActions[i].runtimeType);
       if (currentActions[i] is ActionPosition) {
         var item = value.items
             .where(
@@ -224,15 +252,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         item = item.copyWith(
           position: (currentActions[i] as ActionPosition).oldPosition,
         );
-
-        final itemIndex = value.items.toList().indexWhere((element) {
-          return element.id == item.id;
-        });
-        value = value.copyWith(
-          items: value.items.toList()
-            ..removeAt(itemIndex)
-            ..insert(itemIndex, item),
-        );
+        updateList(item);
       } else if (currentActions[i] is ActionSize) {
         var item = value.items
             .where(
@@ -245,14 +265,18 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           position: (currentActions[i] as ActionSize).oldPosition,
         );
 
-        final itemIndex = value.items.toList().indexWhere((element) {
-          return element.id == item.id;
-        });
-        value = value.copyWith(
-          items: value.items.toList()
-            ..removeAt(itemIndex)
-            ..insert(itemIndex, item),
+        updateList(item);
+      } else if (currentActions[i] is ActionRotation) {
+        var item = value.items
+            .where(
+              (element) =>
+                  element.id == (currentActions[i] as ActionRotation).item.id,
+            )
+            .first;
+        item = item.copyWith(
+          rotation: (currentActions[i] as ActionRotation).oldRotateAngle,
         );
+        updateList(item);
       }
     }
 

@@ -18,12 +18,15 @@ class PainterContainer extends StatefulWidget {
     this.minimumContainerWidth,
     this.onPositionChange,
     this.onSizeChange,
+    this.onRotateAngleChange,
+    this.onRotateAngleChangeEnd,
     this.onPositionChangeEnd,
     this.onSizeChangeEnd,
     this.itemPosition,
     this.itemSize,
     this.enabled,
     this.position,
+    this.rotateAngle,
     this.size,
   });
   final double height;
@@ -36,11 +39,13 @@ class PainterContainer extends StatefulWidget {
     SizeModel oldSize,
     SizeModel newSize,
   )? onSizeChange;
+  final void Function(double oldRotateAngle, double newRotateAngle)?
+      onRotateAngleChange;
+  final void Function(double oldRotateAngle, double newRotateAngle)?
+      onRotateAngleChangeEnd;
   final void Function(
     PositionModel oldPosition,
     PositionModel newPosition,
-    double oldRotateAngle,
-    double newRotateAngle,
   )? onPositionChangeEnd;
   final void Function(
     PositionModel oldPosition,
@@ -55,6 +60,7 @@ class PainterContainer extends StatefulWidget {
   final SizeModel? itemSize;
   final bool? enabled;
   final PositionModel? position;
+  final double? rotateAngle;
   final SizeModel? size;
   @override
   State<PainterContainer> createState() => _PainterContainerState();
@@ -127,6 +133,10 @@ class _PainterContainerState extends State<PainterContainer> {
                             PositionModel(x: oldPosition.x, y: oldPosition.y),
                             PositionModel(x: position.x, y: position.y),
                           );
+                        }
+                        if (widget.onRotateAngleChange != null) {
+                          widget.onRotateAngleChange
+                              ?.call(oldRotateAngle, rotateAngle);
                         }
                         if (widget.onSizeChange != null) {
                           widget.onSizeChange?.call(
@@ -449,6 +459,7 @@ class _PainterContainerState extends State<PainterContainer> {
       containerSize = containerSize.copyWith(
         height: minimumContainerHeight,
       );
+      oldContainerSize = containerSize;
       stackPosition = stackPosition.copyWith(
         x: stackWidth / 2 - containerSize.width / 2,
         y: stackHeight / 2 - containerSize.height / 2,
@@ -468,6 +479,7 @@ class _PainterContainerState extends State<PainterContainer> {
       containerSize = widget.size!;
       oldContainerSize = widget.size!;
       calculateSizeAfterChangedSize(stackWidth, stackHeight);
+      oldPosition = position;
     }
     if (widget.position != null &&
         widget.position != position &&
@@ -480,29 +492,49 @@ class _PainterContainerState extends State<PainterContainer> {
         y: stackHeight / 2 - containerSize.height / 2,
       );
     }
+
+    if (widget.rotateAngle != null &&
+        widget.rotateAngle != rotateAngle &&
+        changesFromOutside) {
+      rotateAngle = widget.rotateAngle!;
+      oldRotateAngle = widget.rotateAngle!;
+    }
   }
 
   void updateEvents() {
     if (position != oldPosition && !changedSize) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (widget.onPositionChangeEnd != null && changesFromOutside) {
-          widget.onPositionChangeEnd
-              ?.call(oldPosition, position, oldRotateAngle, rotateAngle);
+          widget.onPositionChangeEnd?.call(
+            oldPosition,
+            position,
+          );
           oldPosition = position;
-          oldRotateAngle = rotateAngle;
         }
         if (widget.onPositionChange != null) {
           widget.onPositionChange?.call(oldPosition, position);
         }
       });
     }
+    if (rotateAngle != oldRotateAngle && !changedSize) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (widget.onRotateAngleChangeEnd != null && changesFromOutside) {
+          widget.onRotateAngleChangeEnd?.call(oldRotateAngle, rotateAngle);
+          oldRotateAngle = rotateAngle;
+        }
 
+        if (widget.onRotateAngleChangeEnd != null) {
+          widget.onRotateAngleChange?.call(oldRotateAngle, rotateAngle);
+        }
+      });
+    }
     if (containerSize != oldContainerSize) {
       changedSize = false;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (widget.onSizeChangeEnd != null && changesFromOutside) {
           widget.onSizeChangeEnd
               ?.call(oldPosition, oldContainerSize, position, containerSize);
+
           oldPosition = position;
           oldContainerSize = containerSize;
         }

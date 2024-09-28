@@ -23,7 +23,8 @@ class ChangesList extends StatelessWidget {
         valueListenable: controller.changeActions,
         builder: (context, value, child) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (value.changeList.isNotEmpty) {
+            if (value.changeList.isNotEmpty &&
+                value.index == value.changeList.length - 1) {
               final scrollController = PrimaryScrollController.of(context);
               scrollController
                   .jumpTo(scrollController.position.maxScrollExtent);
@@ -69,6 +70,8 @@ class ChangesList extends StatelessWidget {
         return 'Changed position';
       case ActionType.sizeItem:
         return 'Changed size';
+      case ActionType.rotationItem:
+        return 'Changed rotation';
     }
   }
 }

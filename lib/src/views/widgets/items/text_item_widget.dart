@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
@@ -16,11 +17,13 @@ class TextItemWidget extends StatefulWidget {
     super.key,
     this.onPositionChange,
     this.onSizeChange,
+    this.onRotationChange,
   });
   final TextItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
   final void Function(PositionModel, SizeModel)? onSizeChange;
+  final void Function(double)? onRotationChange;
 
   final PainterController painterController;
   @override
@@ -41,25 +44,40 @@ class _TextItemWidgetState extends State<TextItemWidget> {
           height: widget.height,
           minimumContainerHeight: widgetHeight,
           position: widget.item.position,
+          rotateAngle: widget.item.rotation,
           size: widget.item.size,
           onPositionChange: (oldPosition, newPosition) {
             position.value = newPosition;
             widget.onPositionChange?.call(newPosition);
           },
+          onRotateAngleChange: (oldRotateAngle, newRotateAngle) {
+            widget.onRotationChange?.call(newRotateAngle);
+          },
           onSizeChange: (newPosition, oldSize, newSize) {
             widget.onSizeChange?.call(newPosition, newSize);
           },
-          onPositionChangeEnd:
-              (oldPosition, newPosition, oldRotateAngle, newRotateAngle) {
+          onPositionChangeEnd: (
+            oldPosition,
+            newPosition,
+          ) {
             widget.painterController.addAction(
               ActionPosition(
                 item: widget.item,
                 oldPosition: oldPosition,
                 newPosition: newPosition,
+                timestamp: DateTime.now(),
+                actionType: ActionType.positionItem,
+              ),
+            );
+          },
+          onRotateAngleChangeEnd: (oldRotateAngle, newRotateAngle) {
+            widget.painterController.addAction(
+              ActionRotation(
+                item: widget.item,
                 oldRotateAngle: oldRotateAngle,
                 newRotateAngle: newRotateAngle,
                 timestamp: DateTime.now(),
-                actionType: ActionType.positionItem,
+                actionType: ActionType.rotationItem,
               ),
             );
           },
