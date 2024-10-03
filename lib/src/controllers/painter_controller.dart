@@ -176,6 +176,14 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   void addAction(PaintAction action) {
+    if (changeActions.value.index < changeActions.value.changeList.length - 1) {
+      // actions en son indeksde değilse ve yeni aksiyon yazılıcaksa en sondan şu anki indekse kadar olan aksiyonları sil
+      changeActions.value = changeActions.value.copyWith(
+        changeList: changeActions.value.changeList
+            .sublist(0, changeActions.value.index + 1),
+        index: changeActions.value.index + 1,
+      );
+    }
     changeActions.value = changeActions.value.copyWith(
       changeList: changeActions.value.changeList.toList()..add(action),
       index: changeActions.value.changeList.length,
