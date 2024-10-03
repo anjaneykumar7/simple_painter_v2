@@ -36,7 +36,7 @@ class FlutterPainterExample extends StatefulWidget {
 
 class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   late PainterController controller;
-  ValueNotifier<bool> ifOpenChangeList = ValueNotifier(true);
+  bool ifOpenChangeList = true;
   @override
   void initState() {
     super.initState();
@@ -61,17 +61,13 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             height: height,
             child: PainterWidget(controller: controller),
           ),
-          ValueListenableBuilder(
-            valueListenable: ifOpenChangeList,
-            builder: (context, opened, child) => !opened
-                ? const SizedBox()
-                : Positioned.fill(
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: ChangesList(controller: controller),
-                    ),
-                  ),
-          ),
+          if (ifOpenChangeList)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: ChangesList(controller: controller),
+              ),
+            ),
         ],
       ),
     );
@@ -90,7 +86,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               PhosphorIconsRegular.listNumbers,
             ),
             onPressed: () {
-              ifOpenChangeList.value = !ifOpenChangeList.value;
+              setState(() {
+                ifOpenChangeList = !ifOpenChangeList;
+              });
             },
           ),
           IconButton(
@@ -106,18 +104,33 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             ),
             onPressed: () {},
           ),
-          // Redo action
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               PhosphorIconsRegular.arrowCounterClockwise,
+              color: (controller.changeActions.value.index == -1)
+                  ? Colors.grey
+                  : Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              print(controller.changeActions.value.index);
+              setState(() {
+                controller.undo();
+              });
+            },
           ),
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               PhosphorIconsRegular.arrowClockwise,
+              color: (controller.changeActions.value.index ==
+                      controller.changeActions.value.changeList.length - 1)
+                  ? Colors.grey
+                  : Colors.white,
             ),
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                controller.redo();
+              });
+            },
           ),
           // Undo action
         ],
@@ -154,10 +167,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
           ),
           button(
             PhosphorIconsRegular.textT,
-            () {
-              setState(() {
-                controller.addText();
-              });
+            () async {
+              await controller.addText();
+              setState(() {});
             },
             enabled: controller.editingText || controller.addingText,
           ),

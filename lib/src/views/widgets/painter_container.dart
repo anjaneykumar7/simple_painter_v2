@@ -80,10 +80,14 @@ class _PainterContainerState extends State<PainterContainer> {
   double minimumContainerHeight = 50;
   double scaleCurrentHeight = -1;
   double currentRotateAngel = -1;
-  bool initializeSize = false;
-  bool changesFromOutside = false;
-  bool calculatingPositionForSize = false;
-  bool changedSize = false;
+  bool initializeSize =
+      false; //bir defaya mahsus widgetın boyutunu ayarlamak için kullanılıyor, örneğin metin boyutunu measuresize ile alıp set etmek için
+  bool changesFromOutside =
+      true; //dışarıdan gelen değişikliklerin çalışmasını sağlayan değişken, false olduğu durumda dışarıdan genel değişiklikleri kabul etmiyor
+  bool calculatingPositionForSize =
+      false; //position değişkeninin widgetın boyutu değiştiğinde çalışması için kullanılıyor, bu değişken olmadığı takdirde widget, size için değişen pozisyonu dışarıdand gelen yeni pozisyon sanıyor ve pozisyonu bozuyor
+  bool changedSize =
+      false; //bu değişken size değiştiğinde updateEvents fonksiyonunda ki position ve rotateAngle anlık olarak değişmesini engelliyor, çünkü o sırada position ve rotation hesaplanmamış oluyor
 
   @override
   Widget build(BuildContext context) {

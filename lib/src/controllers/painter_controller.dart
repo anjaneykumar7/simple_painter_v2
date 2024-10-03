@@ -13,12 +13,10 @@ import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
+import 'package:flutter_painter/src/helpers/actions_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 import 'package:flutter_painter/src/pages/add_edit_text_page.dart';
@@ -169,6 +167,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       addAction(
         ActionAddItem(
           item: painterItem,
+          listIndex: value.items.length - 1,
           timestamp: DateTime.now(),
           actionType: ActionType.addedTextItem,
         ),
@@ -226,65 +225,29 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   void updateActionWithChangeActionIndex(int index) {
-    void updateList(PainterItem item) {
-      final itemIndex = value.items.toList().indexWhere((element) {
-        return element.id == item.id;
-      });
-      value = value.copyWith(
-        items: value.items.toList()
-          ..removeAt(itemIndex)
-          ..insert(itemIndex, item),
-      );
-    }
-
-    final currentActions = changeActions.value.changeList;
-    final currentIndex = changeActions.value.index;
-    print('index: $index currentIndex: $currentIndex');
-    for (var i = currentIndex; i > index; i--) {
-      print(currentActions[i].runtimeType);
-      if (currentActions[i] is ActionPosition) {
-        var item = value.items
-            .where(
-              (element) =>
-                  element.id == (currentActions[i] as ActionPosition).item.id,
-            )
-            .first;
-        item = item.copyWith(
-          position: (currentActions[i] as ActionPosition).oldPosition,
-        );
-        updateList(item);
-      } else if (currentActions[i] is ActionSize) {
-        var item = value.items
-            .where(
-              (element) =>
-                  element.id == (currentActions[i] as ActionSize).item.id,
-            )
-            .first;
-        item = item.copyWith(
-          size: (currentActions[i] as ActionSize).oldSize,
-          position: (currentActions[i] as ActionSize).oldPosition,
-        );
-
-        updateList(item);
-      } else if (currentActions[i] is ActionRotation) {
-        var item = value.items
-            .where(
-              (element) =>
-                  element.id == (currentActions[i] as ActionRotation).item.id,
-            )
-            .first;
-        item = item.copyWith(
-          rotation: (currentActions[i] as ActionRotation).oldRotateAngle,
-        );
-        updateList(item);
-      }
-    }
-
-    changeActions.value = changeActions.value.copyWith(index: index);
+    ActionsService().updateActionWithChangeActionIndex(
+        changeActions, value, index, (items) {
+      value = value.copyWith(items: items);
+    }, (index) {
+      changeActions.value = changeActions.value.copyWith(index: index);
+    });
   }
 
-  void undo() {}
-  void redo() {}
+  void undo() {
+    ActionsService().undo(changeActions, value, (items) {
+      value = value.copyWith(items: items);
+    }, (index) {
+      changeActions.value = changeActions.value.copyWith(index: index);
+    });
+  }
+
+  void redo() {
+    ActionsService().redo(changeActions, value, (items) {
+      value = value.copyWith(items: items);
+    }, (index) {
+      changeActions.value = changeActions.value.copyWith(index: index);
+    });
+  }
 }
 
 class PainterControllerValue {
