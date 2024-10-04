@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:example/changes_list.dart';
+import 'package:example/layers.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
@@ -37,6 +38,8 @@ class FlutterPainterExample extends StatefulWidget {
 class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   late PainterController controller;
   bool ifOpenChangeList = true;
+  bool openSettings = false;
+  bool openLayers = false;
   @override
   void initState() {
     super.initState();
@@ -61,6 +64,12 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             height: height,
             child: PainterWidget(controller: controller),
           ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: settings,
+            ),
+          ),
           if (ifOpenChangeList)
             Positioned.fill(
               child: Align(
@@ -69,6 +78,80 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               ),
             ),
         ],
+      ),
+    );
+  }
+
+  Widget get settings {
+    Widget settings() {
+      Widget buttons(IconData icon, String text, void Function() onTap) {
+        return GestureDetector(
+          onTap: onTap,
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(5, 10, 5, 6),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.grey,
+                  size: 30,
+                ),
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      return SizedBox(
+        height: 90,
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 10,
+            ),
+            buttons(PhosphorIconsRegular.stack, 'Layers', () {
+              setState(() {
+                openLayers = !openLayers;
+              });
+            }),
+          ],
+        ),
+      );
+    }
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 700),
+      curve: Curves.fastLinearToSlowEaseIn,
+      height: openSettings
+          ? openLayers
+              ? 170
+              : 90
+          : 0,
+      child: ClipRect(
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF232323),
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.grey.shade800,
+                width: 1,
+              ),
+            ),
+          ),
+          child: SingleChildScrollView(
+              child: openLayers ? const Layers() : settings()),
+        ),
       ),
     );
   }
@@ -183,7 +266,11 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
           ),
           button(
             PhosphorIconsRegular.listBullets,
-            () {},
+            () {
+              setState(() {
+                openSettings = !openSettings;
+              });
+            },
           ),
         ],
       ),
