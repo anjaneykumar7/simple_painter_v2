@@ -7,6 +7,7 @@ class ChangesList extends StatelessWidget {
   final PainterController controller;
   @override
   Widget build(BuildContext context) {
+    final scrollController = ScrollController();
     return Container(
       height: 100,
       width: 190,
@@ -25,12 +26,12 @@ class ChangesList extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (value.changeList.isNotEmpty &&
                 value.index == value.changeList.length - 1) {
-              final scrollController = PrimaryScrollController.of(context);
               scrollController
                   .jumpTo(scrollController.position.maxScrollExtent);
             }
           });
           return ListView.builder(
+            controller: scrollController,
             itemCount: value.changeList.length,
             itemBuilder: (context, index) {
               return Padding(

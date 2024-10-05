@@ -15,8 +15,10 @@ import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.d
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
 import 'package:flutter_painter/src/helpers/actions_service.dart';
+import 'package:flutter_painter/src/helpers/layer_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 import 'package:flutter_painter/src/pages/add_edit_text_page.dart';
@@ -160,7 +162,13 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
 
     if (text.isNotEmpty) {
-      final painterItem = TextItem(position: const PositionModel(), text: text);
+      final painterItem = TextItem(
+          position: const PositionModel(),
+          text: text,
+          layer: LayerSettings(
+            title: text,
+            index: value.items.length,
+          ));
       value = value.copyWith(
         items: value.items.toList()..add(painterItem),
       );
@@ -254,6 +262,13 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
+    });
+  }
+
+  void updateLayerIndex(PainterItem item, int newIndex) {
+    LayerService().updateLayerIndex(item, newIndex, value.items.toList(),
+        (items) {
+      value = value.copyWith(items: items);
     });
   }
 }

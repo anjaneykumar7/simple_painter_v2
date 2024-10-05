@@ -150,7 +150,11 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             ),
           ),
           child: SingleChildScrollView(
-              child: openLayers ? const Layers() : settings()),
+              child: openLayers
+                  ? Layers(
+                      controller: controller,
+                    )
+                  : settings()),
         ),
       ),
     );

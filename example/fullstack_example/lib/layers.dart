@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+// ignore: depend_on_referenced_packages
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Layers extends StatelessWidget {
-  const Layers({super.key});
-
+  const Layers({super.key, required this.controller});
+  final PainterController controller;
   @override
   Widget build(BuildContext context) {
     Widget iconButton(IconData icon, Color color, void Function() onTap) {
@@ -20,7 +22,7 @@ class Layers extends StatelessWidget {
       );
     }
 
-    Widget section(String title) {
+    Widget section(String title, PainterItem item) {
       return Container(
         height: 40,
         margin: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -95,14 +97,14 @@ class Layers extends StatelessWidget {
 
     return Container(
       height: 170,
-      child: ListView(
-        children: [
-          title(),
-          section('Title1'),
-          section('Title2'),
-          section('Title3'),
-          section('Title4'),
-        ],
+      child: ValueListenableBuilder(
+        valueListenable: controller,
+        builder: (context, value, child) => ListView.builder(
+            itemCount: value.items.length,
+            itemBuilder: (context, index) {
+              return section(
+                  value.items[index].layer.title, value.items[index]);
+            }),
       ),
     );
   }
