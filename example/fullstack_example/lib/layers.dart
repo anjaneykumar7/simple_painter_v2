@@ -1,10 +1,12 @@
+// ignore_for_file: depend_on_referenced_packages, implementation_imports
+
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Layers extends StatelessWidget {
-  const Layers({super.key, required this.controller});
+  const Layers({required this.controller, super.key});
   final PainterController controller;
   @override
   Widget build(BuildContext context) {
@@ -25,12 +27,11 @@ class Layers extends StatelessWidget {
     Widget section(String title, PainterItem item) {
       return Container(
         height: 40,
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
           border: Border.all(
             color: Colors.grey.shade700,
-            width: 1,
           ),
         ),
         child: Row(
@@ -57,54 +58,37 @@ class Layers extends StatelessWidget {
               PhosphorIconsRegular.arrowDown,
               Colors.white,
               () {
-                // Add your onTap functionality here
+                controller.updateLayerIndex(item, item.layer.index + 1);
               },
             ),
             iconButton(
               PhosphorIconsRegular.arrowUp,
               Colors.white,
               () {
-                // Add your onTap functionality here
+                controller.updateLayerIndex(item, item.layer.index - 1);
               },
             ),
             const SizedBox(
               width: 10,
-            )
+            ),
           ],
         ),
       );
     }
 
-    Widget title() {
-      return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 10),
-        child: Row(
-          children: [
-            iconButton(Icons.arrow_back_ios, Colors.white, () {
-              // setState(() {
-              //   openLayers = !openLayers;
-              // });
-            }),
-            Text('Layers',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                )),
-          ],
-        ),
-      );
-    }
-
-    return Container(
+    return SizedBox(
       height: 170,
       child: ValueListenableBuilder(
         valueListenable: controller,
         builder: (context, value, child) => ListView.builder(
-            itemCount: value.items.length,
-            itemBuilder: (context, index) {
-              return section(
-                  value.items[index].layer.title, value.items[index]);
-            }),
+          itemCount: value.items.length,
+          itemBuilder: (context, index) {
+            return section(
+              value.items[index].layer.title,
+              value.items[index],
+            );
+          },
+        ),
       ),
     );
   }

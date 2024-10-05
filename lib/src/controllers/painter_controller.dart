@@ -163,12 +163,13 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
 
     if (text.isNotEmpty) {
       final painterItem = TextItem(
-          position: const PositionModel(),
-          text: text,
-          layer: LayerSettings(
-            title: text,
-            index: value.items.length,
-          ));
+        position: const PositionModel(),
+        text: text,
+        layer: LayerSettings(
+          title: text,
+          index: value.items.length,
+        ),
+      );
       value = value.copyWith(
         items: value.items.toList()..add(painterItem),
       );

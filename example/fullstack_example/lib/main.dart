@@ -145,16 +145,16 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             border: Border(
               bottom: BorderSide(
                 color: Colors.grey.shade800,
-                width: 1,
               ),
             ),
           ),
           child: SingleChildScrollView(
-              child: openLayers
-                  ? Layers(
-                      controller: controller,
-                    )
-                  : settings()),
+            child: openLayers
+                ? Layers(
+                    controller: controller,
+                  )
+                : settings(),
+          ),
         ),
       ),
     );
@@ -199,7 +199,6 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                   : Colors.white,
             ),
             onPressed: () {
-              print(controller.changeActions.value.index);
               setState(() {
                 controller.undo();
               });

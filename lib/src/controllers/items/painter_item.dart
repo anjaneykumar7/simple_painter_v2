@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
 import 'package:flutter_painter/src/helpers/random_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
