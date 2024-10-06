@@ -1,4 +1,6 @@
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
 
 class LayerService {
   List<PainterItem> items = [];
@@ -8,8 +10,9 @@ class LayerService {
     int newIndex,
     List<PainterItem> itemList,
     void Function(List<PainterItem>) changedList,
+    void Function(ActionLayerChange action) changeAction,
   ) {
-    items = itemList;
+    _setValues(itemList);
     final oldIndex = items.indexOf(item);
     items.removeAt(oldIndex);
 
@@ -31,5 +34,41 @@ class LayerService {
     }
 
     changedList(items);
+    changeAction(
+      _getChangeAction(
+        item,
+        oldIndex,
+        newIndex,
+        updatedItem,
+        oldIndex,
+        validIndex,
+      ),
+    );
+  }
+
+  ActionLayerChange _getChangeAction(
+    PainterItem item,
+    int oldIndex,
+    int newIndex,
+    PainterItem changedItem,
+    int changedItemOldIndex,
+    int changedItemNewIndex,
+  ) {
+    return ActionLayerChange(
+      item: item,
+      oldIndex: oldIndex,
+      newIndex: newIndex,
+      changedItem: changedItem,
+      changedItemOldIndex: changedItemOldIndex,
+      changedItemNewIndex: changedItemNewIndex,
+      timestamp: DateTime.now(),
+      actionType: ActionType.changedLayerIndex,
+    );
+  }
+
+  void _setValues(
+    List<PainterItem> itemList,
+  ) {
+    items = itemList;
   }
 }

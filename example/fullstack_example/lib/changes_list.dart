@@ -73,6 +73,8 @@ class ChangesList extends StatelessWidget {
         return 'Changed size';
       case ActionType.rotationItem:
         return 'Changed rotation';
+      case ActionType.changedLayerIndex:
+        return 'Changed layer index';
     }
   }
 }

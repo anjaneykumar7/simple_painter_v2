@@ -267,10 +267,15 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   void updateLayerIndex(PainterItem item, int newIndex) {
-    LayerService().updateLayerIndex(item, newIndex, value.items.toList(),
-        (items) {
-      value = value.copyWith(items: items);
-    });
+    LayerService().updateLayerIndex(
+      item,
+      newIndex,
+      value.items.toList(),
+      (items) {
+        value = value.copyWith(items: items);
+      },
+      addAction,
+    );
   }
 }
 

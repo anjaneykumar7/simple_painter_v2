@@ -152,6 +152,11 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             child: openLayers
                 ? Layers(
                     controller: controller,
+                    closeLayers: () {
+                      setState(() {
+                        openLayers = !openLayers;
+                      });
+                    },
                   )
                 : settings(),
           ),

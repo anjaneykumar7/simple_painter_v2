@@ -6,8 +6,13 @@ import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Layers extends StatelessWidget {
-  const Layers({required this.controller, super.key});
+  const Layers({
+    required this.controller,
+    required this.closeLayers,
+    super.key,
+  });
   final PainterController controller;
+  final void Function() closeLayers;
   @override
   Widget build(BuildContext context) {
     Widget iconButton(IconData icon, Color color, void Function() onTap) {
@@ -76,18 +81,44 @@ class Layers extends StatelessWidget {
       );
     }
 
+    Widget title() {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 10),
+        child: Row(
+          children: [
+            iconButton(Icons.arrow_back_ios, Colors.white, closeLayers),
+            const Text(
+              'Layers',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return SizedBox(
       height: 170,
       child: ValueListenableBuilder(
         valueListenable: controller,
-        builder: (context, value, child) => ListView.builder(
-          itemCount: value.items.length,
-          itemBuilder: (context, index) {
-            return section(
-              value.items[index].layer.title,
-              value.items[index],
-            );
-          },
+        builder: (context, value, child) => Column(
+          children: [
+            title(),
+            SizedBox(
+              height: 120,
+              child: ListView.builder(
+                itemCount: value.items.length,
+                itemBuilder: (context, index) {
+                  return section(
+                    value.items[index].layer.title,
+                    value.items[index],
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

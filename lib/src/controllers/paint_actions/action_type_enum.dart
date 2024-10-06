@@ -4,4 +4,5 @@ enum ActionType {
   positionItem,
   sizeItem,
   rotationItem,
+  changedLayerIndex,
 }
