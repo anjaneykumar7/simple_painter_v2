@@ -4,6 +4,7 @@ import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
@@ -36,6 +37,8 @@ class ActionsService {
           _actionRotation(currentActions[i] as ActionRotation, false);
         } else if (currentActions[i] is ActionLayerChange) {
           _actionLayerChange(currentActions[i] as ActionLayerChange, false);
+        } else if (currentActions[i] is ActionRemoveItem) {
+          _actionRemoveItem(currentActions[i] as ActionRemoveItem, false);
         }
       }
     }
@@ -53,6 +56,8 @@ class ActionsService {
           _actionRotation(currentActions[i] as ActionRotation, true);
         } else if (currentActions[i] is ActionLayerChange) {
           _actionLayerChange(currentActions[i] as ActionLayerChange, true);
+        } else if (currentActions[i] is ActionRemoveItem) {
+          _actionRemoveItem(currentActions[i] as ActionRemoveItem, true);
         }
       }
     }
@@ -163,6 +168,14 @@ class ActionsService {
         ..insert(item.oldIndex, itemValue)
         ..remove(changedItem)
         ..insert(item.changedItemOldIndex, changedItem);
+    }
+  }
+
+  void _actionRemoveItem(ActionRemoveItem item, bool isRedo) {
+    if (isRedo) {
+      items.insert(item.listIndex, item.item);
+    } else {
+      _removeItemFromList(item.item.id);
     }
   }
 

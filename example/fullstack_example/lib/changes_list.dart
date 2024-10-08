@@ -75,6 +75,8 @@ class ChangesList extends StatelessWidget {
         return 'Changed rotation';
       case ActionType.changedLayerIndex:
         return 'Changed layer index';
+      case ActionType.removedItem:
+        return 'Removed item';
     }
   }
 }

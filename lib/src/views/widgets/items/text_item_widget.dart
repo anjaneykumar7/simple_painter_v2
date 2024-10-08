@@ -40,12 +40,18 @@ class _TextItemWidgetState extends State<TextItemWidget> {
       valueListenable: position,
       builder: (context, value, child) {
         return PainterContainer(
-          selectedItem: true,
+          selectedItem: widget.painterController.value.selectedItem != null &&
+              widget.painterController.value.selectedItem?.id == widget.item.id,
           height: widget.height,
           minimumContainerHeight: widgetHeight,
           position: widget.item.position,
           rotateAngle: widget.item.rotation,
           size: widget.item.size,
+          selectedItemChange: () {
+            print(widget.item.id);
+            widget.painterController.value = widget.painterController.value
+                .copyWith(selectedItem: widget.item);
+          },
           onPositionChange: (oldPosition, newPosition) {
             position.value = newPosition;
             widget.onPositionChange?.call(newPosition);

@@ -57,16 +57,23 @@ class PainterWidget extends StatelessWidget {
   Widget mainBody(PainterController controller) {
     return RepaintBoundary(
       key: controller.repaintBoundaryKey,
-      child: CustomPaint(
-        painter: PainterCustomPaint(
-          color: Colors.blue,
-          isErasing: false,
-          paths: controller.value.paintPaths.toList(),
-          points: controller.value.currentPaintPath.toList(),
-          backgroundImage: controller.background.image,
-        ),
-        child: Stack(
-          children: controller.value.items.map(getItemWidget).toList(),
+      child: GestureDetector(
+        onTap: () {
+          print('object');
+          controller.value.selectedItem = null;
+          controller.value = controller.value.copyWith();
+        },
+        child: CustomPaint(
+          painter: PainterCustomPaint(
+            color: Colors.blue,
+            isErasing: false,
+            paths: controller.value.paintPaths.toList(),
+            points: controller.value.currentPaintPath.toList(),
+            backgroundImage: controller.background.image,
+          ),
+          child: Stack(
+            children: controller.value.items.map(getItemWidget).toList(),
+          ),
         ),
       ),
     );

@@ -13,6 +13,7 @@ import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
 import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
@@ -181,6 +182,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           actionType: ActionType.addedTextItem,
         ),
       );
+      value.selectedItem = painterItem;
     }
   }
 
@@ -277,6 +279,29 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       addAction,
     );
   }
+
+  void removeSelectedItem() {
+    if (value.selectedItem == null) return;
+    final index = _getItemIndexFromItem(value.selectedItem!);
+    if (index < 0) return;
+    final items = value.items.toList();
+    final item = items[index];
+    items.removeAt(index);
+    value = value.copyWith(items: items);
+    addAction(
+      ActionRemoveItem(
+        item: item,
+        listIndex: index,
+        timestamp: DateTime.now(),
+        actionType: ActionType.removedItem,
+      ),
+    );
+  }
+
+  int _getItemIndexFromItem(PainterItem item) {
+    final index = value.items.indexWhere((element) => element.id == item.id);
+    return index;
+  }
 }
 
 class PainterControllerValue {
@@ -286,6 +311,7 @@ class PainterControllerValue {
     this.paintPaths = const <List<Offset?>>[],
     this.currentPaintPath = const <Offset?>[],
     this.items = const <PainterItem>[],
+    this.selectedItem,
   });
   final PainterSettings settings;
   final Size? scale;
@@ -293,6 +319,7 @@ class PainterControllerValue {
       <List<Offset?>>[]; // Çizim yollarını saklamak için
   List<Offset?> currentPaintPath = <Offset?>[]; // Geçici çizim yolu
   List<PainterItem> items = <PainterItem>[];
+  PainterItem? selectedItem;
 
   PainterControllerValue copyWith({
     PainterSettings? settings,
@@ -300,6 +327,7 @@ class PainterControllerValue {
     List<List<Offset?>>? paintPaths,
     List<Offset?>? currentPaintPath,
     List<PainterItem>? items,
+    PainterItem? selectedItem,
   }) {
     return PainterControllerValue(
       settings: settings ?? this.settings,
@@ -307,6 +335,7 @@ class PainterControllerValue {
       paintPaths: paintPaths ?? this.paintPaths,
       currentPaintPath: currentPaintPath ?? this.currentPaintPath,
       items: items ?? this.items,
+      selectedItem: selectedItem ?? this.selectedItem,
     );
   }
 }

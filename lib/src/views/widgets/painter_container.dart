@@ -22,6 +22,7 @@ class PainterContainer extends StatefulWidget {
     this.onRotateAngleChangeEnd,
     this.onPositionChangeEnd,
     this.onSizeChangeEnd,
+    this.selectedItemChange,
     this.itemPosition,
     this.itemSize,
     this.enabled,
@@ -53,6 +54,7 @@ class PainterContainer extends StatefulWidget {
     PositionModel newPosition,
     SizeModel newSize,
   )? onSizeChangeEnd;
+  final void Function()? selectedItemChange;
   final Widget? child;
   final double? minimumContainerHeight;
   final double? minimumContainerWidth;
@@ -121,6 +123,7 @@ class _PainterContainerState extends State<PainterContainer> {
                     ),
                     child: GestureDetector(
                       onTap: () {
+                        enableItem();
                         if (widget.onTapItem != null) {
                           widget.onTapItem?.call(tapItem: !widget.selectedItem);
                         }
@@ -159,6 +162,7 @@ class _PainterContainerState extends State<PainterContainer> {
                         changesFromOutside = true;
                       },
                       onScaleUpdate: (details) {
+                        enableItem();
                         changesFromOutside = false;
                         if (details.pointerCount == 1) {
                           final pos = details.focalPointDelta;
@@ -240,6 +244,7 @@ class _PainterContainerState extends State<PainterContainer> {
                         width: containerSize.width,
                         height: containerSize.height,
                         decoration: BoxDecoration(
+                          color: Colors.transparent,
                           border: Border.all(
                             color: widget.selectedItem
                                 ? widget.dragHandleColor ?? Colors.blue
@@ -502,6 +507,12 @@ class _PainterContainerState extends State<PainterContainer> {
         changesFromOutside) {
       rotateAngle = widget.rotateAngle!;
       oldRotateAngle = widget.rotateAngle!;
+    }
+  }
+
+  void enableItem() {
+    if (widget.selectedItemChange != null) {
+      widget.selectedItemChange?.call();
     }
   }
 

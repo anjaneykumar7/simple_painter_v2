@@ -183,11 +183,21 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               });
             },
           ),
-          IconButton(
-            icon: const Icon(
-              PhosphorIconsRegular.trash,
+          ValueListenableBuilder(
+            valueListenable: controller,
+            builder: (context, value, child) => IconButton(
+              icon: Icon(
+                PhosphorIconsRegular.trash,
+                color: controller.value.selectedItem != null
+                    ? Colors.white
+                    : Colors.grey,
+              ),
+              onPressed: () {
+                setState(() {
+                  controller.removeSelectedItem();
+                });
+              },
             ),
-            onPressed: () {},
           ),
           // Delete the selected drawable
           IconButton(
