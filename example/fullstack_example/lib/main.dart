@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:example/changes_list.dart';
 import 'package:example/layers.dart';
+import 'package:example/options.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
@@ -64,12 +65,6 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             height: height,
             child: PainterWidget(controller: controller),
           ),
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: settings,
-            ),
-          ),
           if (ifOpenChangeList)
             Positioned.fill(
               child: Align(
@@ -77,6 +72,23 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                 child: ChangesList(controller: controller),
               ),
             ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ColoredBox(
+                color: Colors.grey.shade900,
+                child: Options(
+                  controller: controller,
+                ),
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: settings,
+            ),
+          ),
         ],
       ),
     );
@@ -243,54 +255,56 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
     return Container(
       color: const Color(0xFF232323),
       padding: EdgeInsets.only(
-        bottom: Platform.isIOS ? 20 : 0,
+        bottom: Platform.isIOS ? 20 : 10,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          button(
-            PhosphorIconsRegular.eraser,
-            () {
-              setState(() {
-                controller.toggleErasing();
-              });
-            },
-            enabled: controller.isErasing,
-          ),
-          button(
-            PhosphorIconsRegular.scribble,
-            () {
-              setState(() {
-                controller.toggleDrawing();
-              });
-            },
-            enabled: controller.isDrawing,
-          ),
-          button(
-            PhosphorIconsRegular.textT,
-            () async {
-              await controller.addText();
-              setState(() {});
-            },
-            enabled: controller.editingText || controller.addingText,
-          ),
-          button(
-            PhosphorIconsRegular.image,
-            () {},
-          ),
-          button(
-            PhosphorIconsRegular.polygon,
-            () {},
-          ),
-          button(
-            PhosphorIconsRegular.listBullets,
-            () {
-              setState(() {
-                openSettings = !openSettings;
-              });
-            },
-          ),
-        ],
+      child: IntrinsicHeight(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            button(
+              PhosphorIconsRegular.eraser,
+              () {
+                setState(() {
+                  controller.toggleErasing();
+                });
+              },
+              enabled: controller.isErasing,
+            ),
+            button(
+              PhosphorIconsRegular.scribble,
+              () {
+                setState(() {
+                  controller.toggleDrawing();
+                });
+              },
+              enabled: controller.isDrawing,
+            ),
+            button(
+              PhosphorIconsRegular.textT,
+              () async {
+                await controller.addText();
+                setState(() {});
+              },
+              enabled: controller.editingText || controller.addingText,
+            ),
+            button(
+              PhosphorIconsRegular.image,
+              () {},
+            ),
+            button(
+              PhosphorIconsRegular.polygon,
+              () {},
+            ),
+            button(
+              PhosphorIconsRegular.listBullets,
+              () {
+                setState(() {
+                  openSettings = !openSettings;
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
