@@ -59,7 +59,6 @@ class PainterWidget extends StatelessWidget {
       key: controller.repaintBoundaryKey,
       child: GestureDetector(
         onTap: () {
-          print('object');
           controller.value.selectedItem = null;
           controller.value = controller.value.copyWith();
         },

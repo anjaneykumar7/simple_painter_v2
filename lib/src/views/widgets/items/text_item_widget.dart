@@ -48,7 +48,6 @@ class _TextItemWidgetState extends State<TextItemWidget> {
           rotateAngle: widget.item.rotation,
           size: widget.item.size,
           selectedItemChange: () {
-            print(widget.item.id);
             widget.painterController.value = widget.painterController.value
                 .copyWith(selectedItem: widget.item);
           },

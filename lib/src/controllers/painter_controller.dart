@@ -13,6 +13,8 @@ import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
@@ -64,6 +66,10 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
 
   void addPaintPoint(Offset? point) {
     if (isErasing) {
+      if (value.paintPathsBeforeErasing.isEmpty) {
+        value =
+            value.copyWith(paintPathsBeforeErasing: value.paintPaths.toList());
+      }
       _erase(point);
     } else {
       value = value.copyWith(
@@ -76,8 +82,27 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     if (!isErasing && value.currentPaintPath.toList().isNotEmpty) {
       value.paintPaths = value.paintPaths.toList()
         ..add(List.from(value.currentPaintPath.toList()));
-      // ignore: cascade_invocations
+      addAction(
+        ActionDraw(
+          paintPath: value.currentPaintPath.toList(),
+          listIndex: value.paintPaths.length - 1,
+          timestamp: DateTime.now(),
+          actionType: ActionType.draw,
+        ),
+      );
       value.currentPaintPath = value.currentPaintPath.toList()..clear();
+    } else if (isErasing) {
+      addAction(
+        ActionErase(
+          currentPaintPath: value.paintPaths.toList(),
+          lastPaintPath: value.paintPathsBeforeErasing.toList(),
+          timestamp: DateTime.now(),
+          actionType: ActionType.erase,
+        ),
+      );
+      value = value.copyWith(
+        paintPathsBeforeErasing: value.paintPathsBeforeErasing..clear(),
+      );
     }
   }
 
@@ -245,26 +270,32 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
 
   void updateActionWithChangeActionIndex(int index) {
     ActionsService().updateActionWithChangeActionIndex(
-        changeActions, value, index, (items) {
+        changeActions, value.paintPaths, value, index, (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
+    }, (pathList) {
+      value = value.copyWith(paintPaths: pathList);
     });
   }
 
   void undo() {
-    ActionsService().undo(changeActions, value, (items) {
+    ActionsService().undo(changeActions, value.paintPaths, value, (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
+    }, (pathList) {
+      value = value.copyWith(paintPaths: pathList);
     });
   }
 
   void redo() {
-    ActionsService().redo(changeActions, value, (items) {
+    ActionsService().redo(changeActions, value.paintPaths, value, (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
+    }, (pathList) {
+      value = value.copyWith(paintPaths: pathList);
     });
   }
 
@@ -310,6 +341,7 @@ class PainterControllerValue {
     this.scale,
     this.paintPaths = const <List<Offset?>>[],
     this.currentPaintPath = const <Offset?>[],
+    this.paintPathsBeforeErasing = const <List<Offset?>>[],
     this.items = const <PainterItem>[],
     this.selectedItem,
   });
@@ -318,6 +350,7 @@ class PainterControllerValue {
   List<List<Offset?>> paintPaths =
       <List<Offset?>>[]; // Çizim yollarını saklamak için
   List<Offset?> currentPaintPath = <Offset?>[]; // Geçici çizim yolu
+  List<List<Offset?>> paintPathsBeforeErasing = <List<Offset?>>[];
   List<PainterItem> items = <PainterItem>[];
   PainterItem? selectedItem;
 
@@ -326,6 +359,7 @@ class PainterControllerValue {
     Size? scale,
     List<List<Offset?>>? paintPaths,
     List<Offset?>? currentPaintPath,
+    List<List<Offset?>>? paintPathsBeforeErasing,
     List<PainterItem>? items,
     PainterItem? selectedItem,
   }) {
@@ -334,6 +368,8 @@ class PainterControllerValue {
       scale: scale ?? this.scale,
       paintPaths: paintPaths ?? this.paintPaths,
       currentPaintPath: currentPaintPath ?? this.currentPaintPath,
+      paintPathsBeforeErasing:
+          paintPathsBeforeErasing ?? this.paintPathsBeforeErasing,
       items: items ?? this.items,
       selectedItem: selectedItem ?? this.selectedItem,
     );

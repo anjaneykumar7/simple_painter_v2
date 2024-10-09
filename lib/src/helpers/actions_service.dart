@@ -3,6 +3,8 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
@@ -14,15 +16,17 @@ class ActionsService {
   List<PaintAction> currentActions = [];
   int currentIndex = 0;
   List<PainterItem> items = [];
-
+  List<List<Offset?>> currentPaintPath = [];
   void updateActionWithChangeActionIndex(
     ValueNotifier<PaintActions> changeActions,
+    List<List<Offset?>> paintPath,
     PainterControllerValue value,
     int index,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
+    void Function(List<List<Offset?>> pathList) updatedPaintPath,
   ) {
-    _setValues(changeActions, value);
+    _setValues(changeActions, paintPath, value);
 
     void undoActions() {
       for (var i = currentIndex; i > index; i--) {
@@ -39,6 +43,10 @@ class ActionsService {
           _actionLayerChange(currentActions[i] as ActionLayerChange, false);
         } else if (currentActions[i] is ActionRemoveItem) {
           _actionRemoveItem(currentActions[i] as ActionRemoveItem, false);
+        } else if (currentActions[i] is ActionDraw) {
+          _actionDraw(currentActions[i] as ActionDraw, false);
+        } else if (currentActions[i] is ActionErase) {
+          _actionErese(currentActions[i] as ActionErase, false);
         }
       }
     }
@@ -58,6 +66,10 @@ class ActionsService {
           _actionLayerChange(currentActions[i] as ActionLayerChange, true);
         } else if (currentActions[i] is ActionRemoveItem) {
           _actionRemoveItem(currentActions[i] as ActionRemoveItem, true);
+        } else if (currentActions[i] is ActionDraw) {
+          _actionDraw(currentActions[i] as ActionDraw, true);
+        } else if (currentActions[i] is ActionErase) {
+          _actionErese(currentActions[i] as ActionErase, true);
         }
       }
     }
@@ -69,6 +81,7 @@ class ActionsService {
     }
     updatedList(items);
     updateIndex(index);
+    updatedPaintPath(currentPaintPath);
   }
 
   void _updateList(PainterItem item) {
@@ -179,46 +192,72 @@ class ActionsService {
     }
   }
 
+  void _actionDraw(ActionDraw item, bool isRedo) {
+    if (isRedo) {
+      currentPaintPath.insert(item.listIndex, item.paintPath);
+    } else {
+      currentPaintPath.removeAt(item.listIndex);
+    }
+  }
+
+  void _actionErese(ActionErase item, bool isRedo) {
+    if (isRedo) {
+      currentPaintPath = item.currentPaintPath;
+    } else {
+      currentPaintPath = item.lastPaintPath;
+    }
+  }
+
   void undo(
     ValueNotifier<PaintActions> changeActions,
+    List<List<Offset?>> paintPath,
     PainterControllerValue value,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
+    void Function(List<List<Offset?>> pathList) updatedPaintPath,
   ) {
-    _setValues(changeActions, value);
+    _setValues(changeActions, paintPath, value);
     if (currentIndex < 0) return;
     updateActionWithChangeActionIndex(
       changeActions,
+      currentPaintPath,
       value,
       currentIndex - 1,
       updatedList,
       updateIndex,
+      updatedPaintPath,
     );
   }
 
   void redo(
     ValueNotifier<PaintActions> changeActions,
+    List<List<Offset?>> paintPath,
     PainterControllerValue value,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
+    void Function(List<List<Offset?>> pathList) updatedPaintPath,
   ) {
-    _setValues(changeActions, value);
+    _setValues(changeActions, paintPath, value);
     if (currentIndex == currentActions.length - 1) return;
     updateActionWithChangeActionIndex(
       changeActions,
+      currentPaintPath,
       value,
       currentIndex + 1,
       updatedList,
       updateIndex,
+      updatedPaintPath,
     );
   }
 
   void _setValues(
     ValueNotifier<PaintActions> changeActions,
+    List<List<Offset?>> paintPath,
     PainterControllerValue value,
   ) {
     currentActions = changeActions.value.changeList;
     currentIndex = changeActions.value.index;
+    currentPaintPath = paintPath;
     items = value.items.toList();
   }
 }

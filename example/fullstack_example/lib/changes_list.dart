@@ -77,6 +77,10 @@ class ChangesList extends StatelessWidget {
         return 'Changed layer index';
       case ActionType.removedItem:
         return 'Removed item';
+      case ActionType.draw:
+        return 'Draw';
+      case ActionType.erase:
+        return 'Erase';
     }
   }
 }

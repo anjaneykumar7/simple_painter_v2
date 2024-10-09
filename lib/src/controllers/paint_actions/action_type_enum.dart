@@ -6,4 +6,6 @@ enum ActionType {
   rotationItem,
   changedLayerIndex,
   removedItem,
+  draw,
+  erase,
 }
