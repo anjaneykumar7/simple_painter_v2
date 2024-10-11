@@ -107,13 +107,35 @@ class _TextItemWidgetState extends State<TextItemWidget> {
                 widgetHeight = size.height;
               });
             },
-            child: Text(
-              widget.item.text,
-              style: widget.item.textStyle,
+            child: SizedBox(
+              width: double.infinity,
+              child: widget.item.enableGradientColor
+                  ? ShaderMask(
+                      blendMode: BlendMode.srcIn,
+                      shaderCallback: (Rect bounds) {
+                        return LinearGradient(
+                          begin: widget.item.gradientBegin,
+                          end: widget.item.gradientEnd,
+                          colors: [
+                            widget.item.gradientStartColor,
+                            widget.item.gradientEndColor,
+                          ],
+                          stops: const [0.0, 1.0],
+                        ).createShader(bounds);
+                      },
+                      child: text,
+                    )
+                  : text,
             ),
           ),
         );
       },
     );
   }
+
+  Widget get text => Text(
+        widget.item.text,
+        textAlign: widget.item.textAlign,
+        style: widget.item.textStyle,
+      );
 }

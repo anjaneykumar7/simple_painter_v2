@@ -81,6 +81,8 @@ class ChangesList extends StatelessWidget {
         return 'Draw';
       case ActionType.erase:
         return 'Erase';
+      case ActionType.changeTextValue:
+        return 'Change text options';
     }
   }
 }

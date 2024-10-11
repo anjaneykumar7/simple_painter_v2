@@ -18,6 +18,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
 import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
 import 'package:flutter_painter/src/helpers/actions_service.dart';
@@ -332,6 +333,64 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   int _getItemIndexFromItem(PainterItem item) {
     final index = value.items.indexWhere((element) => element.id == item.id);
     return index;
+  }
+
+  void changeTextFontSize(TextItem item, double fontSize) {
+    final newTextItem = item.copyWith(
+      textStyle: item.textStyle.copyWith(fontSize: fontSize),
+    );
+    _changeTextItemValues(newTextItem);
+  }
+
+  void changeTextColor(TextItem item, Color color) {
+    final newTextItem = item.copyWith(
+      textStyle: item.textStyle.copyWith(color: color),
+    );
+    _changeTextItemValues(newTextItem);
+  }
+
+  void changeTextAlign(TextItem item, TextAlign align) {
+    final newTextItem = item.copyWith(textAlign: align);
+    _changeTextItemValues(newTextItem);
+  }
+
+  void changeTextGradient(
+    TextItem item, {
+    bool? enableGradientColor,
+    Color? gradientStartColor,
+    Color? gradientEndColor,
+    AlignmentGeometry? gradientBegin,
+    AlignmentGeometry? gradientEnd,
+  }) {
+    final newTextItem = item.copyWith(
+      enableGradientColor: enableGradientColor ?? item.enableGradientColor,
+      gradientStartColor: gradientStartColor ?? item.gradientStartColor,
+      gradientEndColor: gradientEndColor ?? item.gradientEndColor,
+      gradientBegin: gradientBegin ?? item.gradientBegin,
+      gradientEnd: gradientEnd ?? item.gradientEnd,
+    );
+
+    _changeTextItemValues(newTextItem);
+  }
+
+  void _changeTextItemValues(
+    TextItem item,
+  ) {
+    final items = value.items.toList();
+    final index = _getItemIndexFromItem(item);
+    final lastItem = items[index] as TextItem;
+    items
+      ..removeAt(index)
+      ..insert(index, item);
+    addAction(
+      ActionTextChangeValue(
+        currentItem: item,
+        lastItem: lastItem,
+        timestamp: DateTime.now(),
+        actionType: ActionType.changeTextValue,
+      ),
+    );
+    value = value.copyWith(items: items, selectedItem: item);
   }
 }
 

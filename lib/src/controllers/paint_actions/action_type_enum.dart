@@ -8,4 +8,5 @@ enum ActionType {
   removedItem,
   draw,
   erase,
+  changeTextValue,
 }

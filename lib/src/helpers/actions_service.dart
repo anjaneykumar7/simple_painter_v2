@@ -11,6 +11,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
 
 class ActionsService {
   List<PaintAction> currentActions = [];
@@ -47,6 +48,8 @@ class ActionsService {
           _actionDraw(currentActions[i] as ActionDraw, false);
         } else if (currentActions[i] is ActionErase) {
           _actionErese(currentActions[i] as ActionErase, false);
+        } else if (currentActions[i] is ActionTextChangeValue) {
+          _actionTextValue(currentActions[i] as ActionTextChangeValue, false);
         }
       }
     }
@@ -70,6 +73,8 @@ class ActionsService {
           _actionDraw(currentActions[i] as ActionDraw, true);
         } else if (currentActions[i] is ActionErase) {
           _actionErese(currentActions[i] as ActionErase, true);
+        } else if (currentActions[i] is ActionTextChangeValue) {
+          _actionTextValue(currentActions[i] as ActionTextChangeValue, true);
         }
       }
     }
@@ -206,6 +211,20 @@ class ActionsService {
     } else {
       currentPaintPath = item.lastPaintPath;
     }
+  }
+
+  void _actionTextValue(ActionTextChangeValue item, bool isRedo) {
+    var itemValue = items
+        .where(
+          (element) => element.id == item.currentItem.id,
+        )
+        .first;
+    if (isRedo) {
+      itemValue = item.currentItem;
+    } else {
+      itemValue = item.lastItem;
+    }
+    _updateList(itemValue);
   }
 
   void undo(
