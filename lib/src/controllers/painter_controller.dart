@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
+import 'package:flutter_painter/src/controllers/items/image_item.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
@@ -206,6 +207,31 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           listIndex: value.items.length - 1,
           timestamp: DateTime.now(),
           actionType: ActionType.addedTextItem,
+        ),
+      );
+      value.selectedItem = painterItem;
+    }
+  }
+
+  void addImageUint8List(Uint8List image) {
+    if (image.isNotEmpty) {
+      final painterItem = ImageItem(
+        position: const PositionModel(),
+        image: image,
+        layer: LayerSettings(
+          title: 'Image (${value.items.whereType<ImageItem>().length})',
+          index: value.items.length,
+        ),
+      );
+      value = value.copyWith(
+        items: value.items.toList()..add(painterItem),
+      );
+      addAction(
+        ActionAddItem(
+          item: painterItem,
+          listIndex: value.items.length - 1,
+          timestamp: DateTime.now(),
+          actionType: ActionType.addedImageItem,
         ),
       );
       value.selectedItem = painterItem;

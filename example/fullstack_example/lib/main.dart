@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:example/changes_list.dart';
 import 'package:example/layers.dart';
 import 'package:example/options.dart';
+import 'package:example/select_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
@@ -211,13 +213,6 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               },
             ),
           ),
-          // Delete the selected drawable
-          IconButton(
-            icon: const Icon(
-              Icons.flip,
-            ),
-            onPressed: () {},
-          ),
           IconButton(
             icon: Icon(
               PhosphorIconsRegular.arrowCounterClockwise,
@@ -289,7 +284,18 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             ),
             button(
               PhosphorIconsRegular.image,
-              () {},
+              () async {
+                final imageUrl = await showDialog<String>(
+                    context: context,
+                    builder: (context) => const SelectImageDialog());
+                if (imageUrl == null) return;
+                final response = await HttpClient().getUrl(Uri.parse(imageUrl));
+                final bytes = await consolidateHttpClientResponseBytes(
+                    await response.close());
+                final imageUint8List = bytes;
+                controller.addImageUint8List(imageUint8List);
+                setState(() {});
+              },
             ),
             button(
               PhosphorIconsRegular.polygon,

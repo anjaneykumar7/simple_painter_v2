@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/custom_paint.dart';
+import 'package:flutter_painter/src/controllers/items/image_item.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/items/text_item.dart';
+import 'package:flutter_painter/src/views/widgets/items/image_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';
 
 class PainterWidget extends StatelessWidget {
@@ -83,6 +85,48 @@ class PainterWidget extends StatelessWidget {
   ) {
     if (item is TextItem) {
       return TextItemWidget(
+        item: item,
+        height: controller.background.height,
+        painterController: controller,
+        onPositionChange: (position) {
+          final newItem = controller.value.items.firstWhere(
+            //Position veya size değiştiğinde eski item geliyor,
+            //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi
+            //için tekrardan size üzerinden itemi
+            //bulup onun üzeirinden indeks alıyorum.
+            (element) => element.id == item.id,
+          );
+          final itemIndex = controller.value.items.indexOf(newItem);
+          controller.setItemPosition(itemIndex, position);
+        },
+        onRotationChange: (rotation) {
+          final newItem = controller.value.items.firstWhere(
+            //Position veya size değiştiğinde eski item geliyor,
+            //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi
+            //için tekrardan size üzerinden itemi
+            //bulup onun üzeirinden indeks alıyorum.
+            (element) => element.id == item.id,
+          );
+          final itemIndex = controller.value.items.indexOf(newItem);
+          controller.setItemRotation(itemIndex, rotation);
+        },
+        onSizeChange: (position, size) {
+          final newItem = controller.value.items.firstWhere(
+            //Position veya size değiştiğinde eski item geliyor,
+            //bundan dolayı da indexi bulamayıp hata veriyor. Hata vermemesi
+            //için tekrardan size üzerinden itemi
+            //bulup onun üzeirinden indeks alıyorum.
+            (element) => element.id == item.id,
+            orElse: () => item,
+          );
+          final itemIndex = controller.value.items.indexOf(newItem);
+          controller
+            ..setItemSize(itemIndex, size)
+            ..setItemPosition(itemIndex, position);
+        },
+      );
+    } else if (item is ImageItem) {
+      return ImageItemWidget(
         item: item,
         height: controller.background.height,
         painterController: controller,
