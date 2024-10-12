@@ -1,10 +1,12 @@
+import 'package:example/widgets/options/image_options.dart';
+import 'package:example/widgets/options/text_options.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Options extends StatelessWidget {
-  const Options({super.key, required this.controller});
+  const Options({required this.controller, super.key});
   final PainterController controller;
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,15 @@ class Options extends StatelessWidget {
       valueListenable: controller,
       builder: (context, value, child) {
         if (value.selectedItem is TextItem) {
-          return textOptions(value.selectedItem! as TextItem);
+          return TextOptions(
+            controller: controller,
+            item: value.selectedItem! as TextItem,
+          );
+        } else if (value.selectedItem is ImageItem) {
+          return ImageOptions(
+            controller: controller,
+            item: value.selectedItem! as ImageItem,
+          );
         } else {
           return const SizedBox.shrink();
         }
@@ -58,13 +68,14 @@ class Options extends StatelessWidget {
               title('Font Size (${(sliderVal * 100).toStringAsFixed(0)}px)'),
               const Spacer(),
               Slider(
-                  value: sliderVal,
-                  onChanged: (value) {
-                    sliderValue.value = value;
-                  },
-                  onChangeEnd: (value) {
-                    controller.changeTextFontSize(item, value * 100);
-                  }),
+                value: sliderVal,
+                onChanged: (value) {
+                  sliderValue.value = value;
+                },
+                onChangeEnd: (value) {
+                  controller.changeTextFontSize(item, value * 100);
+                },
+              ),
             ],
           );
         },
@@ -85,24 +96,24 @@ class Options extends StatelessWidget {
             title('Color'),
             const Spacer(),
             ValueListenableBuilder(
-                valueListenable: color,
-                builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      max: 0xFFFFFF.toDouble(),
-                      thumbColor: Color(colorVal.toInt())
-                          .withOpacity(item.textStyle.color!.opacity),
-                      onChanged: (value) {
-                        color.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        final intValue = value.toInt();
-                        controller.changeTextColor(
-                          item,
-                          Color(intValue)
-                              .withOpacity(item.textStyle.color!.opacity),
-                        );
-                      },
-                    )),
+              valueListenable: color,
+              builder: (context, colorVal, child) => Slider(
+                value: colorVal,
+                max: 0xFFFFFF.toDouble(),
+                thumbColor: Color(colorVal.toInt())
+                    .withOpacity(item.textStyle.color!.opacity),
+                onChanged: (value) {
+                  color.value = value;
+                },
+                onChangeEnd: (value) {
+                  final intValue = value.toInt();
+                  controller.changeTextColor(
+                    item,
+                    Color(intValue).withOpacity(item.textStyle.color!.opacity),
+                  );
+                },
+              ),
+            ),
           ],
         ),
       );
@@ -123,14 +134,18 @@ class Options extends StatelessWidget {
       );
       Widget arrow(IconData icon, Alignment begin, Alignment end) {
         return IconButton(
-            onPressed: () {
-              controller.changeTextGradient(item,
-                  gradientBegin: begin, gradientEnd: end);
-            },
-            icon: Icon(
-              icon,
-              color: Colors.white,
-            ));
+          onPressed: () {
+            controller.changeTextGradient(
+              item,
+              gradientBegin: begin,
+              gradientEnd: end,
+            );
+          },
+          icon: Icon(
+            icon,
+            color: Colors.white,
+          ),
+        );
       }
 
       return Column(
@@ -142,8 +157,10 @@ class Options extends StatelessWidget {
               Switch(
                 value: item.enableGradientColor,
                 onChanged: (value) {
-                  controller.changeTextGradient(item,
-                      enableGradientColor: value);
+                  controller.changeTextGradient(
+                    item,
+                    enableGradientColor: value,
+                  );
                 },
               ),
             ],
@@ -209,28 +226,52 @@ class Options extends StatelessWidget {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      arrow(PhosphorIconsRegular.arrowLeft,
-                          Alignment.centerRight, Alignment.centerLeft),
-                      arrow(PhosphorIconsRegular.arrowRight,
-                          Alignment.centerLeft, Alignment.centerRight),
-                      arrow(PhosphorIconsRegular.arrowUp,
-                          Alignment.bottomCenter, Alignment.topCenter),
-                      arrow(PhosphorIconsRegular.arrowDown, Alignment.topCenter,
-                          Alignment.bottomCenter),
-                      arrow(PhosphorIconsRegular.arrowUpRight,
-                          Alignment.bottomLeft, Alignment.topRight),
-                      arrow(PhosphorIconsRegular.arrowUpLeft,
-                          Alignment.bottomRight, Alignment.topLeft),
-                      arrow(PhosphorIconsRegular.arrowDownRight,
-                          Alignment.topLeft, Alignment.bottomRight),
-                      arrow(PhosphorIconsRegular.arrowDownLeft,
-                          Alignment.topRight, Alignment.bottomLeft),
+                      arrow(
+                        PhosphorIconsRegular.arrowLeft,
+                        Alignment.centerRight,
+                        Alignment.centerLeft,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowRight,
+                        Alignment.centerLeft,
+                        Alignment.centerRight,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowUp,
+                        Alignment.bottomCenter,
+                        Alignment.topCenter,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowDown,
+                        Alignment.topCenter,
+                        Alignment.bottomCenter,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowUpRight,
+                        Alignment.bottomLeft,
+                        Alignment.topRight,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowUpLeft,
+                        Alignment.bottomRight,
+                        Alignment.topLeft,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowDownRight,
+                        Alignment.topLeft,
+                        Alignment.bottomRight,
+                      ),
+                      arrow(
+                        PhosphorIconsRegular.arrowDownLeft,
+                        Alignment.topRight,
+                        Alignment.bottomLeft,
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
-          )
+          ),
         ],
       );
     }
@@ -248,19 +289,20 @@ class Options extends StatelessWidget {
       ),
     );
   }
-
-  Widget title(String text) => Align(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          text,
-          style: TextStyle(color: Colors.white, fontSize: 16),
-        ),
-      );
-  Widget listView(List<Widget> children) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: ListView(
-          shrinkWrap: true,
-          children: children,
-        ),
-      );
 }
+
+Widget listView(List<Widget> children) => Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: ListView(
+        shrinkWrap: true,
+        children: children,
+      ),
+    );
+
+Widget title(String text) => Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white, fontSize: 16),
+      ),
+    );

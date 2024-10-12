@@ -34,6 +34,10 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
   double? widgetHeight;
   ValueNotifier<PositionModel> position =
       ValueNotifier(const PositionModel(x: 50, y: 50));
+  bool refreshValue =
+      false; //image widgetı ilk çalıştığında uint8list daha işlenmediğinden
+  //height 0 döndürüyor, doğru şekilde height ölçmesi için MeasureSize
+  //widgetında ki onChange methodunu bu değişken ile yeniden çalıştırıyorum
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -102,6 +106,12 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
           enabled: widgetHeight != null,
           child: MeasureSize(
             onChange: (size) {
+              if (refreshValue == false) {
+                setState(() {
+                  refreshValue = true;
+                });
+                return;
+              }
               if (widgetHeight != null) return;
               setState(() {
                 widgetHeight = size.height;

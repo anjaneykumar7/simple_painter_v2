@@ -9,4 +9,5 @@ enum ActionType {
   draw,
   erase,
   changeTextValue,
+  changeImageValue,
 }

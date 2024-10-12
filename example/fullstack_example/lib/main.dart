@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:example/changes_list.dart';
-import 'package:example/layers.dart';
-import 'package:example/options.dart';
-import 'package:example/select_image.dart';
+import 'package:example/widgets/changes_list.dart';
+import 'package:example/widgets/layers.dart';
+import 'package:example/widgets/options/options.dart';
+import 'package:example/widgets/select_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -286,12 +286,14 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               PhosphorIconsRegular.image,
               () async {
                 final imageUrl = await showDialog<String>(
-                    context: context,
-                    builder: (context) => const SelectImageDialog());
+                  context: context,
+                  builder: (context) => const SelectImageDialog(),
+                );
                 if (imageUrl == null) return;
                 final response = await HttpClient().getUrl(Uri.parse(imageUrl));
                 final bytes = await consolidateHttpClientResponseBytes(
-                    await response.close());
+                  await response.close(),
+                );
                 final imageUint8List = bytes;
                 controller.addImageUint8List(imageUint8List);
                 setState(() {});

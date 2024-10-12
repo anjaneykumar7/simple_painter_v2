@@ -28,7 +28,7 @@ class SelectImageDialog extends StatelessWidget {
       'https://picsum.photos/217',
       'https://picsum.photos/218',
       'https://picsum.photos/219',
-      'https://picsum.photos/220'
+      'https://picsum.photos/220',
     ];
     return AlertDialog(
       title: const Text('Select Image'),
@@ -55,7 +55,7 @@ class SelectImageDialog extends StatelessWidget {
         TextButton(
           child: const Text('Cancel'),
           onPressed: () => Navigator.pop(context),
-        )
+        ),
       ],
     );
   }

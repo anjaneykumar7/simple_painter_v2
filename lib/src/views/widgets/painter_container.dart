@@ -251,7 +251,7 @@ class _PainterContainerState extends State<PainterContainer> {
                                 : Colors.transparent,
                           ),
                         ),
-                        child: Center(child: widget.child),
+                        child: Align(child: widget.child),
                       ),
                     ),
                   ),

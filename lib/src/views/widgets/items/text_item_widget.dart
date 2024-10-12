@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';

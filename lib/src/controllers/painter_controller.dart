@@ -16,6 +16,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.d
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
@@ -399,21 +400,53 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     _changeTextItemValues(newTextItem);
   }
 
+  void changeImageBoxFit(ImageItem item, BoxFit boxFit) {
+    final newImageItem = item.copyWith(fit: boxFit);
+    _changeImageItemValues(newImageItem);
+  }
+
   void _changeTextItemValues(
     TextItem item,
   ) {
     final items = value.items.toList();
     final index = _getItemIndexFromItem(item);
     final lastItem = items[index] as TextItem;
+    final newItem = item.copyWith(
+        size: lastItem.size,
+        position: lastItem.position,
+        rotation: lastItem.rotation);
     items
       ..removeAt(index)
-      ..insert(index, item);
+      ..insert(index, newItem);
     addAction(
       ActionTextChangeValue(
         currentItem: item,
         lastItem: lastItem,
         timestamp: DateTime.now(),
         actionType: ActionType.changeTextValue,
+      ),
+    );
+    value = value.copyWith(items: items, selectedItem: item);
+  }
+
+  void _changeImageItemValues(ImageItem item) {
+    final items = value.items.toList();
+    final index = _getItemIndexFromItem(item);
+    final lastItem = items[index] as ImageItem;
+    final newItem = item.copyWith(
+      size: lastItem.size,
+      position: lastItem.position,
+      rotation: lastItem.rotation,
+    );
+    items
+      ..removeAt(index)
+      ..insert(index, newItem);
+    addAction(
+      ActionImageChangeValue(
+        currentItem: item,
+        lastItem: lastItem,
+        timestamp: DateTime.now(),
+        actionType: ActionType.changeImageValue,
       ),
     );
     value = value.copyWith(items: items, selectedItem: item);

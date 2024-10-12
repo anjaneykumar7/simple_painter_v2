@@ -83,6 +83,8 @@ class ChangesList extends StatelessWidget {
         return 'Erase';
       case ActionType.changeTextValue:
         return 'Change text options';
+      case ActionType.changeImageValue:
+        return 'Change image options';
     }
   }
 }

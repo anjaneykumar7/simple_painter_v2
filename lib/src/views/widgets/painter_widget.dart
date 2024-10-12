@@ -3,7 +3,6 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/custom_paint.dart';
 import 'package:flutter_painter/src/controllers/items/image_item.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/items/text_item.dart';
 import 'package:flutter_painter/src/views/widgets/items/image_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';
 
@@ -162,6 +161,7 @@ class PainterWidget extends StatelessWidget {
             orElse: () => item,
           );
           final itemIndex = controller.value.items.indexOf(newItem);
+
           controller
             ..setItemSize(itemIndex, size)
             ..setItemPosition(itemIndex, position);
