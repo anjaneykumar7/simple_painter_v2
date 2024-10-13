@@ -285,16 +285,11 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             button(
               PhosphorIconsRegular.image,
               () async {
-                final imageUrl = await showDialog<String>(
+                final imageUint8List = await showDialog<Uint8List>(
                   context: context,
                   builder: (context) => const SelectImageDialog(),
                 );
-                if (imageUrl == null) return;
-                final response = await HttpClient().getUrl(Uri.parse(imageUrl));
-                final bytes = await consolidateHttpClientResponseBytes(
-                  await response.close(),
-                );
-                final imageUint8List = bytes;
+                if (imageUint8List == null) return;
                 controller.addImageUint8List(imageUint8List);
                 setState(() {});
               },

@@ -29,6 +29,7 @@ class PainterContainer extends StatefulWidget {
     this.position,
     this.rotateAngle,
     this.size,
+    this.centerChild,
   });
   final double height;
   final Color? dragHandleColor;
@@ -64,6 +65,8 @@ class PainterContainer extends StatefulWidget {
   final PositionModel? position;
   final double? rotateAngle;
   final SizeModel? size;
+  final bool?
+      centerChild; //text widgetı ve diğer widgetlar çağırıldığında ortalamak için kullanılıyor
   @override
   State<PainterContainer> createState() => _PainterContainerState();
 }
@@ -251,7 +254,14 @@ class _PainterContainerState extends State<PainterContainer> {
                                 : Colors.transparent,
                           ),
                         ),
-                        child: Align(child: widget.child),
+                        child:
+                            initializeSize //eğer her zaman align çalışırsa image fill yapmak istediğimde align widgetı olduğu için height olarak fit yapamıyor, bunu düzeltmek içinde bir kez align çalıştıktan sonra ana widgetı döndürüyorum
+                                ? (widget.centerChild != null &&
+                                        widget
+                                            .centerChild!) //widget her zaman ortaya alınmak istiyor ise (örneğin text widgetı)
+                                    ? Center(child: widget.child)
+                                    : widget.child
+                                : Align(child: widget.child),
                       ),
                     ),
                   ),

@@ -99,6 +99,7 @@ class _TextItemWidgetState extends State<TextItemWidget> {
             );
           },
           enabled: widgetHeight != null,
+          centerChild: true,
           child: MeasureSize(
             onChange: (size) {
               if (widgetHeight != null) return;

@@ -20,6 +20,9 @@ class ImageItem extends PainterItem {
     this.gradientEnd = Alignment.centerRight,
     this.gradientOpacity = 1.0,
     this.fit = BoxFit.contain,
+    this.borderRadius = BorderRadius.zero,
+    this.borderColor = Colors.black,
+    this.borderWidth = 0.0,
     super.id,
     super.size,
     super.enabled = true,
@@ -36,6 +39,9 @@ class ImageItem extends PainterItem {
   final AlignmentGeometry gradientEnd;
   final double gradientOpacity;
   final BoxFit fit;
+  final BorderRadius borderRadius;
+  final Color borderColor;
+  final double borderWidth;
 
   @override
   ImageItem copyWith({
@@ -50,6 +56,9 @@ class ImageItem extends PainterItem {
     double? gradientOpacity,
     PositionModel? position,
     BoxFit? fit,
+    BorderRadius? borderRadius,
+    Color? borderColor,
+    double? borderWidth,
     LayerSettings? layer,
     SizeModel? size,
     double? rotation,
@@ -67,6 +76,9 @@ class ImageItem extends PainterItem {
       gradientEnd: gradientEnd ?? this.gradientEnd,
       gradientOpacity: gradientOpacity ?? this.gradientOpacity,
       fit: fit ?? this.fit,
+      borderRadius: borderRadius ?? this.borderRadius,
+      borderColor: borderColor ?? this.borderColor,
+      borderWidth: borderWidth ?? this.borderWidth,
       position: position ?? this.position,
       layer: layer ?? this.layer,
       rotation: rotation ?? this.rotation,

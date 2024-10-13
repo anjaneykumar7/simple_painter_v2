@@ -6,7 +6,7 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TextOptions extends StatelessWidget {
-  const TextOptions({super.key, required this.controller, required this.item});
+  const TextOptions({required this.controller, required this.item, super.key});
   final PainterController controller;
   final TextItem item;
   @override
@@ -33,19 +33,19 @@ class TextOptions extends StatelessWidget {
         IconButton(
           icon: const Icon(Icons.format_align_left),
           onPressed: () {
-            controller.changeTextAlign(item, TextAlign.left);
+            controller.changeTextValues(item, textAlign: TextAlign.left);
           },
         ),
         IconButton(
           icon: const Icon(Icons.format_align_center),
           onPressed: () {
-            controller.changeTextAlign(item, TextAlign.center);
+            controller.changeTextValues(item, textAlign: TextAlign.center);
           },
         ),
         IconButton(
           icon: const Icon(Icons.format_align_right),
           onPressed: () {
-            controller.changeTextAlign(item, TextAlign.right);
+            controller.changeTextValues(item, textAlign: TextAlign.right);
           },
         ),
       ],
@@ -67,7 +67,7 @@ class TextOptions extends StatelessWidget {
                 sliderValue.value = value;
               },
               onChangeEnd: (value) {
-                controller.changeTextFontSize(item, value * 100);
+                controller.changeTextValues(item, fontSize: value * 100);
               },
             ),
           ],
@@ -101,9 +101,10 @@ class TextOptions extends StatelessWidget {
               },
               onChangeEnd: (value) {
                 final intValue = value.toInt();
-                controller.changeTextColor(
+                controller.changeTextValues(
                   item,
-                  Color(intValue).withOpacity(item.textStyle.color!.opacity),
+                  color: Color(intValue)
+                      .withOpacity(item.textStyle.color!.opacity),
                 );
               },
             ),
@@ -129,7 +130,7 @@ class TextOptions extends StatelessWidget {
     Widget arrow(IconData icon, Alignment begin, Alignment end) {
       return IconButton(
         onPressed: () {
-          controller.changeTextGradient(
+          controller.changeTextValues(
             item,
             gradientBegin: begin,
             gradientEnd: end,
@@ -151,7 +152,7 @@ class TextOptions extends StatelessWidget {
             Switch(
               value: item.enableGradientColor,
               onChanged: (value) {
-                controller.changeTextGradient(
+                controller.changeTextValues(
                   item,
                   enableGradientColor: value,
                 );
@@ -179,7 +180,7 @@ class TextOptions extends StatelessWidget {
                       },
                       onChangeEnd: (value) {
                         final intValue = value.toInt();
-                        controller.changeTextGradient(
+                        controller.changeTextValues(
                           item,
                           gradientStartColor: Color(intValue)
                               .withOpacity(item.gradientStartColor.opacity),
@@ -205,7 +206,7 @@ class TextOptions extends StatelessWidget {
                       },
                       onChangeEnd: (value) {
                         final intValue = value.toInt();
-                        controller.changeTextGradient(
+                        controller.changeTextValues(
                           item,
                           gradientEndColor: Color(intValue)
                               .withOpacity(item.gradientEndColor.opacity),

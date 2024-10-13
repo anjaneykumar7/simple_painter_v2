@@ -362,27 +362,11 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     return index;
   }
 
-  void changeTextFontSize(TextItem item, double fontSize) {
-    final newTextItem = item.copyWith(
-      textStyle: item.textStyle.copyWith(fontSize: fontSize),
-    );
-    _changeTextItemValues(newTextItem);
-  }
-
-  void changeTextColor(TextItem item, Color color) {
-    final newTextItem = item.copyWith(
-      textStyle: item.textStyle.copyWith(color: color),
-    );
-    _changeTextItemValues(newTextItem);
-  }
-
-  void changeTextAlign(TextItem item, TextAlign align) {
-    final newTextItem = item.copyWith(textAlign: align);
-    _changeTextItemValues(newTextItem);
-  }
-
-  void changeTextGradient(
+  void changeTextValues(
     TextItem item, {
+    double? fontSize,
+    Color? color,
+    TextAlign? textAlign,
     bool? enableGradientColor,
     Color? gradientStartColor,
     Color? gradientEndColor,
@@ -390,18 +374,33 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     AlignmentGeometry? gradientEnd,
   }) {
     final newTextItem = item.copyWith(
+      textStyle: item.textStyle.copyWith(
+        fontSize: fontSize ?? item.textStyle.fontSize,
+        color: color ?? item.textStyle.color,
+      ),
+      textAlign: textAlign ?? item.textAlign,
       enableGradientColor: enableGradientColor ?? item.enableGradientColor,
       gradientStartColor: gradientStartColor ?? item.gradientStartColor,
       gradientEndColor: gradientEndColor ?? item.gradientEndColor,
       gradientBegin: gradientBegin ?? item.gradientBegin,
       gradientEnd: gradientEnd ?? item.gradientEnd,
     );
-
     _changeTextItemValues(newTextItem);
   }
 
-  void changeImageBoxFit(ImageItem item, BoxFit boxFit) {
-    final newImageItem = item.copyWith(fit: boxFit);
+  void changeImageValues(
+    ImageItem item, {
+    BoxFit? boxFit,
+    BorderRadius? borderRadius,
+    Color? borderColor,
+    double? borderWidth,
+  }) {
+    final newImageItem = item.copyWith(
+      fit: boxFit ?? item.fit,
+      borderRadius: borderRadius ?? item.borderRadius,
+      borderColor: borderColor ?? item.borderColor,
+      borderWidth: borderWidth ?? item.borderWidth,
+    );
     _changeImageItemValues(newImageItem);
   }
 
@@ -412,9 +411,10 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     final index = _getItemIndexFromItem(item);
     final lastItem = items[index] as TextItem;
     final newItem = item.copyWith(
-        size: lastItem.size,
-        position: lastItem.position,
-        rotation: lastItem.rotation);
+      size: lastItem.size,
+      position: lastItem.position,
+      rotation: lastItem.rotation,
+    );
     items
       ..removeAt(index)
       ..insert(index, newItem);

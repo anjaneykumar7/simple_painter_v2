@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/image_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
@@ -106,12 +105,6 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
           enabled: widgetHeight != null,
           child: MeasureSize(
             onChange: (size) {
-              if (refreshValue == false) {
-                setState(() {
-                  refreshValue = true;
-                });
-                return;
-              }
               if (widgetHeight != null) return;
               setState(() {
                 widgetHeight = size.height;
@@ -154,8 +147,20 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
     );
   }
 
-  Widget get image => Image(
-        image: MemoryImage(widget.item.image),
-        fit: widget.item.fit,
+  Widget get image => Container(
+        decoration: BoxDecoration(
+          borderRadius: widget.item.borderRadius,
+          border: Border.all(
+            color: widget.item.borderColor,
+            width: widget.item.borderWidth,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: widget.item.borderRadius,
+          child: Image(
+            image: MemoryImage(widget.item.image),
+            fit: widget.item.fit,
+          ),
+        ),
       );
 }

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class SelectImageDialog extends StatelessWidget {
@@ -39,14 +42,7 @@ class SelectImageDialog extends StatelessWidget {
               child: SingleChildScrollView(
                 child: Wrap(
                   children: [
-                    for (final imageLink in imageLinks)
-                      InkWell(
-                        onTap: () => Navigator.pop(context, imageLink),
-                        child: FractionallySizedBox(
-                          widthFactor: 1 / 4,
-                          child: Image.network(imageLink),
-                        ),
-                      ),
+                    for (final imageLink in imageLinks) getImage(imageLink),
                   ],
                 ),
               ),
@@ -57,6 +53,32 @@ class SelectImageDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ],
+    );
+  }
+
+  Widget getImage(String imageUrl) {
+    return FutureBuilder<Uint8List>(
+      future: Future(() async {
+        final response = await HttpClient().getUrl(Uri.parse(imageUrl));
+        final bytes = await consolidateHttpClientResponseBytes(
+          await response.close(),
+        );
+        final imageUint8List = bytes;
+        return imageUint8List;
+      }),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return GestureDetector(
+            onTap: () => Navigator.pop(context, snapshot.data),
+            child: FractionallySizedBox(
+              widthFactor: 1 / 4,
+              child: Image.memory(snapshot.data!),
+            ),
+          );
+        } else {
+          return const CircularProgressIndicator();
+        }
+      },
     );
   }
 }
