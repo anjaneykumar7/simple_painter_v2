@@ -5,6 +5,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
@@ -50,6 +51,8 @@ class ActionsService {
           _actionErese(currentActions[i] as ActionErase, false);
         } else if (currentActions[i] is ActionTextChangeValue) {
           _actionTextValue(currentActions[i] as ActionTextChangeValue, false);
+        } else if (currentActions[i] is ActionImageChangeValue) {
+          _actionImageValue(currentActions[i] as ActionImageChangeValue, false);
         }
       }
     }
@@ -75,6 +78,8 @@ class ActionsService {
           _actionErese(currentActions[i] as ActionErase, true);
         } else if (currentActions[i] is ActionTextChangeValue) {
           _actionTextValue(currentActions[i] as ActionTextChangeValue, true);
+        } else if (currentActions[i] is ActionImageChangeValue) {
+          _actionImageValue(currentActions[i] as ActionImageChangeValue, true);
         }
       }
     }
@@ -191,9 +196,9 @@ class ActionsService {
 
   void _actionRemoveItem(ActionRemoveItem item, bool isRedo) {
     if (isRedo) {
-      items.insert(item.listIndex, item.item);
-    } else {
       _removeItemFromList(item.item.id);
+    } else {
+      items.insert(item.listIndex, item.item);
     }
   }
 
@@ -214,6 +219,20 @@ class ActionsService {
   }
 
   void _actionTextValue(ActionTextChangeValue item, bool isRedo) {
+    var itemValue = items
+        .where(
+          (element) => element.id == item.currentItem.id,
+        )
+        .first;
+    if (isRedo) {
+      itemValue = item.currentItem;
+    } else {
+      itemValue = item.lastItem;
+    }
+    _updateList(itemValue);
+  }
+
+  void _actionImageValue(ActionImageChangeValue item, bool isRedo) {
     var itemValue = items
         .where(
           (element) => element.id == item.currentItem.id,

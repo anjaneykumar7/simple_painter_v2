@@ -18,7 +18,7 @@ class ImageItem extends PainterItem {
     this.gradientEndColor = Colors.white,
     this.gradientBegin = Alignment.centerLeft,
     this.gradientEnd = Alignment.centerRight,
-    this.gradientOpacity = 1.0,
+    this.gradientOpacity = 0.5,
     this.fit = BoxFit.contain,
     this.borderRadius = BorderRadius.zero,
     this.borderColor = Colors.black,
