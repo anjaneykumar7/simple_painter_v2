@@ -355,6 +355,12 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         actionType: ActionType.removedItem,
       ),
     );
+    clearSelectedItem();
+  }
+
+  void clearSelectedItem() {
+    value.selectedItem = null;
+    value = value.copyWith();
   }
 
   int _getItemIndexFromItem(PainterItem item) {
@@ -366,6 +372,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     TextItem item, {
     double? fontSize,
     Color? color,
+    Color? backgroundColor,
     TextAlign? textAlign,
     bool? enableGradientColor,
     Color? gradientStartColor,
@@ -377,6 +384,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       textStyle: item.textStyle.copyWith(
         fontSize: fontSize ?? item.textStyle.fontSize,
         color: color ?? item.textStyle.color,
+        backgroundColor: backgroundColor ?? item.textStyle.backgroundColor,
       ),
       textAlign: textAlign ?? item.textAlign,
       enableGradientColor: enableGradientColor ?? item.enableGradientColor,

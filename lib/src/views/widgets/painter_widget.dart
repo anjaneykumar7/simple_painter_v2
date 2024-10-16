@@ -59,8 +59,7 @@ class PainterWidget extends StatelessWidget {
       key: controller.repaintBoundaryKey,
       child: GestureDetector(
         onTap: () {
-          controller.value.selectedItem = null;
-          controller.value = controller.value.copyWith();
+          controller.clearSelectedItem();
         },
         child: CustomPaint(
           painter: PainterCustomPaint(
@@ -71,7 +70,11 @@ class PainterWidget extends StatelessWidget {
             backgroundImage: controller.background.image,
           ),
           child: Stack(
-            children: controller.value.items.map(getItemWidget).toList(),
+            children: controller.value.items
+                .map(getItemWidget)
+                .toList()
+                .reversed
+                .toList(),
           ),
         ),
       ),

@@ -18,6 +18,7 @@ class TextOptions extends StatelessWidget {
           title('Text Options'),
           fontSize,
           color,
+          bgColor,
           textAlign,
           gradient,
         ],
@@ -105,6 +106,42 @@ class TextOptions extends StatelessWidget {
                   item,
                   color: Color(intValue)
                       .withOpacity(item.textStyle.color!.opacity),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget get bgColor {
+    final bgColor = ValueNotifier(
+      (item.textStyle.backgroundColor!.red << 16 |
+              item.textStyle.backgroundColor!.green << 8 |
+              item.textStyle.backgroundColor!.blue)
+          .toDouble(),
+    );
+    return Opacity(
+      opacity: item.enableGradientColor ? 0.5 : 1,
+      child: Row(
+        children: [
+          title('Background Color'),
+          const Spacer(),
+          ValueListenableBuilder(
+            valueListenable: bgColor,
+            builder: (context, colorVal, child) => Slider(
+              value: colorVal,
+              max: 0xFFFFFF.toDouble(),
+              thumbColor: Color(colorVal.toInt()).withOpacity(1),
+              onChanged: (value) {
+                bgColor.value = value;
+              },
+              onChangeEnd: (value) {
+                final intValue = value.toInt();
+                controller.changeTextValues(
+                  item,
+                  backgroundColor: Color(intValue).withOpacity(1),
                 );
               },
             ),

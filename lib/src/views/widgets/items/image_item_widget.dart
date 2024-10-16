@@ -121,48 +121,44 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
   }
 
   Widget get imageBody => Container(
-      decoration: BoxDecoration(
-        borderRadius: widget.item.borderRadius,
-        color: widget.item.borderColor,
-        border: Border.all(
-          color: widget.item.borderColor,
-          width: widget.item.borderWidth,
-        ),
-      ),
-      child: widget.item.enableGradientColor
-          ? Stack(
-              children: [
-                Positioned.fill(child: image),
-                if (widget.item.gradientOpacity > 0)
-                  Positioned.fill(
-                    child: Opacity(
-                      opacity: widget.item.gradientOpacity,
-                      child: ShaderMask(
-                        blendMode: BlendMode.srcIn,
-                        shaderCallback: (Rect bounds) {
-                          return LinearGradient(
-                            begin: widget.item.gradientBegin,
-                            end: widget.item.gradientEnd,
-                            colors: [
-                              widget.item.gradientStartColor,
-                              widget.item.gradientEndColor,
-                            ],
-                            stops: const [0.0, 1.0],
-                          ).createShader(bounds);
-                        },
-                        child: image,
-                      ),
-                    ),
-                  ),
-              ],
-            )
-          : ClipRRect(
-              borderRadius: widget.item.borderRadius,
-              child: Image(
-                image: MemoryImage(widget.item.image),
-                fit: widget.item.fit,
+          child: Stack(
+        children: [
+          Positioned.fill(child: image),
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: widget.item.borderRadius,
+                border: Border.all(
+                  color: widget.item.borderColor,
+                  width: widget.item.borderWidth,
+                ),
               ),
-            ));
+            ),
+          ),
+          if (widget.item.gradientOpacity > 0 &&
+              widget.item.enableGradientColor)
+            Positioned.fill(
+              child: Opacity(
+                opacity: widget.item.gradientOpacity,
+                child: ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (Rect bounds) {
+                    return LinearGradient(
+                      begin: widget.item.gradientBegin,
+                      end: widget.item.gradientEnd,
+                      colors: [
+                        widget.item.gradientStartColor,
+                        widget.item.gradientEndColor,
+                      ],
+                      stops: const [0.0, 1.0],
+                    ).createShader(bounds);
+                  },
+                  child: image,
+                ),
+              ),
+            ),
+        ],
+      ));
 
   Widget get image => ClipRRect(
         borderRadius: widget.item.borderRadius,

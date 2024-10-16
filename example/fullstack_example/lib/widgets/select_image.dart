@@ -34,9 +34,16 @@ class SelectImageDialog extends StatelessWidget {
       'https://picsum.photos/220',
     ];
     return AlertDialog(
-      title: const Text('Select Image'),
+      backgroundColor: Colors.grey.shade900,
+      title: const Text(
+        'Select Image',
+        style: TextStyle(color: Colors.white),
+      ),
       content: imageLinks.isEmpty
-          ? const Text('No images')
+          ? const Text(
+              'No images',
+              style: TextStyle(color: Colors.white),
+            )
           : FractionallySizedBox(
               heightFactor: 0.5,
               child: SingleChildScrollView(
@@ -49,7 +56,10 @@ class SelectImageDialog extends StatelessWidget {
             ),
       actions: [
         TextButton(
-          child: const Text('Cancel'),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.white),
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ],

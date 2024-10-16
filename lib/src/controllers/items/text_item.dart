@@ -9,7 +9,8 @@ class TextItem extends PainterItem {
     required this.text,
     required super.position,
     required super.layer,
-    this.textStyle = const TextStyle(fontSize: 16, color: Colors.black),
+    this.textStyle = const TextStyle(
+        fontSize: 16, color: Colors.black, backgroundColor: Colors.transparent),
     this.textAlign = TextAlign.center,
     this.enableGradientColor = false,
     this.gradientStartColor = Colors.black,

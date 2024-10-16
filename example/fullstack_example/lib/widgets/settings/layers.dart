@@ -106,18 +106,29 @@ class Layers extends StatelessWidget {
         builder: (context, value, child) => Column(
           children: [
             title(),
-            SizedBox(
-              height: 120,
-              child: ListView.builder(
-                itemCount: value.items.length,
-                itemBuilder: (context, index) {
-                  return section(
-                    value.items[index].layer.title,
-                    value.items[index],
-                  );
-                },
+            if (value.items.isEmpty)
+              SizedBox(
+                height: 100,
+                child: Center(
+                  child: Text(
+                    'No layers',
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 20),
+                  ),
+                ),
               ),
-            ),
+            if (value.items.isNotEmpty)
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  itemCount: value.items.length,
+                  itemBuilder: (context, index) {
+                    return section(
+                      value.items[index].layer.title,
+                      value.items[index],
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:example/widgets/changes_list.dart';
-import 'package:example/widgets/layers.dart';
+import 'package:example/widgets/settings/layers.dart';
 import 'package:example/widgets/options/options.dart';
 import 'package:example/widgets/select_image.dart';
+import 'package:example/widgets/settings/settings.dart';
+import 'package:example/widgets/settings/shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -21,6 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           iconTheme: IconThemeData(color: Colors.white),
@@ -43,6 +46,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   bool ifOpenChangeList = true;
   bool openSettings = false;
   bool openLayers = false;
+  bool openShapes = false;
   @override
   void initState() {
     super.initState();
@@ -97,85 +101,26 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   }
 
   Widget get settings {
-    Widget settings() {
-      Widget buttons(IconData icon, String text, void Function() onTap) {
-        return GestureDetector(
-          onTap: onTap,
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(5, 10, 5, 6),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  color: Colors.grey,
-                  size: 30,
-                ),
-                Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
-
-      return SizedBox(
-        height: 90,
-        child: Row(
-          children: [
-            const SizedBox(
-              width: 10,
-            ),
-            buttons(PhosphorIconsRegular.stack, 'Layers', () {
-              setState(() {
-                openLayers = !openLayers;
-              });
-            }),
-          ],
-        ),
-      );
-    }
-
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 700),
-      curve: Curves.fastLinearToSlowEaseIn,
-      height: openSettings
-          ? openLayers
-              ? 170
-              : 90
-          : 0,
-      child: ClipRect(
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF232323),
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ),
-          child: SingleChildScrollView(
-            child: openLayers
-                ? Layers(
-                    controller: controller,
-                    closeLayers: () {
-                      setState(() {
-                        openLayers = !openLayers;
-                      });
-                    },
-                  )
-                : settings(),
-          ),
-        ),
-      ),
+    return Settings(
+      controller: controller,
+      openSettings: openSettings,
+      openLayers: openLayers,
+      openShapes: openShapes,
+      changeSettings: ({bool value = false}) {
+        setState(() {
+          openSettings = value;
+        });
+      },
+      changeLayers: ({bool value = false}) {
+        setState(() {
+          openLayers = value;
+        });
+      },
+      changeShapes: ({bool value = false}) {
+        setState(() {
+          openShapes = value;
+        });
+      },
     );
   }
 
@@ -240,7 +185,23 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               });
             },
           ),
-          // Undo action
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue),
+                child: const Icon(
+                  PhosphorIconsRegular.image,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -293,10 +254,6 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                 controller.addImageUint8List(imageUint8List);
                 setState(() {});
               },
-            ),
-            button(
-              PhosphorIconsRegular.polygon,
-              () {},
             ),
             button(
               PhosphorIconsRegular.listBullets,
