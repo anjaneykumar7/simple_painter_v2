@@ -136,6 +136,10 @@ class _TextItemWidgetState extends State<TextItemWidget> {
   Widget get text => Text(
         widget.item.text,
         textAlign: widget.item.textAlign,
-        style: widget.item.textStyle,
+        style: widget.item.textStyle.copyWith(
+          backgroundColor: widget.item.enableGradientColor
+              ? Colors.transparent
+              : widget.item.textStyle.backgroundColor,
+        ),
       );
 }

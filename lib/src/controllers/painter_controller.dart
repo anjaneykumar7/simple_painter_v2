@@ -8,11 +8,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
-import 'package:flutter_painter/src/controllers/items/image_item.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/items/text_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
+import 'package:flutter_painter/src/controllers/items/shape_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
@@ -22,7 +21,6 @@ import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart'
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
-import 'package:flutter_painter/src/controllers/settings/painter_settings.dart';
 import 'package:flutter_painter/src/helpers/actions_service.dart';
 import 'package:flutter_painter/src/helpers/layer_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
@@ -356,6 +354,29 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       ),
     );
     clearSelectedItem();
+  }
+
+  void addShape(ShapeType shapeType) {
+    final shapeItem = ShapeItem(
+      shapeType: shapeType,
+      position: const PositionModel(),
+      layer: LayerSettings(
+        title: 'Shape (${value.items.whereType<ShapeItem>().length})',
+        index: value.items.length,
+      ),
+    );
+    value = value.copyWith(
+      items: value.items.toList()..add(shapeItem),
+    );
+    addAction(
+      ActionAddItem(
+        item: shapeItem,
+        listIndex: value.items.length - 1,
+        timestamp: DateTime.now(),
+        actionType: ActionType.addedShapeItem,
+      ),
+    );
+    value.selectedItem = shapeItem;
   }
 
   void clearSelectedItem() {

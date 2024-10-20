@@ -17,37 +17,37 @@ class Shapes extends StatelessWidget {
       {
         'shape': ShapeType.line,
         'title': 'Line',
-        'icon': PhosphorIconsRegular.lineVertical
+        'icon': PhosphorIconsRegular.lineVertical,
       },
       {
         'shape': ShapeType.arrow,
         'title': 'Arrow',
-        'icon': PhosphorIconsRegular.arrowUpRight
+        'icon': PhosphorIconsRegular.arrowUpRight,
       },
       {
         'shape': ShapeType.doubleArrow,
         'title': 'Double Arrow',
-        'icon': PhosphorIconsRegular.arrowsHorizontal
+        'icon': PhosphorIconsRegular.arrowsHorizontal,
       },
       {
         'shape': ShapeType.rectangle,
         'title': 'Rectangle',
-        'icon': PhosphorIconsRegular.rectangle
+        'icon': PhosphorIconsRegular.rectangle,
       },
       {
         'shape': ShapeType.triangle,
         'title': 'Triangle',
-        'icon': PhosphorIconsRegular.triangle
+        'icon': PhosphorIconsRegular.triangle,
       },
       {
         'shape': ShapeType.star,
         'title': 'Star',
-        'icon': PhosphorIconsRegular.star
+        'icon': PhosphorIconsRegular.star,
       },
       {
         'shape': ShapeType.oval,
         'title': 'Oval',
-        'icon': PhosphorIconsRegular.circle
+        'icon': PhosphorIconsRegular.circle,
       },
     ];
     return SizedBox(
@@ -79,7 +79,9 @@ class Shapes extends StatelessWidget {
 
   Widget buttons(String title, IconData icon, ShapeType shape) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        controller.addShape(shape);
+      },
       child: Container(
         margin: const EdgeInsets.fromLTRB(20, 10, 5, 6),
         padding: const EdgeInsets.only(top: 5),

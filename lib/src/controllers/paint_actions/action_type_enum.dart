@@ -1,6 +1,7 @@
 enum ActionType {
   addedTextItem,
   addedImageItem,
+  addedShapeItem,
   positionItem,
   sizeItem,
   rotationItem,

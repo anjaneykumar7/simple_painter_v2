@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:flutter_painter/src/controllers/items/shape_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
@@ -8,8 +11,8 @@ import 'package:flutter_painter/src/models/size_model.dart';
 import 'package:flutter_painter/src/views/widgets/measure_size.dart';
 import 'package:flutter_painter/src/views/widgets/painter_container.dart';
 
-class ImageItemWidget extends StatefulWidget {
-  const ImageItemWidget({
+class ShapeItemWidget extends StatefulWidget {
+  const ShapeItemWidget({
     required this.item,
     required this.height,
     required this.painterController,
@@ -18,7 +21,7 @@ class ImageItemWidget extends StatefulWidget {
     this.onSizeChange,
     this.onRotationChange,
   });
-  final ImageItem item;
+  final ShapeItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
   final void Function(PositionModel, SizeModel)? onSizeChange;
@@ -26,17 +29,13 @@ class ImageItemWidget extends StatefulWidget {
 
   final PainterController painterController;
   @override
-  State<ImageItemWidget> createState() => _ImageItemWidgetState();
+  State<ShapeItemWidget> createState() => _ShapeItemWidgetState();
 }
 
-class _ImageItemWidgetState extends State<ImageItemWidget> {
+class _ShapeItemWidgetState extends State<ShapeItemWidget> {
   double? widgetHeight;
   ValueNotifier<PositionModel> position =
       ValueNotifier(const PositionModel(x: 50, y: 50));
-  bool refreshValue =
-      false; //image widgetı ilk çalıştığında uint8list daha işlenmediğinden
-  //height 0 döndürüyor, doğru şekilde height ölçmesi için MeasureSize
-  //widgetında ki onChange methodunu bu değişken ile yeniden çalıştırıyorum
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
@@ -103,6 +102,7 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
             );
           },
           enabled: widgetHeight != null,
+          centerChild: true,
           child: MeasureSize(
             onChange: (size) {
               if (widgetHeight != null) return;
@@ -112,7 +112,7 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
             },
             child: SizedBox(
               width: double.infinity,
-              child: imageBody,
+              child: shape,
             ),
           ),
         );
@@ -120,50 +120,107 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
     );
   }
 
-  Widget get imageBody => Stack(
-        children: [
-          Positioned.fill(child: image),
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: widget.item.borderRadius,
-                border: Border.all(
-                  color: widget.item.borderColor,
-                  width: widget.item.borderWidth,
-                ),
+  Widget get shape => SizedBox(
+        height: 50,
+        child: LayoutBuilder(
+          // Bu widget, mevcut alanı kullanmak için boyut belirleyecek
+          builder: (context, constraints) {
+            return CustomPaint(
+              size: Size(
+                constraints.maxWidth,
+                constraints.maxHeight,
+              ), // Expanded boyutlarına göre çizim yapacak
+              painter: ArrowPainter(
+                arrowColor: Colors.black,
+                arrowThickness: 2,
+                angle: 0,
+                width: constraints.maxWidth,
+                height: constraints.maxHeight,
               ),
-            ),
-          ),
-          if (widget.item.gradientOpacity > 0 &&
-              widget.item.enableGradientColor)
-            Positioned.fill(
-              child: Opacity(
-                opacity: widget.item.gradientOpacity,
-                child: ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (Rect bounds) {
-                    return LinearGradient(
-                      begin: widget.item.gradientBegin,
-                      end: widget.item.gradientEnd,
-                      colors: [
-                        widget.item.gradientStartColor,
-                        widget.item.gradientEndColor,
-                      ],
-                      stops: const [0.0, 1.0],
-                    ).createShader(bounds);
-                  },
-                  child: image,
-                ),
-              ),
-            ),
-        ],
-      );
-
-  Widget get image => ClipRRect(
-        borderRadius: widget.item.borderRadius,
-        child: Image(
-          image: MemoryImage(widget.item.image),
-          fit: widget.item.fit,
+            );
+          },
         ),
       );
+}
+
+// class LinePainter extends CustomPainter {
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     final paint = Paint()
+//       ..color = Colors.black
+//       ..strokeWidth = 2.0;
+
+//     final startPoint = Offset(0, size.height / 2);
+//     final endPoint = Offset(size.width, size.height / 2);
+
+//     canvas.drawLine(startPoint, endPoint, paint);
+//   }
+
+//   @override
+//   bool shouldRepaint(covariant CustomPainter oldDelegate) {
+//     return false;
+//   }
+// }
+
+class ArrowPainter extends CustomPainter {
+  // Yükseklik
+
+  ArrowPainter({
+    required this.arrowColor,
+    required this.arrowThickness,
+    required this.angle,
+    required this.width,
+    required this.height,
+  });
+  final Color arrowColor;
+  final double arrowThickness;
+  final double angle; // Radyan cinsinden yön (0 = sağa, pi/2 = yukarı vb.)
+  final double width; // Genişlik
+  final double height;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = arrowColor
+      ..strokeWidth = arrowThickness
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Ok uzunluğu: genişlik ve yükseklikten daha küçük olanın %60'ı kadar
+    final arrowLength = width;
+
+    // Oku soldan başlayacak şekilde başlat
+    final startPoint = Offset(0, height / 2);
+    final endPoint = Offset(
+      startPoint.dx + arrowLength * cos(angle),
+      startPoint.dy + arrowLength * sin(angle),
+    );
+
+    // Ana gövde çizimi
+    canvas.drawLine(startPoint, endPoint, paint);
+
+    // Okun uçlarını çizmek için iki kısa çizgi (ok başı)
+    final headSize =
+        arrowLength * 0.2; // Okun başının boyutu, ok uzunluğuna bağlı
+    const angleOffset = pi / 6; // Ok başının açısı
+
+    final arrowLeft = Offset(
+      endPoint.dx + headSize * cos(angle + pi - angleOffset),
+      endPoint.dy + headSize * sin(angle + pi - angleOffset),
+    );
+    final arrowRight = Offset(
+      endPoint.dx + headSize * cos(angle + pi + angleOffset),
+      endPoint.dy + headSize * sin(angle + pi + angleOffset),
+    );
+
+    // Okun başındaki iki çizgi
+    canvas
+      ..drawLine(endPoint, arrowLeft, paint)
+      ..drawLine(endPoint, arrowRight, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true; // Her durumda yeniden çizer
+  }
 }

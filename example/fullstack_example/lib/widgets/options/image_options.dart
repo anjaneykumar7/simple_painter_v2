@@ -268,8 +268,10 @@ class ImageOptions extends StatelessWidget {
                         gradientOpacity.value = value;
                       },
                       onChangeEnd: (value) {
-                        controller.changeImageValues(item,
-                            gradientOpacity: value);
+                        controller.changeImageValues(
+                          item,
+                          gradientOpacity: value,
+                        );
                       },
                     ),
                   ),

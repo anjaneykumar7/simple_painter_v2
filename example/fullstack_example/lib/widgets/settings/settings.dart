@@ -6,15 +6,16 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Settings extends StatelessWidget {
-  const Settings(
-      {required this.controller,
-      required this.openSettings,
-      required this.openLayers,
-      required this.openShapes,
-      required this.changeSettings,
-      required this.changeLayers,
-      required this.changeShapes,
-      super.key});
+  const Settings({
+    required this.controller,
+    required this.openSettings,
+    required this.openLayers,
+    required this.openShapes,
+    required this.changeSettings,
+    required this.changeLayers,
+    required this.changeShapes,
+    super.key,
+  });
   final PainterController controller;
   final bool openSettings;
   final bool openLayers;

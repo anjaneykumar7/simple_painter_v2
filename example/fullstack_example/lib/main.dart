@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:example/widgets/changes_list.dart';
-import 'package:example/widgets/settings/layers.dart';
 import 'package:example/widgets/options/options.dart';
 import 'package:example/widgets/select_image.dart';
 import 'package:example/widgets/settings/settings.dart';
-import 'package:example/widgets/settings/shapes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -193,8 +191,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                 height: 40,
                 width: 40,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.blue),
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.blue,
+                ),
                 child: const Icon(
                   PhosphorIconsRegular.image,
                   color: Colors.white,
