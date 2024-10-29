@@ -45,8 +45,8 @@ class Shapes extends StatelessWidget {
         'icon': PhosphorIconsRegular.star,
       },
       {
-        'shape': ShapeType.oval,
-        'title': 'Oval',
+        'shape': ShapeType.circle,
+        'title': 'Circle',
         'icon': PhosphorIconsRegular.circle,
       },
     ];

@@ -5,5 +5,5 @@ enum ShapeType {
   rectangle,
   triangle,
   star,
-  oval,
+  circle,
 }
