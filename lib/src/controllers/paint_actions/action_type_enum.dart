@@ -11,4 +11,5 @@ enum ActionType {
   erase,
   changeTextValue,
   changeImageValue,
+  changeShapeValue,
 }

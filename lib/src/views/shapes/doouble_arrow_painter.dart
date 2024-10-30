@@ -6,13 +6,9 @@ class DoubleArrowPainter extends CustomPainter {
   DoubleArrowPainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
   });
   final Color lineColor;
   final double thickness;
-  final double width;
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -24,11 +20,11 @@ class DoubleArrowPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     // Ok uzunluğu: genişlik ve yükseklikten daha küçük olanın %60'ı kadar
-    final arrowLength = width;
+    final arrowLength = size.width;
 
     // Okları çizecek başlangıç noktaları
-    final startPointLeft = Offset(0, height / 2);
-    final startPointRight = Offset(width, height / 2);
+    final startPointLeft = Offset(0, size.height / 2);
+    final startPointRight = Offset(size.width, size.height / 2);
 
     // Sağ tarafa olan ok
     final endPointRight = Offset(
@@ -50,27 +46,34 @@ class DoubleArrowPainter extends CustomPainter {
       ..drawLine(startPointRight, endPointLeft, paint);
 
     // Ok uçları için baş boyutu ve açı farkı
-    final headSize = arrowLength * 0.2; // Okun başının boyutu
+    var headHeight = size.height; // Okun başının boyutu, ok yüksekliğine bağlı
     const angleOffset = pi / 6; // Ok başının açısı
 
+    // Genişliği hesaplıyoruz.
+    var headWidth = headHeight * cos(angleOffset);
+    if (headWidth > arrowLength / 2.1) {
+      // .1 eklenmesi iki okun tamamen birleşmemesi için
+      headHeight = arrowLength / 2.1 / cos(angleOffset);
+      headWidth = arrowLength;
+    }
     // Sağ taraf ok başı
     final arrowRightHeadLeft = Offset(
-      endPointRight.dx + headSize * cos(angle + pi - angleOffset),
-      endPointRight.dy + headSize * sin(angle + pi - angleOffset),
+      endPointRight.dx + headHeight * cos(angle + pi - angleOffset),
+      endPointRight.dy + headHeight * sin(angle + pi - angleOffset),
     );
     final arrowRightHeadRight = Offset(
-      endPointRight.dx + headSize * cos(angle + pi + angleOffset),
-      endPointRight.dy + headSize * sin(angle + pi + angleOffset),
+      endPointRight.dx + headHeight * cos(angle + pi + angleOffset),
+      endPointRight.dy + headHeight * sin(angle + pi + angleOffset),
     );
 
     // Sol taraf ok başı
     final arrowLeftHeadLeft = Offset(
-      endPointLeft.dx - headSize * cos(angle + pi - angleOffset),
-      endPointLeft.dy - headSize * sin(angle + pi - angleOffset),
+      endPointLeft.dx - headHeight * cos(angle + pi - angleOffset),
+      endPointLeft.dy - headHeight * sin(angle + pi - angleOffset),
     );
     final arrowLeftHeadRight = Offset(
-      endPointLeft.dx - headSize * cos(angle + pi + angleOffset),
-      endPointLeft.dy - headSize * sin(angle + pi + angleOffset),
+      endPointLeft.dx - headHeight * cos(angle + pi + angleOffset),
+      endPointLeft.dy - headHeight * sin(angle + pi + angleOffset),
     );
 
     // Sağ taraf ok başını çiz

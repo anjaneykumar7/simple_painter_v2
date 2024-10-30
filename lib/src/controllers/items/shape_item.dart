@@ -48,4 +48,14 @@ class ShapeItem extends PainterItem {
       enabled: enabled ?? this.enabled,
     );
   }
+
+  static SizeModel defaultSize(ShapeType type) {
+    if (type == ShapeType.line ||
+        type == ShapeType.arrow ||
+        type == ShapeType.doubleArrow) {
+      return const SizeModel(width: 100, height: 30);
+    } else {
+      return const SizeModel(width: 100, height: 100);
+    }
+  }
 }

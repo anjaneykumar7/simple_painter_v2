@@ -9,9 +9,6 @@ class PaintAction extends Equatable {
   final ActionType actionType;
   final DateTime timestamp;
 
-  void undo() {}
-  void redo() {}
-
   @override
   List<Object> get props => [actionType, timestamp];
 }

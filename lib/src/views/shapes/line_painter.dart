@@ -4,14 +4,10 @@ class LinePainter extends CustomPainter {
   LinePainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
   });
 
   final Color lineColor;
   final double thickness;
-  final double width;
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -20,8 +16,8 @@ class LinePainter extends CustomPainter {
       ..strokeWidth = thickness;
 
     // Çizginin başlangıç ve bitiş noktaları
-    final startPoint = Offset(0, height / 2);
-    final endPoint = Offset(width, height / 2);
+    final startPoint = Offset(0, size.height / 2);
+    final endPoint = Offset(size.width, size.height / 2);
 
     // Çizgiyi çiz
     canvas.drawLine(startPoint, endPoint, paint);
@@ -32,5 +28,5 @@ class LinePainter extends CustomPainter {
     return false;
   }
 
-  Size get size => Size(width, height);
+  Size get size => Size(size.width, size.height);
 }

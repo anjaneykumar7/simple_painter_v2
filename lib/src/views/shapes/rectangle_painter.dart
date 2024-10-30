@@ -4,16 +4,12 @@ class RectanglePainter extends CustomPainter {
   RectanglePainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
     required this.backgroundColor,
   });
 
   final Color lineColor;
   final Color backgroundColor;
   final double thickness;
-  final double width;
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -29,7 +25,7 @@ class RectanglePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    final rect = Rect.fromLTWH(0, 0, width, height);
+    final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
     // Arka planı doldur
     canvas

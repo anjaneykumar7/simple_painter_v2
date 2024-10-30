@@ -125,24 +125,25 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   PreferredSize get appBar {
     return PreferredSize(
       preferredSize: const Size(double.infinity, kToolbarHeight),
-      child: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          // Delete the selected drawable
-          IconButton(
-            icon: const Icon(
-              PhosphorIconsRegular.listNumbers,
+      child: ValueListenableBuilder(
+        valueListenable: controller,
+        builder: (context, value, child) => AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            // Delete the selected drawable
+            IconButton(
+              icon: const Icon(
+                PhosphorIconsRegular.listNumbers,
+              ),
+              onPressed: () {
+                setState(() {
+                  ifOpenChangeList = !ifOpenChangeList;
+                });
+              },
             ),
-            onPressed: () {
-              setState(() {
-                ifOpenChangeList = !ifOpenChangeList;
-              });
-            },
-          ),
-          ValueListenableBuilder(
-            valueListenable: controller,
-            builder: (context, value, child) => IconButton(
+
+            IconButton(
               icon: Icon(
                 PhosphorIconsRegular.trash,
                 color: controller.value.selectedItem != null
@@ -151,57 +152,57 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               ),
               onPressed: () {
                 setState(() {
-                  controller.removeSelectedItem();
+                  controller.removeItem();
                 });
               },
             ),
-          ),
-          IconButton(
-            icon: Icon(
-              PhosphorIconsRegular.arrowCounterClockwise,
-              color: (controller.changeActions.value.index == -1)
-                  ? Colors.grey
-                  : Colors.white,
+            IconButton(
+              icon: Icon(
+                PhosphorIconsRegular.arrowCounterClockwise,
+                color: (controller.changeActions.value.index == -1)
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  controller.undo();
+                });
+              },
             ),
-            onPressed: () {
-              setState(() {
-                controller.undo();
-              });
-            },
-          ),
-          IconButton(
-            icon: Icon(
-              PhosphorIconsRegular.arrowClockwise,
-              color: (controller.changeActions.value.index ==
-                      controller.changeActions.value.changeList.length - 1)
-                  ? Colors.grey
-                  : Colors.white,
+            IconButton(
+              icon: Icon(
+                PhosphorIconsRegular.arrowClockwise,
+                color: (controller.changeActions.value.index ==
+                        controller.changeActions.value.changeList.length - 1)
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  controller.redo();
+                });
+              },
             ),
-            onPressed: () {
-              setState(() {
-                controller.redo();
-              });
-            },
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: GestureDetector(
-              onTap: () {},
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.blue,
-                ),
-                child: const Icon(
-                  PhosphorIconsRegular.image,
-                  color: Colors.white,
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: GestureDetector(
+                onTap: () {},
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.blue,
+                  ),
+                  child: const Icon(
+                    PhosphorIconsRegular.image,
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

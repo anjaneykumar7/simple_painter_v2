@@ -1,27 +1,26 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 class StarPainter extends CustomPainter {
   StarPainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
     required this.backgroundColor,
   });
 
   final Color lineColor;
   final Color backgroundColor;
   final double thickness;
-  final double width;
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(width / 2, height / 2);
-    final outerRadius = min(width, height) / 2;
-    final innerRadius = outerRadius / 2.5;
+    final center = Offset(size.width / 2, size.height / 2);
+
+    // x ve y yönünde yarıçapları ayrı ayrı hesapla
+    final outerRadiusX = size.width / 2;
+    final outerRadiusY = size.height / 2;
+    final innerRadiusX = outerRadiusX / 2.5;
+    final innerRadiusY = outerRadiusY / 2.5;
     const angleStep = (2 * pi) / 5;
 
     // Arka plan için dolgu boyası
@@ -40,12 +39,12 @@ class StarPainter extends CustomPainter {
 
     // Yıldızın köşe noktalarını belirleyerek path oluştur
     for (var i = 0; i < 5; i++) {
-      final outerX = center.dx + outerRadius * cos(i * angleStep - pi / 2);
-      final outerY = center.dy + outerRadius * sin(i * angleStep - pi / 2);
+      final outerX = center.dx + outerRadiusX * cos(i * angleStep - pi / 2);
+      final outerY = center.dy + outerRadiusY * sin(i * angleStep - pi / 2);
       final innerX =
-          center.dx + innerRadius * cos((i + 0.5) * angleStep - pi / 2);
+          center.dx + innerRadiusX * cos((i + 0.5) * angleStep - pi / 2);
       final innerY =
-          center.dy + innerRadius * sin((i + 0.5) * angleStep - pi / 2);
+          center.dy + innerRadiusY * sin((i + 0.5) * angleStep - pi / 2);
 
       if (i == 0) {
         path.moveTo(outerX, outerY);
@@ -59,7 +58,6 @@ class StarPainter extends CustomPainter {
     // Arka plan rengini doldur
     canvas
       ..drawPath(path, backgroundPaint)
-
       // Yıldızın kenar çizgilerini çiz
       ..drawPath(path, borderPaint);
   }

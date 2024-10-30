@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/custom_paint.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/items/shape_item.dart';
 import 'package:flutter_painter/src/views/widgets/items/image_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/shape_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';

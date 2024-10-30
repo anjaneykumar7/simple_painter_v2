@@ -56,7 +56,7 @@ class Layers extends StatelessWidget {
               PhosphorIconsRegular.trash,
               Colors.red,
               () {
-                // Add your onTap functionality here
+                controller.removeItem(layerIndex: item.layer.index);
               },
             ),
             iconButton(

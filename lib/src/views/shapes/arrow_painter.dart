@@ -8,13 +8,9 @@ class ArrowPainter extends CustomPainter {
   ArrowPainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
   });
   final Color lineColor;
   final double thickness;
-  final double width; // Genişlik
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -26,10 +22,10 @@ class ArrowPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     // Ok uzunluğu: genişlik ve yükseklikten daha küçük olanın %60'ı kadar
-    final arrowLength = width;
+    final arrowLength = size.width;
 
     // Oku soldan başlayacak şekilde başlat
-    final startPoint = Offset(0, height / 2);
+    final startPoint = Offset(0, size.height / 2);
     final endPoint = Offset(
       startPoint.dx + arrowLength * cos(angle),
       startPoint.dy + arrowLength * sin(angle),
@@ -39,17 +35,23 @@ class ArrowPainter extends CustomPainter {
     canvas.drawLine(startPoint, endPoint, paint);
 
     // Okun uçlarını çizmek için iki kısa çizgi (ok başı)
-    final headSize =
-        arrowLength * 0.2; // Okun başının boyutu, ok uzunluğuna bağlı
+    var headHeight = size.height; // Okun başının boyutu, ok yüksekliğine bağlı
     const angleOffset = pi / 6; // Ok başının açısı
 
+    // Genişliği hesaplıyoruz.
+    var headWidth = headHeight * cos(angleOffset);
+    if (headWidth > arrowLength) {
+      headHeight = arrowLength / cos(angleOffset);
+      headWidth = arrowLength;
+    }
+
     final arrowLeft = Offset(
-      endPoint.dx + headSize * cos(angle + pi - angleOffset),
-      endPoint.dy + headSize * sin(angle + pi - angleOffset),
+      endPoint.dx + headHeight * cos(angle + pi - angleOffset),
+      endPoint.dy + headHeight * sin(angle + pi - angleOffset),
     );
     final arrowRight = Offset(
-      endPoint.dx + headSize * cos(angle + pi + angleOffset),
-      endPoint.dy + headSize * sin(angle + pi + angleOffset),
+      endPoint.dx + headHeight * cos(angle + pi + angleOffset),
+      endPoint.dy + headHeight * sin(angle + pi + angleOffset),
     );
 
     // Okun başındaki iki çizgi

@@ -1,4 +1,5 @@
 import 'package:example/widgets/options/image_options.dart';
+import 'package:example/widgets/options/shape_options.dart';
 import 'package:example/widgets/options/text_options.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
@@ -21,6 +22,11 @@ class Options extends StatelessWidget {
           return ImageOptions(
             controller: controller,
             item: value.selectedItem! as ImageItem,
+          );
+        } else if (value.selectedItem is ShapeItem) {
+          return ShapeOptions(
+            controller: controller,
+            item: value.selectedItem! as ShapeItem,
           );
         } else {
           return const SizedBox.shrink();

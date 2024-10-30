@@ -467,14 +467,7 @@ class _PainterContainerState extends State<PainterContainer> {
   }
 
   void initializeWidgetSize(double stackWidth, double stackHeight) {
-    if (initializeSize == false &&
-        (widget.minimumContainerHeight != null ||
-            widget.minimumContainerWidth != null)) {
-      minimumContainerHeight =
-          widget.minimumContainerHeight ?? minimumContainerHeight;
-      minimumContainerWidth =
-          widget.minimumContainerWidth ?? minimumContainerWidth;
-
+    void setValue() {
       containerSize = containerSize.copyWith(
         height: minimumContainerHeight,
       );
@@ -483,6 +476,28 @@ class _PainterContainerState extends State<PainterContainer> {
         x: stackWidth / 2 - containerSize.width / 2,
         y: stackHeight / 2 - containerSize.height / 2,
       );
+    }
+
+    if (initializeSize == false &&
+        (widget.minimumContainerHeight != null ||
+            widget.minimumContainerWidth != null)) {
+      minimumContainerHeight =
+          widget.minimumContainerHeight ?? minimumContainerHeight;
+      minimumContainerWidth =
+          widget.minimumContainerWidth ?? minimumContainerWidth;
+      setValue();
+      initializeSize = true;
+    } else if (initializeSize == false) {
+      containerSize = containerSize.copyWith(
+        height: minimumContainerHeight,
+        width: minimumContainerWidth,
+      );
+      oldContainerSize = containerSize;
+      stackPosition = stackPosition.copyWith(
+        x: stackWidth / 2 - containerSize.width / 2,
+        y: stackHeight / 2 - containerSize.height / 2,
+      );
+      setValue();
       initializeSize = true;
     }
   }

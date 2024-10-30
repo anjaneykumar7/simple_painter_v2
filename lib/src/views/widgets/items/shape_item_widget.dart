@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/shape_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
@@ -44,7 +43,6 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
 
   @override
   Widget build(BuildContext context) {
-    initHeight();
     return ValueListenableBuilder(
       valueListenable: position,
       builder: (context, value, child) {
@@ -52,7 +50,8 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
           selectedItem: widget.painterController.value.selectedItem != null &&
               widget.painterController.value.selectedItem?.id == widget.item.id,
           height: widget.height,
-          minimumContainerHeight: widgetHeight,
+          minimumContainerHeight: 1,
+          minimumContainerWidth: 1,
           position: widget.item.position,
           rotateAngle: widget.item.rotation,
           size: widget.item.size,
@@ -127,14 +126,6 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
     );
   }
 
-  void initHeight() {
-    if (widgetHeight == null && widget.item.shapeType == ShapeType.line ||
-        widget.item.shapeType == ShapeType.arrow ||
-        widget.item.shapeType == ShapeType.doubleArrow) {
-      widgetHeight = 30;
-    }
-  }
-
   Widget get shape => SizedBox(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -165,54 +156,40 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
     if (widget.item.shapeType == ShapeType.arrow) {
       return ArrowPainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
       );
     } else if (widget.item.shapeType == ShapeType.doubleArrow) {
       return DoubleArrowPainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
       );
     } else if (widget.item.shapeType == ShapeType.rectangle) {
       return RectanglePainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
         backgroundColor: backgroundColor,
       );
     } else if (widget.item.shapeType == ShapeType.triangle) {
       return TrianglePainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
         backgroundColor: backgroundColor,
       );
     } else if (widget.item.shapeType == ShapeType.star) {
       return StarPainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
         backgroundColor: backgroundColor,
       );
     } else if (widget.item.shapeType == ShapeType.circle) {
       return CirclePainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
         backgroundColor: backgroundColor,
       );
     } else {
       return LinePainter(
         thickness: thickness,
-        width: width,
-        height: height,
         lineColor: lineColor,
       );
     }

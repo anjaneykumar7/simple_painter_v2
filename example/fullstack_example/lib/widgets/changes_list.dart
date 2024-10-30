@@ -85,6 +85,8 @@ class ChangesList extends StatelessWidget {
         return 'Change text options';
       case ActionType.changeImageValue:
         return 'Change image options';
+      case ActionType.changeShapeValue:
+        return 'Change shape options';
       case ActionType.addedShapeItem:
         return 'Added shape';
     }

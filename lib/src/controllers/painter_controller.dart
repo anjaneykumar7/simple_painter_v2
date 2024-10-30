@@ -11,17 +11,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/items/shape_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
 import 'package:flutter_painter/src/helpers/actions_service.dart';
+import 'package:flutter_painter/src/helpers/change_item_values_service.dart';
 import 'package:flutter_painter/src/helpers/layer_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
@@ -230,6 +228,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           title: 'Image (${value.items.whereType<ImageItem>().length})',
           index: value.items.length,
         ),
+        size: const SizeModel(width: 100, height: 100),
       );
       value = value.copyWith(
         items: value.items.toList()..insert(0, painterItem),
@@ -247,17 +246,16 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   void addAction(PaintAction action) {
-    if (changeActions.value.index < changeActions.value.changeList.length - 1) {
-      // actions en son indeksde değilse ve yeni aksiyon yazılıcaksa en sondan şu anki indekse kadar olan aksiyonları sil
-      changeActions.value = changeActions.value.copyWith(
-        changeList: changeActions.value.changeList
-            .sublist(0, changeActions.value.index + 1),
-        index: changeActions.value.index + 1,
-      );
-    }
-    changeActions.value = changeActions.value.copyWith(
-      changeList: changeActions.value.changeList.toList()..add(action),
-      index: changeActions.value.changeList.length,
+    ActionsService().addAction(
+      action,
+      changeActions,
+      value,
+      (list, index) {
+        changeActions.value = changeActions.value.copyWith(
+          changeList: list,
+          index: index,
+        );
+      },
     );
   }
 
@@ -346,11 +344,16 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
   }
 
-  void removeSelectedItem() {
-    if (value.selectedItem == null) return;
-    final index = _getItemIndexFromItem(value.selectedItem!);
-    if (index < 0) return;
+  void removeItem({int? layerIndex}) {
+    if (value.selectedItem == null && layerIndex == null) return;
     final items = value.items.toList();
+    var index = 0;
+    if (layerIndex != null && layerIndex < items.length) {
+      index = layerIndex;
+    } else {
+      _getItemIndexFromItem(value.selectedItem!);
+    }
+    if (index < 0) return;
     final item = items[index];
     items.removeAt(index);
     value = value.copyWith(items: items);
@@ -373,6 +376,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         title: 'Shape (${value.items.whereType<ShapeItem>().length})',
         index: value.items.length,
       ),
+      size: ShapeItem.defaultSize(shapeType),
     );
     value = value.copyWith(
       items: value.items.toList()..insert(0, shapeItem),
@@ -400,9 +404,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
 
   void changeTextValues(
     TextItem item, {
-    double? fontSize,
-    Color? color,
-    Color? backgroundColor,
+    TextStyle? textStyle,
     TextAlign? textAlign,
     bool? enableGradientColor,
     Color? gradientStartColor,
@@ -410,12 +412,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     AlignmentGeometry? gradientBegin,
     AlignmentGeometry? gradientEnd,
   }) {
-    final newTextItem = item.copyWith(
-      textStyle: item.textStyle.copyWith(
-        fontSize: fontSize ?? item.textStyle.fontSize,
-        color: color ?? item.textStyle.color,
-        backgroundColor: backgroundColor ?? item.textStyle.backgroundColor,
-      ),
+    final newItem = item.copyWith(
+      textStyle: textStyle ?? item.textStyle,
       textAlign: textAlign ?? item.textAlign,
       enableGradientColor: enableGradientColor ?? item.enableGradientColor,
       gradientStartColor: gradientStartColor ?? item.gradientStartColor,
@@ -423,7 +421,23 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       gradientBegin: gradientBegin ?? item.gradientBegin,
       gradientEnd: gradientEnd ?? item.gradientEnd,
     );
-    _changeTextItemValues(newTextItem);
+    _changeItemValues(newItem);
+  }
+
+  void changeShapeValues(
+    ShapeItem item, {
+    ShapeType? shapeType,
+    Color? backgroundColor,
+    Color? lineColor,
+    double? thickness,
+  }) {
+    final newItem = item.copyWith(
+      shapeType: shapeType ?? item.shapeType,
+      backgroundColor: backgroundColor ?? item.backgroundColor,
+      lineColor: lineColor ?? item.lineColor,
+      thickness: thickness ?? item.thickness,
+    );
+    _changeItemValues(newItem);
   }
 
   void changeImageValues(
@@ -439,7 +453,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     AlignmentGeometry? gradientEnd,
     double? gradientOpacity,
   }) {
-    final newImageItem = item.copyWith(
+    final newItem = item.copyWith(
       fit: boxFit ?? item.fit,
       borderRadius: borderRadius ?? item.borderRadius,
       borderColor: borderColor ?? item.borderColor,
@@ -451,55 +465,21 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       gradientEnd: gradientEnd ?? item.gradientEnd,
       gradientOpacity: gradientOpacity ?? item.gradientOpacity,
     );
-    _changeImageItemValues(newImageItem);
+    _changeItemValues(newItem);
   }
 
-  void _changeTextItemValues(
-    TextItem item,
-  ) {
-    final items = value.items.toList();
-    final index = _getItemIndexFromItem(item);
-    final lastItem = items[index] as TextItem;
-    final newItem = item.copyWith(
-      size: lastItem.size,
-      position: lastItem.position,
-      rotation: lastItem.rotation,
+  void _changeItemValues(PainterItem item) {
+    ChangeItemValuesService().changeItemValues(
+      item,
+      value.items.toList(),
+      (action, items, selectedItem) {
+        value = value.copyWith(
+          items: items,
+          selectedItem: selectedItem as PainterItem,
+        );
+        addAction(action);
+      },
     );
-    items
-      ..removeAt(index)
-      ..insert(index, newItem);
-    addAction(
-      ActionTextChangeValue(
-        currentItem: item,
-        lastItem: lastItem,
-        timestamp: DateTime.now(),
-        actionType: ActionType.changeTextValue,
-      ),
-    );
-    value = value.copyWith(items: items, selectedItem: item);
-  }
-
-  void _changeImageItemValues(ImageItem item) {
-    final items = value.items.toList();
-    final index = _getItemIndexFromItem(item);
-    final lastItem = items[index] as ImageItem;
-    final newItem = item.copyWith(
-      size: lastItem.size,
-      position: lastItem.position,
-      rotation: lastItem.rotation,
-    );
-    items
-      ..removeAt(index)
-      ..insert(index, newItem);
-    addAction(
-      ActionImageChangeValue(
-        currentItem: item,
-        lastItem: lastItem,
-        timestamp: DateTime.now(),
-        actionType: ActionType.changeImageValue,
-      ),
-    );
-    value = value.copyWith(items: items, selectedItem: item);
   }
 }
 

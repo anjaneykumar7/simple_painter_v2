@@ -4,16 +4,12 @@ class TrianglePainter extends CustomPainter {
   TrianglePainter({
     required this.lineColor,
     required this.thickness,
-    required this.width,
-    required this.height,
     required this.backgroundColor,
   });
 
   final Color lineColor;
   final Color backgroundColor;
   final double thickness;
-  final double width;
-  final double height;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -30,9 +26,9 @@ class TrianglePainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     final path = Path()
-      ..moveTo(width / 2, 0)
-      ..lineTo(0, height)
-      ..lineTo(width, height)
+      ..moveTo(size.width / 2, 0)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
       ..close();
 
     // Arka planı doldur

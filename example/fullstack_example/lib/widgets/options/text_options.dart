@@ -68,7 +68,10 @@ class TextOptions extends StatelessWidget {
                 sliderValue.value = value;
               },
               onChangeEnd: (value) {
-                controller.changeTextValues(item, fontSize: value * 100);
+                controller.changeTextValues(
+                  item,
+                  textStyle: item.textStyle.copyWith(fontSize: value * 100),
+                );
               },
             ),
           ],
@@ -104,8 +107,10 @@ class TextOptions extends StatelessWidget {
                 final intValue = value.toInt();
                 controller.changeTextValues(
                   item,
-                  color: Color(intValue)
-                      .withOpacity(item.textStyle.color!.opacity),
+                  textStyle: item.textStyle.copyWith(
+                    color: Color(intValue)
+                        .withOpacity(item.textStyle.color!.opacity),
+                  ),
                 );
               },
             ),
@@ -141,7 +146,9 @@ class TextOptions extends StatelessWidget {
                 final intValue = value.toInt();
                 controller.changeTextValues(
                   item,
-                  backgroundColor: Color(intValue).withOpacity(1),
+                  textStyle: item.textStyle.copyWith(
+                    backgroundColor: Color(intValue),
+                  ),
                 );
               },
             ),

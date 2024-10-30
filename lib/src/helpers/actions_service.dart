@@ -9,6 +9,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions
 import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
@@ -49,10 +50,10 @@ class ActionsService {
           _actionDraw(currentActions[i] as ActionDraw, false);
         } else if (currentActions[i] is ActionErase) {
           _actionErese(currentActions[i] as ActionErase, false);
-        } else if (currentActions[i] is ActionTextChangeValue) {
-          _actionTextValue(currentActions[i] as ActionTextChangeValue, false);
-        } else if (currentActions[i] is ActionImageChangeValue) {
-          _actionImageValue(currentActions[i] as ActionImageChangeValue, false);
+        } else if (currentActions[i] is ActionTextChangeValue ||
+            currentActions[i] is ActionImageChangeValue ||
+            currentActions[i] is ActionShapeChangeValue) {
+          _actionChangeValue(currentActions[i], false);
         }
       }
     }
@@ -76,10 +77,10 @@ class ActionsService {
           _actionDraw(currentActions[i] as ActionDraw, true);
         } else if (currentActions[i] is ActionErase) {
           _actionErese(currentActions[i] as ActionErase, true);
-        } else if (currentActions[i] is ActionTextChangeValue) {
-          _actionTextValue(currentActions[i] as ActionTextChangeValue, true);
-        } else if (currentActions[i] is ActionImageChangeValue) {
-          _actionImageValue(currentActions[i] as ActionImageChangeValue, true);
+        } else if (currentActions[i] is ActionTextChangeValue ||
+            currentActions[i] is ActionImageChangeValue ||
+            currentActions[i] is ActionShapeChangeValue) {
+          _actionChangeValue(currentActions[i], true);
         }
       }
     }
@@ -92,6 +93,32 @@ class ActionsService {
     updatedList(items);
     updateIndex(index);
     updatedPaintPath(currentPaintPath);
+  }
+
+  void addAction(
+    PaintAction action,
+    ValueNotifier<PaintActions> changeActions,
+    PainterControllerValue value,
+    void Function(List<PaintAction>? items, int index) updatedValues,
+  ) {
+    _setValues(changeActions, currentPaintPath, value);
+    if (changeActions.value.index < changeActions.value.changeList.length - 1) {
+      // actions en son indeksde değilse ve yeni aksiyon yazılıcaksa en sondan
+      //şu anki indekse kadar olan aksiyonları sil
+      changeActions.value = changeActions.value.copyWith(
+        changeList: changeActions.value.changeList
+            .sublist(0, changeActions.value.index + 1),
+        index: changeActions.value.index + 1,
+      );
+    }
+    changeActions.value = changeActions.value.copyWith(
+      changeList: changeActions.value.changeList.toList()..add(action),
+      index: changeActions.value.changeList.length,
+    );
+    updatedValues(
+      changeActions.value.changeList,
+      changeActions.value.changeList.length - 1,
+    );
   }
 
   void _updateList(PainterItem item) {
@@ -218,30 +245,17 @@ class ActionsService {
     }
   }
 
-  void _actionTextValue(ActionTextChangeValue item, bool isRedo) {
+  void _actionChangeValue(dynamic item, bool isRedo) {
     var itemValue = items
         .where(
-          (element) => element.id == item.currentItem.id,
+          (element) =>
+              element.id == ((item as dynamic).currentItem as PainterItem).id,
         )
         .first;
     if (isRedo) {
-      itemValue = item.currentItem;
+      itemValue = (item as dynamic).currentItem as PainterItem;
     } else {
-      itemValue = item.lastItem;
-    }
-    _updateList(itemValue);
-  }
-
-  void _actionImageValue(ActionImageChangeValue item, bool isRedo) {
-    var itemValue = items
-        .where(
-          (element) => element.id == item.currentItem.id,
-        )
-        .first;
-    if (isRedo) {
-      itemValue = item.currentItem;
-    } else {
-      itemValue = item.lastItem;
+      itemValue = (item as dynamic).lastItem as PainterItem;
     }
     _updateList(itemValue);
   }
