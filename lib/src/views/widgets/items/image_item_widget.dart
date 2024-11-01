@@ -17,12 +17,14 @@ class ImageItemWidget extends StatefulWidget {
     this.onPositionChange,
     this.onSizeChange,
     this.onRotationChange,
+    this.onTapItem,
   });
   final ImageItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
   final void Function(PositionModel, SizeModel)? onSizeChange;
   final void Function(double)? onRotationChange;
+  final void Function()? onTapItem;
 
   final PainterController painterController;
   @override
@@ -101,6 +103,11 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
                 actionType: ActionType.sizeItem,
               ),
             );
+          },
+          onTapItem: ({bool? tapItem}) {
+            if (tapItem != null && !tapItem && widget.onTapItem != null) {
+              widget.onTapItem!.call();
+            }
           },
           enabled: widgetHeight != null,
           child: MeasureSize(

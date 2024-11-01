@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:example/helpers/listener_service.dart';
 import 'package:example/pages/add_edit_text_page.dart';
 import 'package:example/widgets/changes_list.dart';
 import 'package:example/widgets/options/options.dart';
@@ -7,7 +8,7 @@ import 'package:example/widgets/select_image.dart';
 import 'package:example/widgets/settings/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
+
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -55,18 +56,13 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
         itemDragHandleColor: Colors.blue,
       ),
     );
-    controller.eventListener((ControllerEvent event) {
-      print('');
-    });
+    ListenerService().listen(controller, context);
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        controller.triggerEvent(ControllerEvent());
-      }),
       backgroundColor: Colors.grey.shade800.withOpacity(0.6),
       appBar: appBar,
       bottomNavigationBar: bottomBar,

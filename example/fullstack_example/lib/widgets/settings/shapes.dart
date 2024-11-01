@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
+
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 

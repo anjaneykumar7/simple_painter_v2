@@ -2,7 +2,7 @@ import 'package:example/widgets/options/image_options.dart';
 import 'package:example/widgets/options/shape_options.dart';
 import 'package:example/widgets/options/text_options.dart';
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
+
 import 'package:flutter_painter/flutter_painter.dart';
 
 class Options extends StatelessWidget {

@@ -126,6 +126,12 @@ class PainterWidget extends StatelessWidget {
             ..setItemSize(itemIndex, size)
             ..setItemPosition(itemIndex, position);
         },
+        onTapItem: () => controller.triggerEvent(
+          ItemPressEvent(
+            item: item,
+            layerIndex: controller.getLayerIndex(item),
+          ),
+        ),
       );
     } else if (item is ImageItem) {
       return ImageItemWidget(
@@ -169,6 +175,12 @@ class PainterWidget extends StatelessWidget {
             ..setItemSize(itemIndex, size)
             ..setItemPosition(itemIndex, position);
         },
+        onTapItem: () => controller.triggerEvent(
+          ItemPressEvent(
+            item: item,
+            layerIndex: controller.getLayerIndex(item),
+          ),
+        ),
       );
     } else if (item is ShapeItem) {
       return ShapeItemWidget(
@@ -211,6 +223,12 @@ class PainterWidget extends StatelessWidget {
             ..setItemSize(itemIndex, size)
             ..setItemPosition(itemIndex, position);
         },
+        onTapItem: () => controller.triggerEvent(
+          ItemPressEvent(
+            item: item,
+            layerIndex: controller.getLayerIndex(item),
+          ),
+        ),
       );
     }
     {

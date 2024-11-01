@@ -46,6 +46,14 @@ class LayerService {
     );
   }
 
+  int getLayerIndex(
+    PainterItem item,
+    List<PainterItem> itemList,
+  ) {
+    _setValues(itemList);
+    return items.indexWhere((element) => element.id == item.id);
+  }
+
   ActionLayerChange _getChangeAction(
     PainterItem item,
     int oldIndex,

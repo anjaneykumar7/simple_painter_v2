@@ -10,7 +10,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
-import 'package:flutter_painter/src/controllers/events/controller_event.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
@@ -202,11 +201,11 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   StreamSubscription<ControllerEvent> eventListener(
-      void Function(ControllerEvent) onData) {
+    void Function(ControllerEvent) onData,
+  ) {
     return _eventController.stream.listen(onData);
   }
 
-  /// Event tetikleme fonksiyonu
   void triggerEvent(ControllerEvent event) {
     _eventController.add(event);
   }
@@ -249,6 +248,10 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         );
       },
     );
+  }
+
+  int getLayerIndex(PainterItem item) {
+    return LayerService().getLayerIndex(item, value.items.toList());
   }
 
   void setItemPosition(int index, PositionModel position) {

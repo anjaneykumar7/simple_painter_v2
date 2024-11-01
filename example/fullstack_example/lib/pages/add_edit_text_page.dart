@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AddEditTextPage extends StatefulWidget {
-  const AddEditTextPage({required this.onDone, super.key});
+  const AddEditTextPage({required this.onDone, this.defaultText, super.key});
+  final String? defaultText;
   final void Function(String text) onDone;
   @override
   State<AddEditTextPage> createState() => _AddEditTextPageState();
@@ -14,6 +15,7 @@ class _AddEditTextPageState extends State<AddEditTextPage> {
   void initState() {
     super.initState();
     focusNode.requestFocus();
+    textFieldController = TextEditingController(text: widget.defaultText ?? '');
   }
 
   @override

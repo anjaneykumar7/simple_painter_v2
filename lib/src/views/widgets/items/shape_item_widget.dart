@@ -24,12 +24,14 @@ class ShapeItemWidget extends StatefulWidget {
     this.onPositionChange,
     this.onSizeChange,
     this.onRotationChange,
+    this.onTapItem,
   });
   final ShapeItem item;
   final double height;
   final void Function(PositionModel)? onPositionChange;
   final void Function(PositionModel, SizeModel)? onSizeChange;
   final void Function(double)? onRotationChange;
+  final void Function()? onTapItem;
 
   final PainterController painterController;
   @override
@@ -106,6 +108,11 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
                 actionType: ActionType.sizeItem,
               ),
             );
+          },
+          onTapItem: ({bool? tapItem}) {
+            if (tapItem != null && !tapItem && widget.onTapItem != null) {
+              widget.onTapItem!.call();
+            }
           },
           enabled: widgetHeight != null,
           centerChild: true,
