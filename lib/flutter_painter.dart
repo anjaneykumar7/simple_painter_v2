@@ -1,3 +1,4 @@
+export 'src/controllers/events/controller_event.dart';
 export 'src/controllers/items/image_item.dart';
 export 'src/controllers/items/shape_item.dart';
 export 'src/controllers/items/shapes/shape_type_enum.dart';

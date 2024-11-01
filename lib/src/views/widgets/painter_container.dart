@@ -487,18 +487,6 @@ class _PainterContainerState extends State<PainterContainer> {
           widget.minimumContainerWidth ?? minimumContainerWidth;
       setValue();
       initializeSize = true;
-    } else if (initializeSize == false) {
-      containerSize = containerSize.copyWith(
-        height: minimumContainerHeight,
-        width: minimumContainerWidth,
-      );
-      oldContainerSize = containerSize;
-      stackPosition = stackPosition.copyWith(
-        x: stackWidth / 2 - containerSize.width / 2,
-        y: stackHeight / 2 - containerSize.height / 2,
-      );
-      setValue();
-      initializeSize = true;
     }
   }
 
@@ -596,7 +584,8 @@ class _PainterContainerState extends State<PainterContainer> {
         return handleWidgetHeight;
       case _HandlePosition.left:
       case _HandlePosition.right:
-        return containerSize.height / 7;
+        final size = containerSize.height / 7;
+        return size < 15 ? 15 : size;
     }
   }
 
@@ -604,7 +593,8 @@ class _PainterContainerState extends State<PainterContainer> {
     switch (handlePosition) {
       case _HandlePosition.top:
       case _HandlePosition.bottom:
-        return containerSize.width / 7;
+        final size = containerSize.width / 7;
+        return size < 15 ? 15 : size;
       case _HandlePosition.left:
       case _HandlePosition.right:
         return handleWidgetWidth;

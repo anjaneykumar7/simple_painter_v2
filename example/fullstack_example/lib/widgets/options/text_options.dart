@@ -147,7 +147,7 @@ class TextOptions extends StatelessWidget {
                 controller.changeTextValues(
                   item,
                   textStyle: item.textStyle.copyWith(
-                    backgroundColor: Color(intValue),
+                    backgroundColor: Color(intValue).withOpacity(1),
                   ),
                 );
               },

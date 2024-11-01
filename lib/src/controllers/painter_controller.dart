@@ -10,6 +10,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
+import 'package:flutter_painter/src/controllers/events/controller_event.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_painter/src/helpers/change_item_values_service.dart';
 import 'package:flutter_painter/src/helpers/layer_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
-import 'package:flutter_painter/src/pages/add_edit_text_page.dart';
 
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
@@ -34,16 +34,17 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           ),
         );
 
-  PainterController.fromValue(super.value)
-      : background = PainterBackground(
+  PainterController.fromValue(
+    super.value,
+  ) : background = PainterBackground(
           height: value.settings.scale?.height ?? 0,
           width: value.settings.scale?.width ?? 0,
         );
 
   final GlobalKey repaintBoundaryKey = GlobalKey();
+  final StreamController<ControllerEvent> _eventController =
+      StreamController<ControllerEvent>.broadcast();
   PainterBackground background = PainterBackground();
-  // ValueNotifier<List<PaintAction>> changeActions =
-  //     ValueNotifier<List<PaintAction>>(<PaintAction>[]);
   ValueNotifier<PaintActions> changeActions =
       ValueNotifier<PaintActions>(PaintActions());
   bool isErasing = false;
@@ -166,26 +167,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     background.image = await completer.future;
   }
 
-  Future<void> addText() async {
-    var text = '';
-    await Navigator.push(
-      repaintBoundaryKey.currentContext!,
-      PageRouteBuilder<Object>(
-        opaque: false,
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            AddEditTextPage(
-          onDone: (String textFunction) {
-            text = textFunction;
-          },
-        ),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-            FadeTransition(
-          opacity: animation,
-          child: child,
-        ),
-      ),
-    );
-
+  Future<void> addText(String text) async {
     if (text.isNotEmpty) {
       final painterItem = TextItem(
         position: const PositionModel(),
@@ -217,6 +199,16 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       );
       value.selectedItem = painterItem;
     }
+  }
+
+  StreamSubscription<ControllerEvent> eventListener(
+      void Function(ControllerEvent) onData) {
+    return _eventController.stream.listen(onData);
+  }
+
+  /// Event tetikleme fonksiyonu
+  void triggerEvent(ControllerEvent event) {
+    _eventController.add(event);
   }
 
   void addImageUint8List(Uint8List image) {

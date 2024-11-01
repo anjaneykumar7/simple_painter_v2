@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:example/pages/add_edit_text_page.dart';
 import 'package:example/widgets/changes_list.dart';
 import 'package:example/widgets/options/options.dart';
 import 'package:example/widgets/select_image.dart';
@@ -54,12 +55,18 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
         itemDragHandleColor: Colors.blue,
       ),
     );
+    controller.eventListener((ControllerEvent event) {
+      print('');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     return Scaffold(
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        controller.triggerEvent(ControllerEvent());
+      }),
       backgroundColor: Colors.grey.shade800.withOpacity(0.6),
       appBar: appBar,
       bottomNavigationBar: bottomBar,
@@ -238,7 +245,26 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             button(
               PhosphorIconsRegular.textT,
               () async {
-                await controller.addText();
+                var text = '';
+                await Navigator.push(
+                  context,
+                  PageRouteBuilder<Object>(
+                    opaque: false,
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        AddEditTextPage(
+                      onDone: (String textFunction) {
+                        text = textFunction;
+                      },
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) =>
+                            FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  ),
+                );
+                await controller.addText(text);
                 setState(() {});
               },
               enabled: controller.editingText || controller.addingText,

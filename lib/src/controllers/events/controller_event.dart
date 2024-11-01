@@ -1,0 +1,3 @@
+class ControllerEvent {
+  const ControllerEvent();
+}
