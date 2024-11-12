@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:example/pages/add_edit_text_page.dart';
-import 'package:example/widgets/select_image.dart';
+import 'package:fullstack_example/pages/add_edit_text_page.dart';
+import 'package:fullstack_example/widgets/select_image.dart';
+// ignore: directives_ordering
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 
@@ -9,7 +10,9 @@ class ListenerService {
   late PainterController controller;
   late BuildContext context;
   Future<void> listen(
-      PainterController painterController, BuildContext buildContext) async {
+    PainterController painterController,
+    BuildContext buildContext,
+  ) async {
     controller = painterController;
     context = buildContext;
     painterController.eventListener((ControllerEvent event) async {
@@ -36,7 +39,7 @@ class ListenerService {
           onDone: (String textFunction) {
             text = textFunction;
           },
-          defaultText: (item as TextItem).text,
+          defaultText: item.text,
         ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) =>
             FadeTransition(
@@ -45,7 +48,7 @@ class ListenerService {
         ),
       ),
     );
-    final newItem = (item as TextItem).copyWith(text: text);
+    final newItem = item.copyWith(text: text);
     controller.changeTextValues(newItem);
   }
 

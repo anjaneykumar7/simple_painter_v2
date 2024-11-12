@@ -1,8 +1,7 @@
-import 'package:example/widgets/settings/layers.dart';
-import 'package:example/widgets/settings/shapes.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:fullstack_example/widgets/settings/layers.dart';
+import 'package:fullstack_example/widgets/settings/shapes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Settings extends StatelessWidget {

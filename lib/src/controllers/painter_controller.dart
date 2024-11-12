@@ -27,15 +27,17 @@ import 'package:flutter_painter/src/models/size_model.dart';
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
     PainterSettings settings = const PainterSettings(),
+    ui.Image? backgroundImage,
   }) : this.fromValue(
           PainterControllerValue(
             settings: settings,
           ),
+          backgroundImage: backgroundImage,
         );
 
-  PainterController.fromValue(
-    super.value,
-  ) : background = PainterBackground(
+  PainterController.fromValue(super.value, {ui.Image? backgroundImage})
+      : background = PainterBackground(
+          image: backgroundImage,
           height: value.settings.scale?.height ?? 0,
           width: value.settings.scale?.width ?? 0,
         );
@@ -346,7 +348,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     if (layerIndex != null && layerIndex < items.length) {
       index = layerIndex;
     } else {
-      _getItemIndexFromItem(value.selectedItem!);
+      index = _getItemIndexFromItem(value.selectedItem!);
     }
     if (index < 0) return;
     final item = items[index];

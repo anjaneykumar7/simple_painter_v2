@@ -1,7 +1,6 @@
-import 'package:example/widgets/options/options.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:fullstack_example/widgets/options/options.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ImageOptions extends StatelessWidget {

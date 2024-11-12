@@ -1,9 +1,8 @@
-import 'package:example/widgets/options/image_options.dart';
-import 'package:example/widgets/options/shape_options.dart';
-import 'package:example/widgets/options/text_options.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:fullstack_example/widgets/options/image_options.dart';
+import 'package:fullstack_example/widgets/options/shape_options.dart';
+import 'package:fullstack_example/widgets/options/text_options.dart';
 
 class Options extends StatelessWidget {
   const Options({required this.controller, super.key});

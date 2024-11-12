@@ -6,7 +6,7 @@ import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.d
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 import 'package:flutter_painter/src/views/widgets/measure_size.dart';
-import 'package:flutter_painter/src/views/widgets/painter_container.dart';
+import 'package:flutter_painter/src/views/widgets/painter_container/painter_container.dart';
 
 class TextItemWidget extends StatefulWidget {
   const TextItemWidget({
@@ -105,6 +105,8 @@ class _TextItemWidgetState extends State<TextItemWidget> {
             }
           },
           enabled: widgetHeight != null,
+          dragHandleColor:
+              widget.painterController.value.settings.itemDragHandleColor,
           centerChild: true,
           child: MeasureSize(
             onChange: (size) {

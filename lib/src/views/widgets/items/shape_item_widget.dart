@@ -13,7 +13,7 @@ import 'package:flutter_painter/src/views/shapes/rectangle_painter.dart';
 import 'package:flutter_painter/src/views/shapes/star_painter.dart';
 import 'package:flutter_painter/src/views/shapes/triangle_painter.dart';
 import 'package:flutter_painter/src/views/widgets/measure_size.dart';
-import 'package:flutter_painter/src/views/widgets/painter_container.dart';
+import 'package:flutter_painter/src/views/widgets/painter_container/painter_container.dart';
 
 class ShapeItemWidget extends StatefulWidget {
   const ShapeItemWidget({
@@ -115,6 +115,8 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
             }
           },
           enabled: widgetHeight != null,
+          dragHandleColor:
+              widget.painterController.value.settings.itemDragHandleColor,
           centerChild: true,
           child: MeasureSize(
             onChange: (size) {
