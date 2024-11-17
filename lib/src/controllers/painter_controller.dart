@@ -7,7 +7,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
@@ -21,21 +20,25 @@ import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
 import 'package:flutter_painter/src/helpers/actions_service.dart';
 import 'package:flutter_painter/src/helpers/change_item_values_service.dart';
 import 'package:flutter_painter/src/helpers/layer_service.dart';
+import 'package:flutter_painter/src/models/brush_model.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 
 class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController({
     PainterSettings settings = const PainterSettings(),
-    ui.Image? backgroundImage,
+    Uint8List? backgroundImage,
   }) : this.fromValue(
           PainterControllerValue(
             settings: settings,
+            brushColor: settings.brush?.color ?? Colors.blue,
+            brushSize: settings.brush?.size ?? 5,
+            eraseSize: settings.erase?.size ?? 5,
           ),
           backgroundImage: backgroundImage,
         );
 
-  PainterController.fromValue(super.value, {ui.Image? backgroundImage})
+  PainterController.fromValue(super.value, {Uint8List? backgroundImage})
       : background = PainterBackground(
           image: backgroundImage,
           height: value.settings.scale?.height ?? 0,
@@ -46,6 +49,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   final StreamController<ControllerEvent> _eventController =
       StreamController<ControllerEvent>.broadcast();
   PainterBackground background = PainterBackground();
+  ui.Image? cacheBackgroundImage;
   ValueNotifier<PaintActions> changeActions =
       ValueNotifier<PaintActions>(PaintActions());
   bool isErasing = false;
@@ -53,8 +57,10 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   bool editingText = false;
   bool addingText = false;
 
-  Future<Uint8List?> capturePng() async {
+  Future<Uint8List?> renderImage() async {
     try {
+      clearSelectedItem();
+      await Future.delayed(const Duration(milliseconds: 100), () {});
       final boundary = repaintBoundaryKey.currentContext!.findRenderObject()!
           as RenderRepaintBoundary;
       final image = await boundary.toImage();
@@ -65,7 +71,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
-  void addPaintPoint(Offset? point) {
+  void addPaintPoint(DrawModel point) {
     if (isErasing) {
       if (value.paintPathsBeforeErasing.isEmpty) {
         value =
@@ -121,13 +127,13 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
-  void _erase(Offset? position) {
-    if (position == null) return;
+  void _erase(DrawModel draw) {
+    final position = draw.offset;
 
-    final updatedPaths = <List<Offset?>>[];
+    final updatedPaths = <List<DrawModel?>>[];
 
     for (final path in value.paintPaths.toList()) {
-      final updatedPath = <Offset?>[];
+      final updatedPath = <DrawModel?>[];
 
       var isInEraseRegion = false;
       for (var i = 0; i < path.length; i++) {
@@ -135,12 +141,16 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         if (point == null) continue;
 
         // Silme bölgesine girdi mi kontrolü
-        if ((point - position).distance < 10) {
+        if (((point.offset - position).distance) <
+            value.eraseSize + draw.strokeWidth) {
           isInEraseRegion = true;
         }
 
         if (isInEraseRegion) {
-          if (i == 0 || (i > 0 && (path[i - 1]! - position).distance >= 10)) {
+          if (i == 0 ||
+              (i > 0 &&
+                  (path[i - 1]!.offset - position).distance >=
+                      value.eraseSize)) {
             // Eğer silgi bölgesindeysek ve önceki noktayı silmediysek
             if (updatedPath.isNotEmpty) {
               updatedPaths.add(List.from(updatedPath));
@@ -163,9 +173,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   Future<void> setBackgroundImage(Uint8List imageData) async {
-    final completer = Completer<ui.Image>();
-    ui.decodeImageFromList(imageData, completer.complete);
-    background.image = await completer.future;
+    cacheBackgroundImage = null;
+    background.image = imageData;
   }
 
   Future<void> addText(String text) async {
@@ -421,6 +430,25 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     _changeItemValues(newItem);
   }
 
+  void changeBrushValues({
+    double? size,
+    Color? color,
+  }) {
+    value = value.copyWith(
+      brushSize: size ?? value.brushSize,
+      brushColor: color ?? value.brushColor,
+    );
+  }
+
+  void changeEraseValues({
+    double? size,
+    Color? color,
+  }) {
+    value = value.copyWith(
+      eraseSize: size ?? value.eraseSize,
+    );
+  }
+
   void changeShapeValues(
     ShapeItem item, {
     ShapeType? shapeType,
@@ -484,29 +512,38 @@ class PainterControllerValue {
   PainterControllerValue({
     required this.settings,
     this.scale,
-    this.paintPaths = const <List<Offset?>>[],
-    this.currentPaintPath = const <Offset?>[],
-    this.paintPathsBeforeErasing = const <List<Offset?>>[],
+    this.paintPaths = const <List<DrawModel?>>[],
+    this.currentPaintPath = const <DrawModel?>[],
+    this.paintPathsBeforeErasing = const <List<DrawModel?>>[],
     this.items = const <PainterItem>[],
     this.selectedItem,
+    this.brushSize = 5,
+    this.eraseSize = 5,
+    this.brushColor = Colors.blue,
   });
   final PainterSettings settings;
   final Size? scale;
-  List<List<Offset?>> paintPaths =
-      <List<Offset?>>[]; // Çizim yollarını saklamak için
-  List<Offset?> currentPaintPath = <Offset?>[]; // Geçici çizim yolu
-  List<List<Offset?>> paintPathsBeforeErasing = <List<Offset?>>[];
+  List<List<DrawModel?>> paintPaths =
+      <List<DrawModel?>>[]; // Çizim yollarını saklamak için
+  List<DrawModel?> currentPaintPath = <DrawModel?>[]; // Geçici çizim yolu
+  List<List<DrawModel?>> paintPathsBeforeErasing = <List<DrawModel?>>[];
   List<PainterItem> items = <PainterItem>[];
   PainterItem? selectedItem;
+  final double brushSize;
+  final double eraseSize;
+  final Color brushColor;
 
   PainterControllerValue copyWith({
     PainterSettings? settings,
     Size? scale,
-    List<List<Offset?>>? paintPaths,
-    List<Offset?>? currentPaintPath,
-    List<List<Offset?>>? paintPathsBeforeErasing,
+    List<List<DrawModel?>>? paintPaths,
+    List<DrawModel?>? currentPaintPath,
+    List<List<DrawModel?>>? paintPathsBeforeErasing,
     List<PainterItem>? items,
     PainterItem? selectedItem,
+    double? brushSize,
+    double? eraseSize,
+    Color? brushColor,
   }) {
     return PainterControllerValue(
       settings: settings ?? this.settings,
@@ -517,6 +554,9 @@ class PainterControllerValue {
           paintPathsBeforeErasing ?? this.paintPathsBeforeErasing,
       items: items ?? this.items,
       selectedItem: selectedItem ?? this.selectedItem,
+      brushSize: brushSize ?? this.brushSize,
+      eraseSize: eraseSize ?? this.eraseSize,
+      brushColor: brushColor ?? this.brushColor,
     );
   }
 }

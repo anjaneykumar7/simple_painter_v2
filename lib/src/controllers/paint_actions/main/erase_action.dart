@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:flutter_painter/src/models/brush_model.dart';
 
 class ActionErase extends PaintAction {
   const ActionErase({
@@ -10,6 +11,6 @@ class ActionErase extends PaintAction {
     required super.actionType,
   });
 
-  final List<List<Offset?>> lastPaintPath;
-  final List<List<Offset?>> currentPaintPath;
+  final List<List<DrawModel?>> lastPaintPath;
+  final List<List<DrawModel?>> currentPaintPath;
 }

@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:fullstack_example/widgets/select_image.dart';
 import 'package:fullstack_example/widgets/settings/layers.dart';
 import 'package:fullstack_example/widgets/settings/shapes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -13,6 +16,7 @@ class Settings extends StatelessWidget {
     required this.changeSettings,
     required this.changeLayers,
     required this.changeShapes,
+    required this.setNewState,
     super.key,
   });
   final PainterController controller;
@@ -22,6 +26,7 @@ class Settings extends StatelessWidget {
   final void Function({bool value}) changeSettings;
   final void Function({bool value}) changeLayers;
   final void Function({bool value}) changeShapes;
+  final VoidCallback setNewState;
   @override
   Widget build(BuildContext context) {
     Widget settings() {
@@ -66,6 +71,17 @@ class Settings extends StatelessWidget {
             }),
             buttons(PhosphorIconsRegular.polygon, 'Shapes', () {
               changeShapes(value: !openShapes);
+            }),
+            buttons(PhosphorIconsRegular.image, 'Background', () async {
+              final imageUint8List = await showDialog<Uint8List>(
+                context: context,
+                builder: (context) => const SelectImageDialog(
+                  title: 'Add Background Image',
+                ),
+              );
+              if (imageUint8List == null) return;
+              await controller.setBackgroundImage(imageUint8List);
+              setNewState();
             }),
           ],
         ),

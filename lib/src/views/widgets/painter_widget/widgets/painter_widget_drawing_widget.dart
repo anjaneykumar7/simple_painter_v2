@@ -9,7 +9,13 @@ class _DrawingWidget extends StatelessWidget {
     return GestureDetector(
       onPanUpdate: (details) {
         if (controller.isDrawing || controller.isErasing) {
-          controller.addPaintPoint(details.localPosition);
+          controller.addPaintPoint(DrawModel(
+            offset: details.localPosition,
+            color: controller.isErasing
+                ? Colors.transparent
+                : controller.value.brushColor,
+            strokeWidth: controller.value.brushSize,
+          ));
         }
       },
       onPanEnd: (details) {

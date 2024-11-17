@@ -14,20 +14,21 @@ import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.d
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
+import 'package:flutter_painter/src/models/brush_model.dart';
 
 class ActionsService {
   List<PaintAction> currentActions = [];
   int currentIndex = 0;
   List<PainterItem> items = [];
-  List<List<Offset?>> currentPaintPath = [];
+  List<List<DrawModel?>> currentPaintPath = [];
   void updateActionWithChangeActionIndex(
     ValueNotifier<PaintActions> changeActions,
-    List<List<Offset?>> paintPath,
+    List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
     int index,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
-    void Function(List<List<Offset?>> pathList) updatedPaintPath,
+    void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
   ) {
     _setValues(changeActions, paintPath, value);
 
@@ -262,11 +263,11 @@ class ActionsService {
 
   void undo(
     ValueNotifier<PaintActions> changeActions,
-    List<List<Offset?>> paintPath,
+    List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
-    void Function(List<List<Offset?>> pathList) updatedPaintPath,
+    void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
   ) {
     _setValues(changeActions, paintPath, value);
     if (currentIndex < 0) return;
@@ -283,11 +284,11 @@ class ActionsService {
 
   void redo(
     ValueNotifier<PaintActions> changeActions,
-    List<List<Offset?>> paintPath,
+    List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
-    void Function(List<List<Offset?>> pathList) updatedPaintPath,
+    void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
   ) {
     _setValues(changeActions, paintPath, value);
     if (currentIndex == currentActions.length - 1) return;
@@ -304,7 +305,7 @@ class ActionsService {
 
   void _setValues(
     ValueNotifier<PaintActions> changeActions,
-    List<List<Offset?>> paintPath,
+    List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
   ) {
     currentActions = changeActions.value.changeList;

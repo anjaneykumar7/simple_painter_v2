@@ -5,9 +5,10 @@ import 'package:flutter/material.dart';
 
 class SelectImageDialog extends StatelessWidget {
   const SelectImageDialog({
+    required this.title,
     super.key,
   });
-
+  final String title;
   @override
   Widget build(BuildContext context) {
     const imageLinks = [
@@ -35,9 +36,9 @@ class SelectImageDialog extends StatelessWidget {
     ];
     return AlertDialog(
       backgroundColor: Colors.grey.shade900,
-      title: const Text(
-        'Select Image',
-        style: TextStyle(color: Colors.white),
+      title: Text(
+        title,
+        style: const TextStyle(color: Colors.white),
       ),
       content: imageLinks.isEmpty
           ? const Text(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
+import 'package:fullstack_example/widgets/options/brush_options.dart';
+import 'package:fullstack_example/widgets/options/erase_options.dart';
 import 'package:fullstack_example/widgets/options/image_options.dart';
 import 'package:fullstack_example/widgets/options/shape_options.dart';
 import 'package:fullstack_example/widgets/options/text_options.dart';
@@ -12,6 +14,12 @@ class Options extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: controller,
       builder: (context, value, child) {
+        if (controller.isDrawing) {
+          return BrushOptions(controller: controller);
+        }
+        if (controller.isErasing) {
+          return EraseOptions(controller: controller);
+        }
         if (value.selectedItem is TextItem) {
           return TextOptions(
             controller: controller,

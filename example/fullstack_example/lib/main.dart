@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:fullstack_example/helpers/listener_service.dart';
 import 'package:fullstack_example/pages/add_edit_text_page.dart';
+import 'package:fullstack_example/pages/result_page.dart';
 import 'package:fullstack_example/widgets/changes_list.dart';
 import 'package:fullstack_example/widgets/options/options.dart';
 import 'package:fullstack_example/widgets/select_image.dart';
@@ -49,13 +50,8 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   @override
   void initState() {
     super.initState();
-    controller = PainterController(
-
-        // backgroundImage: Image.network(
-        //   'https://images.unsplash.com/photo-1634170380000-3b3b3b3b3b3b',
-        //   fit: BoxFit.cover,
-        // ),
-        );
+    controller =
+        PainterController(settings: PainterSettings(scale: Size(1600, 1600)));
     ListenerService().listen(controller, context);
   }
 
@@ -122,6 +118,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
           openShapes = value;
         });
       },
+      setNewState: () => setState(() {}),
     );
   }
 
@@ -189,7 +186,17 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: GestureDetector(
-                onTap: () {},
+                onTap: () async {
+                  final image = await controller.renderImage();
+                  if (image != null && context.mounted) {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute<dynamic>(
+                        builder: (context) => ResultPage(image: image),
+                      ),
+                    );
+                  }
+                },
                 child: Container(
                   height: 40,
                   width: 40,
@@ -270,7 +277,9 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
               () async {
                 final imageUint8List = await showDialog<Uint8List>(
                   context: context,
-                  builder: (context) => const SelectImageDialog(),
+                  builder: (context) => const SelectImageDialog(
+                    title: 'Select Image',
+                  ),
                 );
                 if (imageUint8List == null) return;
                 controller.addImageUint8List(imageUint8List);

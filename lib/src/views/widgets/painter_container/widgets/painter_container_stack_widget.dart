@@ -31,9 +31,6 @@ class _StackWidget extends StatelessWidget {
     required this.selectedItem,
     required this.pointerCount2Change,
     this.child,
-    this.onPositionChange,
-    this.onSizeChange,
-    this.onRotateAngleChange,
     this.enabled,
     this.centerChild,
     this.dragHandleColor,
@@ -68,17 +65,9 @@ class _StackWidget extends StatelessWidget {
   ) pointerCount2Change;
   final void Function() onTap;
   final void Function() onScaleStart;
-  final void Function() onScaleEnd;
+  final void Function(ScaleEndDetails) onScaleEnd;
   final void Function(PositionModel?, PositionModel?) onScaleUpdate;
   final Color? dragHandleColor;
-  final void Function(PositionModel, PositionModel)? onPositionChange;
-  final void Function(
-    PositionModel newPosition,
-    SizeModel oldSize,
-    SizeModel newSize,
-  )? onSizeChange;
-  final void Function(double oldRotateAngle, double newRotateAngle)?
-      onRotateAngleChange;
   final void Function() handlePanEnd;
   final void Function(SizeModel containerSize, PositionModel? stackPosition)
       handlePanUpdate;
@@ -96,34 +85,7 @@ class _StackWidget extends StatelessWidget {
         child: GestureDetector(
           onTap: onTap,
           onScaleStart: (details) => onScaleStart.call(),
-          onScaleEnd: (details) {
-            if (onPositionChange != null) {
-              onPositionChange?.call(
-                PositionModel(x: oldPosition.x, y: oldPosition.y),
-                PositionModel(x: position.x, y: position.y),
-              );
-            }
-            if (onRotateAngleChange != null) {
-              onRotateAngleChange?.call(
-                oldRotateAngle,
-                rotateAngle,
-              );
-            }
-            if (onSizeChange != null) {
-              onSizeChange?.call(
-                PositionModel(x: position.x, y: position.y),
-                SizeModel(
-                  width: oldContainerSize.width,
-                  height: oldContainerSize.height,
-                ),
-                SizeModel(
-                  width: containerSize.width,
-                  height: containerSize.height,
-                ),
-              );
-            }
-            onScaleEnd.call();
-          },
+          onScaleEnd: onScaleEnd.call,
           onScaleUpdate: (details) {
             if (details.pointerCount == 1) {
               gestureScaleUpdatePointer1(details);
@@ -208,8 +170,6 @@ class _StackWidget extends StatelessWidget {
         ),
       );
     }
-    final oldStackXPosition = stackPosition.x;
-    final oldStackYPosition = stackPosition.y;
     final newStackXPosition = stackWidth / 2 - (containerSize.width / 2);
     final newStackYPosition = stackHeight / 2 - (containerSize.height / 2);
 

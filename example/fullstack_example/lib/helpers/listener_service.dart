@@ -55,7 +55,9 @@ class ListenerService {
   Future<void> changeImageItemValue(ImageItem item) async {
     final imageUint8List = await showDialog<Uint8List>(
       context: context,
-      builder: (context) => const SelectImageDialog(),
+      builder: (context) => const SelectImageDialog(
+        title: 'Select Image',
+      ),
     );
     if (imageUint8List == null) return;
     final newItem = item.copyWith(image: imageUint8List);

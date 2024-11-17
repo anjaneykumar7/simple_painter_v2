@@ -103,9 +103,8 @@ class _PainterContainerState extends State<PainterContainer> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    final stackHeight = widget.height / 2;
+    final stackHeight = screenWidth;
     final stackWidth = screenWidth;
-
     initializeWidgetSize(stackWidth, stackHeight);
     controlOutsideValues(stackWidth, stackHeight);
     updateEvents();
@@ -155,12 +154,32 @@ class _PainterContainerState extends State<PainterContainer> {
                     }
                     scaleCurrentHeight = -1;
                   },
-                  onScaleEnd: () {
+                  onScaleEnd: (details) {
+                    if (widget.onPositionChange != null) {
+                      widget.onPositionChange?.call(
+                        PositionModel(x: oldPosition.x, y: oldPosition.y),
+                        PositionModel(x: position.x, y: position.y),
+                      );
+                    }
+                    if (widget.onRotateAngleChange != null) {
+                      widget.onRotateAngleChange
+                          ?.call(oldRotateAngle, rotateAngle);
+                    }
+                    if (widget.onSizeChange != null) {
+                      widget.onSizeChange?.call(
+                        PositionModel(x: position.x, y: position.y),
+                        SizeModel(
+                          width: oldContainerSize.width,
+                          height: oldContainerSize.height,
+                        ),
+                        SizeModel(
+                          width: containerSize.width,
+                          height: containerSize.height,
+                        ),
+                      );
+                    }
                     currentRotateAngle = rotateAngle;
                     changesFromOutside = true;
-                    setState(() {
-                      scaleCurrentHeight = -1;
-                    });
                   },
                   onScaleUpdate: (newPosition, newStackPosition) {
                     enableItem();
@@ -218,9 +237,6 @@ class _PainterContainerState extends State<PainterContainer> {
                       }
                     });
                   },
-                  onPositionChange: widget.onPositionChange,
-                  onSizeChange: widget.onSizeChange,
-                  onRotateAngleChange: widget.onRotateAngleChange,
                   child: widget.child,
                 ),
                 if (widget.selectedItem)

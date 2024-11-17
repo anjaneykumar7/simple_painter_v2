@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_painter/src/models/brush_model.dart';
 
 class PainterCustomPaint extends CustomPainter {
   PainterCustomPaint({
@@ -8,22 +9,21 @@ class PainterCustomPaint extends CustomPainter {
     required this.points,
     required this.isErasing,
     required this.backgroundImage,
-    required this.color,
   });
 
-  final List<List<Offset?>> paths;
-  final List<Offset?> points;
+  final List<List<DrawModel?>> paths;
+  final List<DrawModel?> points;
   final bool isErasing;
-  final ui.Image? backgroundImage; // Arka plan resmi
-  final Color color;
-
+  final ui.Image? backgroundImage;
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeWidth = 5.0;
+    Paint paint(Color color, double strokeWidth) {
+      return Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeCap = StrokeCap.round
+        ..strokeWidth = strokeWidth;
+    }
 
     final backgroundPaint = Paint()
       ..color = Colors.white
@@ -54,7 +54,8 @@ class PainterCustomPaint extends CustomPainter {
 
       for (var i = 0; i < path.length - 1; i++) {
         if (path[i] != null && path[i + 1] != null) {
-          canvas.drawLine(path[i]!, path[i + 1]!, paint);
+          canvas.drawLine(path[i]!.offset, path[i + 1]!.offset,
+              paint(path[i]!.color, path[i]!.strokeWidth));
         }
       }
     }
@@ -62,7 +63,8 @@ class PainterCustomPaint extends CustomPainter {
     // Kullanıcının geçici yolunu çiz
     for (var i = 0; i < points.length - 1; i++) {
       if (points[i] != null && points[i + 1] != null) {
-        canvas.drawLine(points[i]!, points[i + 1]!, paint);
+        canvas.drawLine(points[i]!.offset, points[i + 1]!.offset,
+            paint(points[i]!.color, points[i]!.strokeWidth));
       }
     }
   }

@@ -1,7 +1,12 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/custom_paint.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:flutter_painter/src/models/brush_model.dart';
 import 'package:flutter_painter/src/views/widgets/items/image_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/shape_item_widget.dart';
 import 'package:flutter_painter/src/views/widgets/items/text_item_widget.dart';
