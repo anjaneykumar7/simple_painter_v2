@@ -50,8 +50,11 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   @override
   void initState() {
     super.initState();
-    controller =
-        PainterController(settings: PainterSettings(scale: Size(1600, 1600)));
+    controller = PainterController(
+      settings: const PainterSettings(
+        scale: Size(1600, 1600),
+      ),
+    );
     ListenerService().listen(controller, context);
   }
 

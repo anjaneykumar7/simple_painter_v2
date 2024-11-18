@@ -20,7 +20,7 @@ class BrushOptions extends StatelessWidget {
   }
 
   Widget get size {
-    final sliderValue = ValueNotifier(controller.value.brushSize! / 100);
+    final sliderValue = ValueNotifier(controller.value.brushSize / 100);
     return ValueListenableBuilder(
       valueListenable: sliderValue,
       builder: (context, sliderVal, child) {
@@ -47,9 +47,9 @@ class BrushOptions extends StatelessWidget {
 
   Widget get color {
     final color = ValueNotifier(
-      (controller.value.brushColor!.red << 16 |
-              controller.value.brushColor!.green << 8 |
-              controller.value.brushColor!.blue)
+      (controller.value.brushColor.red << 16 |
+              controller.value.brushColor.green << 8 |
+              controller.value.brushColor.blue)
           .toDouble(),
     );
     return Row(
@@ -62,15 +62,16 @@ class BrushOptions extends StatelessWidget {
             value: colorVal,
             max: 0xFFFFFF.toDouble(),
             thumbColor: Color(colorVal.toInt())
-                .withOpacity(controller.value.brushColor!.opacity),
+                .withOpacity(controller.value.brushColor.opacity),
             onChanged: (value) {
               color.value = value;
             },
             onChangeEnd: (value) {
               final intValue = value.toInt();
               controller.changeBrushValues(
-                  color: Color(intValue)
-                      .withOpacity(controller.value.brushColor!.opacity));
+                color: Color(intValue)
+                    .withOpacity(controller.value.brushColor.opacity),
+              );
             },
           ),
         ),

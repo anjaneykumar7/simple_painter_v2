@@ -24,42 +24,64 @@ import 'package:flutter_painter/src/models/brush_model.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 
+/// Controller class for managing painter-related functionalities.
+/// This class handles state management, drawing operations, erasing,
+/// adding text or images, and other actions for a painting application.
 class PainterController extends ValueNotifier<PainterControllerValue> {
+  /// Constructor to initialize the controller with default or custom settings.
   PainterController({
     PainterSettings settings = const PainterSettings(),
     Uint8List? backgroundImage,
   }) : this.fromValue(
           PainterControllerValue(
             settings: settings,
-            brushColor: settings.brush?.color ?? Colors.blue,
-            brushSize: settings.brush?.size ?? 5,
-            eraseSize: settings.erase?.size ?? 5,
+            brushColor:
+                settings.brush?.color ?? Colors.blue, // Default brush color
+            brushSize: settings.brush?.size ?? 5, // Default brush size
+            eraseSize: settings.erase?.size ?? 5, // Default erase size
           ),
           backgroundImage: backgroundImage,
         );
 
+  /// Alternate constructor that initializes the controller with a specific value
+  /// and optional background image.
   PainterController.fromValue(super.value, {Uint8List? backgroundImage})
       : background = PainterBackground(
           image: backgroundImage,
-          height: value.settings.scale?.height ?? 0,
-          width: value.settings.scale?.width ?? 0,
+          height: value.settings.scale?.height ??
+              0, // Height scaling for background
+          width:
+              value.settings.scale?.width ?? 0, // Width scaling for background
         );
 
+  /// GlobalKey used to identify the repaint boundary for rendering images.
   final GlobalKey repaintBoundaryKey = GlobalKey();
+
+  /// Stream controller for broadcasting events related to the painter.
   final StreamController<ControllerEvent> _eventController =
       StreamController<ControllerEvent>.broadcast();
+
+  /// Background object for handling the painting canvas background.
   PainterBackground background = PainterBackground();
+
+  /// Cached image of the background for performance improvements.
   ui.Image? cacheBackgroundImage;
+
+  /// ValueNotifier to track changes in paint actions.
   ValueNotifier<PaintActions> changeActions =
       ValueNotifier<PaintActions>(PaintActions());
+
+  /// Flags to determine the current state of the painter (drawing, erasing, etc.).
   bool isErasing = false;
   bool isDrawing = false;
   bool editingText = false;
   bool addingText = false;
 
+  /// Renders the current painting as an image and returns it as a Uint8List.
+  /// This can be used to save or share the painted content.
   Future<Uint8List?> renderImage() async {
     try {
-      clearSelectedItem();
+      clearSelectedItem(); // Deselect any selected item before rendering.
       await Future.delayed(const Duration(milliseconds: 100), () {});
       final boundary = repaintBoundaryKey.currentContext!.findRenderObject()!
           as RenderRepaintBoundary;
@@ -67,12 +89,15 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       return byteData?.buffer.asUint8List();
     } catch (e) {
-      return null;
+      return null; // Return null if rendering fails.
     }
   }
 
+  /// Adds a paint point to the current drawing path or performs erasing
+  /// if the eraser mode is enabled.
   void addPaintPoint(DrawModel point) {
     if (isErasing) {
+      // Save the state of paint paths before erasing begins.
       if (value.paintPathsBeforeErasing.isEmpty) {
         value =
             value.copyWith(paintPathsBeforeErasing: value.paintPaths.toList());
@@ -85,10 +110,13 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Ends the current drawing or erasing path, updating the state accordingly.
   void endPath() {
     if (!isErasing && value.currentPaintPath.toList().isNotEmpty) {
       value.paintPaths = value.paintPaths.toList()
-        ..add(List.from(value.currentPaintPath.toList()));
+        ..add(
+          List.from(value.currentPaintPath.toList()),
+        ); // Save the drawn path.
       addAction(
         ActionDraw(
           paintPath: value.currentPaintPath.toList(),
@@ -97,7 +125,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           actionType: ActionType.draw,
         ),
       );
-      value.currentPaintPath = value.currentPaintPath.toList()..clear();
+      value.currentPaintPath = value.currentPaintPath.toList()
+        ..clear(); // Clear the path.
     } else if (isErasing) {
       addAction(
         ActionErase(
@@ -113,6 +142,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Toggles the erasing mode. If enabled, disables the drawing mode.
   void toggleErasing() {
     isErasing = !isErasing;
     if (isErasing) {
@@ -120,6 +150,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Toggles the drawing mode. If enabled, disables the erasing mode.
   void toggleDrawing() {
     isDrawing = !isDrawing;
     if (isDrawing) {
@@ -127,9 +158,9 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Internal method for erasing parts of the canvas.
   void _erase(DrawModel draw) {
     final position = draw.offset;
-
     final updatedPaths = <List<DrawModel?>>[];
 
     for (final path in value.paintPaths.toList()) {
@@ -140,7 +171,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         final point = path[i];
         if (point == null) continue;
 
-        // Silme bölgesine girdi mi kontrolü
+        // Check if the point is within the eraser's region.
         if (((point.offset - position).distance) <
             value.eraseSize + draw.strokeWidth) {
           isInEraseRegion = true;
@@ -151,7 +182,6 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
               (i > 0 &&
                   (path[i - 1]!.offset - position).distance >=
                       value.eraseSize)) {
-            // Eğer silgi bölgesindeysek ve önceki noktayı silmediysek
             if (updatedPath.isNotEmpty) {
               updatedPaths.add(List.from(updatedPath));
               updatedPath.clear();
@@ -163,20 +193,23 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
         }
       }
 
-      // Son kalan yolu ekle
       if (updatedPath.isNotEmpty) {
         updatedPaths.add(updatedPath);
       }
     }
 
-    value = value.copyWith(paintPaths: updatedPaths);
+    value = value.copyWith(
+      paintPaths: updatedPaths,
+    ); // Update the state with erased paths.
   }
 
+  /// Sets a background image for the painter.
   Future<void> setBackgroundImage(Uint8List imageData) async {
     cacheBackgroundImage = null;
     background.image = imageData;
   }
 
+  /// Adds a text item to the painting canvas.
   Future<void> addText(String text) async {
     if (text.isNotEmpty) {
       final painterItem = TextItem(
@@ -211,16 +244,21 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Listens to events triggered by the controller and executes the provided callback.
+  /// Returns a subscription that can be used to manage the listener.
   StreamSubscription<ControllerEvent> eventListener(
     void Function(ControllerEvent) onData,
   ) {
     return _eventController.stream.listen(onData);
   }
 
+  /// Triggers an event for all listeners of the event stream.
   void triggerEvent(ControllerEvent event) {
     _eventController.add(event);
   }
 
+  /// Adds an image to the painter as a new item, using the provided Uint8List.
+  /// The image is inserted at the top of the items list, and an action is logged.
   void addImageUint8List(Uint8List image) {
     if (image.isNotEmpty) {
       final painterItem = ImageItem(
@@ -247,6 +285,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     }
   }
 
+  /// Adds an action to the action history and updates the current change actions.
   void addAction(PaintAction action) {
     ActionsService().addAction(
       action,
@@ -261,10 +300,12 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
   }
 
+  /// Retrieves the layer index of the specified item.
   int getLayerIndex(PainterItem item) {
     return LayerService().getLayerIndex(item, value.items.toList());
   }
 
+  /// Updates the position of an item in the items list at the specified index.
   void setItemPosition(int index, PositionModel position) {
     final items = value.items.toList();
     var item = items[index];
@@ -279,6 +320,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     value = value.copyWith(items: items);
   }
 
+  /// Updates the rotation of an item in the items list at the specified index.
   void setItemRotation(int index, double rotation) {
     final items = value.items.toList();
     var item = items[index];
@@ -293,6 +335,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     value = value.copyWith(items: items);
   }
 
+  /// Updates the size of an item in the items list at the specified index.
   void setItemSize(int index, SizeModel size) {
     final items = value.items.toList();
     var item = items[index];
@@ -307,6 +350,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     value = value.copyWith(items: items);
   }
 
+  // updates the action by changing the action index and updating the state
   void updateActionWithChangeActionIndex(int index) {
     ActionsService().updateActionWithChangeActionIndex(
         changeActions, value.paintPaths, value, index, (items) {
@@ -318,6 +362,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     });
   }
 
+  // undoes the last action and updates the state
   void undo() {
     ActionsService().undo(changeActions, value.paintPaths, value, (items) {
       value = value.copyWith(items: items);
@@ -328,6 +373,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     });
   }
 
+  // redoes the previously undone action and updates the state
   void redo() {
     ActionsService().redo(changeActions, value.paintPaths, value, (items) {
       value = value.copyWith(items: items);
@@ -338,6 +384,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     });
   }
 
+  // updates the layer index for a given painter item
   void updateLayerIndex(PainterItem item, int newIndex) {
     LayerService().updateLayerIndex(
       item,
@@ -350,6 +397,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
   }
 
+  // removes a painter item from the list based on layer index or selected item
   void removeItem({int? layerIndex}) {
     if (value.selectedItem == null && layerIndex == null) return;
     final items = value.items.toList();
@@ -374,6 +422,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     clearSelectedItem();
   }
 
+  // adds a new shape to the canvas
   void addShape(ShapeType shapeType) {
     final shapeItem = ShapeItem(
       shapeType: shapeType,
@@ -398,16 +447,19 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     value.selectedItem = shapeItem;
   }
 
+  // clears the selected item in the canvas
   void clearSelectedItem() {
     value.selectedItem = null;
     value = value.copyWith();
   }
 
+  // retrieves the index of a given painter item
   int _getItemIndexFromItem(PainterItem item) {
     final index = value.items.indexWhere((element) => element.id == item.id);
     return index;
   }
 
+  // updates text-related properties for a TextItem
   void changeTextValues(
     TextItem item, {
     TextStyle? textStyle,
@@ -430,6 +482,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     _changeItemValues(newItem);
   }
 
+  // updates brush size or color
   void changeBrushValues({
     double? size,
     Color? color,
@@ -440,6 +493,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
   }
 
+  // updates eraser size
   void changeEraseValues({
     double? size,
     Color? color,
@@ -449,6 +503,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     );
   }
 
+  // updates properties for a ShapeItem
   void changeShapeValues(
     ShapeItem item, {
     ShapeType? shapeType,
@@ -465,6 +520,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     _changeItemValues(newItem);
   }
 
+  // updates properties for an ImageItem
   void changeImageValues(
     ImageItem item, {
     BoxFit? boxFit,
@@ -493,6 +549,7 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
     _changeItemValues(newItem);
   }
 
+  // applies changes to a specific item and updates the state
   void _changeItemValues(PainterItem item) {
     ChangeItemValuesService().changeItemValues(
       item,
@@ -508,7 +565,11 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 }
 
+/// This class is used to hold the values for the PainterController.
+/// It manages the state of the drawing application, including settings,
+/// drawn paths, selected items, and tool properties.
 class PainterControllerValue {
+  /// Constructor to initialize the controller's values.
   PainterControllerValue({
     required this.settings,
     this.scale,
@@ -521,18 +582,38 @@ class PainterControllerValue {
     this.eraseSize = 5,
     this.brushColor = Colors.blue,
   });
+
+  /// General painter settings.
   final PainterSettings settings;
+
+  /// The scale of the canvas.
   final Size? scale;
-  List<List<DrawModel?>> paintPaths =
-      <List<DrawModel?>>[]; // Çizim yollarını saklamak için
-  List<DrawModel?> currentPaintPath = <DrawModel?>[]; // Geçici çizim yolu
+
+  /// List of all paint paths (each path is a list of draw models).
+  List<List<DrawModel?>> paintPaths = <List<DrawModel?>>[];
+
+  /// The current paint path being drawn (not yet finalized).
+  List<DrawModel?> currentPaintPath = <DrawModel?>[];
+
+  /// List of paint paths before erasing (for undo/redo support).
   List<List<DrawModel?>> paintPathsBeforeErasing = <List<DrawModel?>>[];
+
+  /// List of all items (shapes, images, text) on the canvas.
   List<PainterItem> items = <PainterItem>[];
+
+  /// The currently selected item, if any.
   PainterItem? selectedItem;
+
+  /// The size of the brush tool.
   final double brushSize;
+
+  /// The size of the eraser tool.
   final double eraseSize;
+
+  /// The color of the brush tool.
   final Color brushColor;
 
+  /// Creates a copy of the current controller value with optional changes.
   PainterControllerValue copyWith({
     PainterSettings? settings,
     Size? scale,

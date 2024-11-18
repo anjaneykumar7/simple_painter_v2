@@ -8,6 +8,7 @@ import 'package:flutter_painter/src/models/size_model.dart';
 import 'package:flutter_painter/src/views/widgets/measure_size.dart';
 import 'package:flutter_painter/src/views/widgets/painter_container/painter_container.dart';
 
+// StatefulWidget that manages the display and interaction with an image item
 class ImageItemWidget extends StatefulWidget {
   const ImageItemWidget({
     required this.item,
@@ -19,53 +20,90 @@ class ImageItemWidget extends StatefulWidget {
     this.onRotationChange,
     this.onTapItem,
   });
+
+  // The image item being displayed and interacted with
   final ImageItem item;
+  // The height of the widget
   final double height;
+  // Optional callback when the position of the item changes
   final void Function(PositionModel)? onPositionChange;
+  // Optional callback when the size of the item changes
   final void Function(PositionModel, SizeModel)? onSizeChange;
+  // Optional callback when the rotation of the item changes
   final void Function(double)? onRotationChange;
+  // Optional callback when the item is tapped
   final void Function()? onTapItem;
 
+  // The painter controller that controls the drawing behavior
   final PainterController painterController;
+
   @override
   State<ImageItemWidget> createState() => _ImageItemWidgetState();
 }
 
+// State class for ImageItemWidget, which handles the widget's state
 class _ImageItemWidgetState extends State<ImageItemWidget> {
+  // Variable to store the widget's height
   double? widgetHeight;
+
+  // A ValueNotifier to track the position of the item
   ValueNotifier<PositionModel> position =
       ValueNotifier(const PositionModel(x: 50, y: 50));
-  bool refreshValue =
-      false; //image widgetı ilk çalıştığında uint8list daha işlenmediğinden
-  //height 0 döndürüyor, doğru şekilde height ölçmesi için MeasureSize
-  //widgetında ki onChange methodunu bu değişken ile yeniden çalıştırıyorum
+
+  // Flag to trigger a refresh for the widget
+  bool refreshValue = false; // The image widget might return height
+  //as 0 if the image hasn't been processed yet,
+  // hence we are manually triggering a refresh in
+  //the MeasureSize widget's onChange method.
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
+      // Listening to position changes
       valueListenable: position,
       builder: (context, value, child) {
         return PainterContainer(
+          // Determines if the current item is selected
+          // based on the painterController's value
           selectedItem: widget.painterController.value.selectedItem != null &&
               widget.painterController.value.selectedItem?.id == widget.item.id,
+
+          // Height of the painter container
           height: widget.height,
           minimumContainerHeight: widgetHeight,
+
+          // Position of the image item
           position: widget.item.position,
+
+          // Rotation angle of the item
           rotateAngle: widget.item.rotation,
+
+          // Size of the item
           size: widget.item.size,
+
+          // Callback to handle item selection
           selectedItemChange: () {
             widget.painterController.value = widget.painterController.value
                 .copyWith(selectedItem: widget.item);
           },
+
+          // Callback to handle position change
           onPositionChange: (oldPosition, newPosition) {
             position.value = newPosition;
             widget.onPositionChange?.call(newPosition);
           },
+
+          // Callback to handle rotation change
           onRotateAngleChange: (oldRotateAngle, newRotateAngle) {
             widget.onRotationChange?.call(newRotateAngle);
           },
+
+          // Callback to handle size change
           onSizeChange: (newPosition, oldSize, newSize) {
             widget.onSizeChange?.call(newPosition, newSize);
           },
+
+          // When position change ends, record the action
           onPositionChangeEnd: (
             oldPosition,
             newPosition,
@@ -80,6 +118,8 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
               ),
             );
           },
+
+          // When rotation change ends, record the action
           onRotateAngleChangeEnd: (oldRotateAngle, newRotateAngle) {
             widget.painterController.addAction(
               ActionRotation(
@@ -91,6 +131,8 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
               ),
             );
           },
+
+          // When size change ends, record the action
           onSizeChangeEnd: (oldPosition, oldSize, newPosition, newSize) {
             widget.painterController.addAction(
               ActionSize(
@@ -104,15 +146,25 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
               ),
             );
           },
+
+          // Callback to handle tap on the item
           onTapItem: ({bool? tapItem}) {
             if (tapItem != null && !tapItem && widget.onTapItem != null) {
               widget.onTapItem!.call();
             }
           },
+
+          // Only enable the painter container if the widgetHeight is available
           enabled: widgetHeight != null,
+
+          // Color of the drag handle for the item
           dragHandleColor:
               widget.painterController.value.settings.itemDragHandleColor,
+
+          // Child widget that wraps the image
           child: MeasureSize(
+            // Measure the size of the child and
+            // update widgetHeight if necessary
             onChange: (size) {
               if (widgetHeight != null) return;
               setState(() {
@@ -121,7 +173,7 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
             },
             child: SizedBox(
               width: double.infinity,
-              child: imageBody,
+              child: imageBody, // The body of the image widget
             ),
           ),
         );
@@ -129,9 +181,12 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
     );
   }
 
+  // Builds the body of the image widget, which consists of layers
   Widget get imageBody => Stack(
         children: [
+          // Positioned image as the background
           Positioned.fill(child: image),
+          // Positioned container with a border around the image
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
@@ -143,6 +198,7 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
               ),
             ),
           ),
+          // Apply gradient overlay if enabled
           if (widget.item.gradientOpacity > 0 &&
               widget.item.enableGradientColor)
             Positioned.fill(
@@ -168,11 +224,13 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
         ],
       );
 
+  // Builds the image widget, wrapped in a ClipRRect to apply border radius
   Widget get image => ClipRRect(
         borderRadius: widget.item.borderRadius,
         child: Image(
-          image: MemoryImage(widget.item.image),
-          fit: widget.item.fit,
+          image: MemoryImage(widget.item.image), // Loads image from memory
+          fit: widget
+              .item.fit, // Sets the fit for the image within the container
         ),
       );
 }

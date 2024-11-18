@@ -13,12 +13,12 @@ class RectanglePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Arka plan için dolgu boyası
+    // Paint for the background (fill)
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
 
-    // Çerçeve için çizim boyası
+    // Paint for the border (stroke)
     final borderPaint = Paint()
       ..color = lineColor
       ..strokeWidth = thickness
@@ -27,15 +27,15 @@ class RectanglePainter extends CustomPainter {
 
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
 
-    // Arka planı doldur
+    // Draw the background (fill)
     canvas
       ..drawRect(rect, backgroundPaint)
-      // Dikdörtgenin kenar çizgilerini çiz
+      // Draw the border of the rectangle
       ..drawRect(rect, borderPaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return true; // Always redraw
   }
 }

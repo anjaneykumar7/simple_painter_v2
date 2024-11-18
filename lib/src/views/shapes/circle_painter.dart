@@ -13,31 +13,30 @@ class CirclePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Arka plan için dolgu boyası
+    // Paint for the background (fill)
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
 
-    // Çerçeve için çizim boyası
+    // Paint for the border (stroke)
     final borderPaint = Paint()
       ..color = lineColor
       ..strokeWidth = thickness
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    // Dairenin sınırlarını belirleyen dikdörtgen
-    //(genişliğe ve yüksekliğe göre esneyen oval)
+    // Creating a rectangle to define the boundaries of the oval (ellipse)
     final ovalRect = Rect.fromLTWH(0, 0, size.width, size.height);
 
-    // Arka planı doldur
+    // Draw the background as an oval
     canvas
       ..drawOval(ovalRect, backgroundPaint)
-      // Ovalin kenar çizgilerini çiz
+      // Draw the border of the oval
       ..drawOval(ovalRect, borderPaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return true; // Always redraw
   }
 }

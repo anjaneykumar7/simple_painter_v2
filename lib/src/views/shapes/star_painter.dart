@@ -16,19 +16,19 @@ class StarPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
 
-    // x ve y yönünde yarıçapları ayrı ayrı hesapla
+    // Calculate outer and inner radii for the star's points
     final outerRadiusX = size.width / 2;
     final outerRadiusY = size.height / 2;
     final innerRadiusX = outerRadiusX / 2.5;
     final innerRadiusY = outerRadiusY / 2.5;
     const angleStep = (2 * pi) / 5;
 
-    // Arka plan için dolgu boyası
+    // Paint for the background (fill)
     final backgroundPaint = Paint()
       ..color = backgroundColor
       ..style = PaintingStyle.fill;
 
-    // Yıldız kenar çizgileri için boyama
+    // Paint for the border (stroke) of the star
     final borderPaint = Paint()
       ..color = lineColor
       ..strokeWidth = thickness
@@ -37,7 +37,7 @@ class StarPainter extends CustomPainter {
 
     final path = Path();
 
-    // Yıldızın köşe noktalarını belirleyerek path oluştur
+    // Generate the points of the star
     for (var i = 0; i < 5; i++) {
       final outerX = center.dx + outerRadiusX * cos(i * angleStep - pi / 2);
       final outerY = center.dy + outerRadiusY * sin(i * angleStep - pi / 2);
@@ -55,15 +55,15 @@ class StarPainter extends CustomPainter {
     }
     path.close();
 
-    // Arka plan rengini doldur
+    // Draw the background (fill)
     canvas
       ..drawPath(path, backgroundPaint)
-      // Yıldızın kenar çizgilerini çiz
+      // Draw the border of the star
       ..drawPath(path, borderPaint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
+    return true; // Always redraw
   }
 }

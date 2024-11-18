@@ -1,86 +1,107 @@
 part of '../painter_container.dart';
 
+// A widget that handles the resizing and repositioning of a stack container.
+// It allows the user to drag the edges (handles) of the container to resize it
+// and updates the container's size and position based on user interaction.
 class _StackHandle extends StatelessWidget {
   const _StackHandle({
-    required this.stackPosition,
-    required this.containerSize,
-    required this.oldContainerSize,
-    required this.handleWidgetHeight,
-    required this.handleWidgetWidth,
-    required this.minimumContainerWidth,
-    required this.minimumContainerHeight,
-    required this.stackWidth,
-    required this.stackHeight,
-    required this.position,
-    required this.height,
-    required this.onPanEnd,
-    required this.onPanUpdate,
-    this.dragHandleColor,
-    this.onSizeChange,
+    required this.stackPosition, // Position of the stack within
+    // the parent container
+    required this.containerSize, // The current size
+    // (width and height) of the container
+    required this.oldContainerSize, // The previous size of
+    // the container before resizing
+    required this.handleWidgetHeight, // Height of the resizing handle widgets
+    required this.handleWidgetWidth, // Width of the resizing handle widgets
+    required this.minimumContainerWidth, // Minimum width of the container
+    required this.minimumContainerHeight, // Minimum height of the container
+    required this.stackWidth, // The width of the stack (used for positioning)
+    required this.stackHeight, // The height of the stack (used for positioning)
+    required this.position, // Current position of the stack within the screen
+    required this.height, // The total height of the screen or container
+    required this.onPanEnd, // Callback when the user finishes dragging
+    required this.onPanUpdate, // Callback for updating
+    //the container's size or position during dragging
+    this.dragHandleColor, // Optional color for the drag handle
+    this.onSizeChange, // Optional callback for size change events
   });
-  final PositionModel stackPosition;
-  final SizeModel containerSize;
-  final SizeModel oldContainerSize;
-  final double handleWidgetHeight;
-  final double handleWidgetWidth;
-  final double minimumContainerWidth;
-  final double minimumContainerHeight;
-  final double stackWidth;
-  final double stackHeight;
-  final PositionModel position;
-  final double height;
-  final Color? dragHandleColor;
-  final void Function() onPanEnd;
+
+  final PositionModel stackPosition; // Position model for the stack
+  final SizeModel containerSize; // Current size of the container
+  final SizeModel oldContainerSize; // Previous size of the container
+  final double handleWidgetHeight; // Height of the resize handle
+  final double handleWidgetWidth; // Width of the resize handle
+  final double
+      minimumContainerWidth; // Minimum allowable width for the container
+  final double
+      minimumContainerHeight; // Minimum allowable height for the container
+  final double stackWidth; // Width of the stack to help position the container
+  final double
+      stackHeight; // Height of the stack to help position the container
+  final PositionModel position; // Position of the stack
+  final double height; // Height constraint of the parent container or screen
+  final Color? dragHandleColor; // Color for the drag
+  //handle, defaults to blue if not provided
+  final void Function() onPanEnd; // Function to call when dragging ends
   final void Function(SizeModel containerSize, PositionModel? stackPosition)
-      onPanUpdate;
+      onPanUpdate; // Function to call for updates during dragging
 
   final void Function(
-    PositionModel newPosition,
-    SizeModel oldSize,
-    SizeModel newSize,
-  )? onSizeChange;
+    PositionModel newPosition, // The new position after resizing or dragging
+    SizeModel oldSize, // The old size of the container
+    SizeModel newSize, // The new size of the container after resizing
+  )? onSizeChange; // Optional callback for when the size changes
+
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: stackPosition.x,
-      top: stackPosition.y,
+      left: stackPosition.x, // Position the widget at the specified X position
+      top: stackPosition.y, // Position the widget at the specified Y position
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: handleWidgetHeight / 2,
-          vertical: handleWidgetWidth / 2,
+          horizontal:
+              handleWidgetHeight / 2, // Horizontal padding for handle size
+          vertical: handleWidgetWidth / 2, // Vertical padding for handle size
         ),
         child: SizedBox(
-          width: containerSize.width + handleWidgetHeight,
-          height: containerSize.height + handleWidgetWidth,
+          width: containerSize.width +
+              handleWidgetHeight, // Width including the handle size
+          height: containerSize.height +
+              handleWidgetWidth, // Height including the handle size
           child: Stack(
             children: _HandlePosition.values.map((handlePosition) {
               return Align(
                 alignment: handlePosition == _HandlePosition.top
-                    ? Alignment.topCenter
+                    ? Alignment.topCenter // Align top handle
                     : handlePosition == _HandlePosition.bottom
-                        ? Alignment.bottomCenter
+                        ? Alignment.bottomCenter // Align bottom handle
                         : handlePosition == _HandlePosition.left
-                            ? Alignment.centerLeft
+                            ? Alignment.centerLeft // Align left handle
                             : handlePosition == _HandlePosition.right
-                                ? Alignment.centerRight
-                                : Alignment.center,
+                                ? Alignment.centerRight // Align right handle
+                                : Alignment.center, // Align center for
+                //the default position
                 child: GestureDetector(
-                  onPanEnd: (details) => onPanEnd.call(),
-                  onPanUpdate: (details) =>
-                      gestureUpdate(details, handlePosition),
+                  onPanEnd: (details) =>
+                      onPanEnd.call(), // Call onPanEnd when drag ends
+                  onPanUpdate: (details) => gestureUpdate(
+                    details,
+                    handlePosition,
+                  ), // Handle updates while dragging
                   child: _HandleWidget(
-                    handlePosition: handlePosition,
+                    handlePosition: handlePosition, // Position of the handle
                     height: _getHandleWidgetHeight(
-                      handlePosition,
-                      handleWidgetHeight,
-                      containerSize,
+                      handlePosition, // Get the height for the handle widget
+                      handleWidgetHeight, // Height of the handle widget
+                      containerSize, // Current size of the container
                     ),
                     width: _getHandleWidgetWidth(
-                      handlePosition,
-                      handleWidgetWidth,
-                      containerSize,
+                      handlePosition, // Get the width for the handle widget
+                      handleWidgetWidth, // Width of the handle widget
+                      containerSize, // Current size of the container
                     ),
-                    backgroundColor: dragHandleColor ?? Colors.blue,
+                    backgroundColor: dragHandleColor ??
+                        Colors.blue, // Set background color for the handle
                   ),
                 ),
               );
@@ -92,48 +113,47 @@ class _StackHandle extends StatelessWidget {
   }
 
   void gestureUpdate(
-    DragUpdateDetails details,
-    _HandlePosition handlePosition,
+    DragUpdateDetails details, // Details of the drag update
+    _HandlePosition
+        handlePosition, // Position of the current handle being dragged
   ) {
-    {
-      // endSizeControl = true;
+    if (handlePosition == _HandlePosition.left) {
+      stackLeftUpdate(details); // Handle left-side drag
+    } else if (handlePosition == _HandlePosition.right) {
+      stackRightUpdate(details); // Handle right-side drag
+    } else if (handlePosition == _HandlePosition.top) {
+      stackTopUpdate(details); // Handle top-side drag
+    } else if (handlePosition == _HandlePosition.bottom) {
+      stackBottomUpdate(details); // Handle bottom-side drag
+    }
 
-      if (handlePosition == _HandlePosition.left) {
-        stackLeftUpdate(details);
-      } else if (handlePosition == _HandlePosition.right) {
-        stackRightUpdate(details);
-      } else if (handlePosition == _HandlePosition.top) {
-        stackTopUpdate(details);
-      } else if (handlePosition == _HandlePosition.bottom) {
-        stackBottomUpdate(details);
-      }
-      if (onSizeChange != null) {
-        onSizeChange?.call(
-          PositionModel(
-            x: position.x,
-            y: position.y,
-          ),
-          SizeModel(
-            width: oldContainerSize.width,
-            height: oldContainerSize.height,
-          ),
-          SizeModel(
-            width: containerSize.width,
-            height: containerSize.height,
-          ),
-        );
-      }
+    // If onSizeChange callback is provided, call it to
+    //notify of the size change
+    if (onSizeChange != null) {
+      onSizeChange?.call(
+        PositionModel(
+          x: position.x, // Current X position of the container
+          y: position.y, // Current Y position of the container
+        ),
+        SizeModel(
+          width: oldContainerSize.width, // Old width before resize
+          height: oldContainerSize.height, // Old height before resize
+        ),
+        SizeModel(
+          width: containerSize.width, // New width after resize
+          height: containerSize.height, // New height after resize
+        ),
+      );
     }
   }
 
   void stackLeftUpdate(DragUpdateDetails details) {
     if (containerSize.width <= minimumContainerWidth && details.delta.dx > 0) {
-      //container genişliği minimum genişlikten küçükse ve
-      //ola doğru kaydırma yapılıyorsa
-
+      // If the container width is smaller than the
+      //minimum width and dragged right
       onPanUpdate.call(
         containerSize.copyWith(
-          width: minimumContainerWidth,
+          width: minimumContainerWidth, // Set the width to the minimum allowed
         ),
         null,
       );
@@ -142,30 +162,33 @@ class _StackHandle extends StatelessWidget {
 
     onPanUpdate.call(
       containerSize.copyWith(
-        width: containerSize.width - details.delta.dx,
+        width: containerSize.width -
+            details.delta.dx, // Update width based on drag
       ),
       stackPosition.copyWith(
-        x: stackPosition.x + details.delta.dx,
+        x: stackPosition.x +
+            details.delta.dx, // Update X position based on drag
       ),
     );
   }
 
   void stackRightUpdate(DragUpdateDetails details) {
     if (containerSize.width <= minimumContainerWidth && details.delta.dx < 0) {
-      //container genişliği minimum genişlikten küçükse ve
-      //sağa doğru kaydırma yapılıyorsa
-
+      // If the container width is smaller than
+      //the minimum width and dragged left
       onPanUpdate.call(
         containerSize.copyWith(
-          width: minimumContainerWidth,
+          width: minimumContainerWidth, // Set the width to the minimum allowed
         ),
         null,
       );
       return;
     }
+
     onPanUpdate.call(
       containerSize.copyWith(
-        width: containerSize.width + details.delta.dx,
+        width: containerSize.width +
+            details.delta.dx, // Update width based on drag
       ),
       null,
     );
@@ -174,55 +197,58 @@ class _StackHandle extends StatelessWidget {
   void stackTopUpdate(DragUpdateDetails details) {
     if (containerSize.height <= minimumContainerHeight &&
         details.delta.dy > 0) {
-      //container yüksekliği minimum yükseklikten küçükse
-      //ve yukarı doğru kaydırma yapılıyorsa
-
+      // If the container height is smaller
+      //than the minimum height and dragged up
       onPanUpdate.call(
         containerSize.copyWith(
-          height: minimumContainerHeight,
+          height:
+              minimumContainerHeight, // Set the height to the minimum allowed
         ),
         null,
       );
       return;
-    } else {
-      onPanUpdate.call(
-        containerSize.copyWith(
-          height: containerSize.height - details.delta.dy,
-        ),
-        stackPosition.copyWith(
-          y: stackPosition.y + details.delta.dy,
-        ),
-      );
     }
+
+    onPanUpdate.call(
+      containerSize.copyWith(
+        height: containerSize.height -
+            details.delta.dy, // Update height based on drag
+      ),
+      stackPosition.copyWith(
+        y: stackPosition.y +
+            details.delta.dy, // Update Y position based on drag
+      ),
+    );
   }
 
   void stackBottomUpdate(DragUpdateDetails details) {
     if (containerSize.height <= minimumContainerHeight &&
         details.delta.dy < 0) {
-      //container yüksekliği minimum yükseklikten küçükse
-      //ve aşağı doğru kaydırma yapılıyorsa
-
+      // If the container height is
+      //smaller than the minimum height and dragged down
       onPanUpdate.call(
         containerSize.copyWith(
-          height: minimumContainerHeight,
+          height:
+              minimumContainerHeight, // Set the height to the minimum allowed
         ),
         null,
       );
       return;
     }
-    if (position.y + containerSize.height + details.delta.dy > height) {
-      //eğer container en aşağı kaydırıldıysa container yüksekliği sabit kalır
 
+    if (position.y + containerSize.height + details.delta.dy > height) {
+      // If the container is dragged to the bottom limit, maintain its height
       onPanUpdate.call(
         containerSize.copyWith(
-          height: height - position.y,
+          height: height - position.y, // Set height to fit the remaining space
         ),
         null,
       );
     } else {
       onPanUpdate.call(
         containerSize.copyWith(
-          height: containerSize.height + details.delta.dy,
+          height: containerSize.height +
+              details.delta.dy, // Update height based on drag
         ),
         null,
       );

@@ -2,6 +2,10 @@
 
 part of '../painter_container.dart';
 
+// This class defines a widget that can be positioned
+//and scaled interactively within a stack.
+// It also handles user interactions like tapping, scaling,
+//and dragging, and adjusts the size and position of the widget accordingly.
 class _StackWidget extends StatelessWidget {
   const _StackWidget({
     required this.oldPosition,
@@ -35,6 +39,9 @@ class _StackWidget extends StatelessWidget {
     this.centerChild,
     this.dragHandleColor,
   });
+
+  // These variables hold the current and
+  //previous positions and sizes of the widget.
   final PositionModel stackPosition;
   final PositionModel oldPosition;
   final PositionModel position;
@@ -57,6 +64,7 @@ class _StackWidget extends StatelessWidget {
   final bool? centerChild;
   final Widget? child;
 
+  // Callbacks and event handlers for user interactions with the widget.
   final void Function(
     double? scaleCurrentHeight,
     double? currentRotateAngle,
@@ -72,57 +80,58 @@ class _StackWidget extends StatelessWidget {
   final void Function(SizeModel containerSize, PositionModel? stackPosition)
       handlePanUpdate;
   final void Function(PositionModel, SizeModel, SizeModel) handleSizeChange;
+
+  // The build method positions the widget
+  //within a stack, handling interactions like tapping and scaling.
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: stackPosition.x,
-      top: stackPosition.y,
+      left: stackPosition.x, // Position the widget on the X axis
+      top: stackPosition.y, // Position the widget on the Y axis
       child: Padding(
         padding: EdgeInsets.symmetric(
-          horizontal: handleWidgetHeight,
-          vertical: handleWidgetWidth,
+          horizontal: handleWidgetHeight, // Padding for horizontal resizing
+          vertical: handleWidgetWidth, // Padding for vertical resizing
         ),
         child: GestureDetector(
-          onTap: onTap,
-          onScaleStart: (details) => onScaleStart.call(),
-          onScaleEnd: onScaleEnd.call,
+          onTap: onTap, // Handle tap events
+          onScaleStart: (details) => onScaleStart.call(), // Handle scale start
+          onScaleEnd: onScaleEnd.call, // Handle scale end
           onScaleUpdate: (details) {
             if (details.pointerCount == 1) {
-              gestureScaleUpdatePointer1(details);
+              gestureScaleUpdatePointer1(
+                details,
+              ); // Handle single-pointer scaling
             } else if (details.pointerCount == 2) {
-              gestureScaleUpdatePointer2(details);
+              gestureScaleUpdatePointer2(details); // Handle two-pointer scaling
             }
           },
           child: Container(
-            width: containerSize.width,
-            height: containerSize.height,
+            width: containerSize.width, // Set the container width
+            height: containerSize.height, // Set the container height
             decoration: BoxDecoration(
-              color: Colors.transparent,
+              color: Colors.transparent, // Transparent background
               border: Border.all(
                 color: selectedItem
-                    ? dragHandleColor ?? Colors.blue
-                    : Colors.transparent,
+                    ? dragHandleColor ??
+                        Colors.blue // Border color when selected
+                    : Colors.transparent, // No border when not selected
               ),
             ),
-            child: initializeSize //eğer her zaman align çalışırsa
-                //imagefill yapmak istediğimde
-                //align widgetı olduğu için height olarak fit
-                //yapamıyor, bunu düzeltmek içinde bir
-                //kez align çalıştıktan sonra ana widgetı
-                //döndürüyorum
+            child: initializeSize // If size initialization is needed
                 ? (centerChild != null &&
-                        centerChild!) //widget her zaman ortaya
-                    //alınmak istiyor
-                    //ise (örneğin text widgetı)
-                    ? Center(child: child)
+                        centerChild!) // If the widget should be centered
+                    ? Center(child: child) // Center the child widget
                     : child
-                : Align(child: child),
+                : Align(child: child), // Align the child widget otherwise
           ),
         ),
       ),
     );
   }
 
+  // Handles the scaling update when there
+  //are two pointers interacting with the widget.
   void gestureScaleUpdatePointer2(ScaleUpdateDetails details) {
     if (scaleCurrentHeight == -1) {
       pointerCount2Change.call(
@@ -143,12 +152,14 @@ class _StackWidget extends StatelessWidget {
       return;
     }
 
+    // Calculate the real scaling factor based on the pointer scale
     final realScale =
         (scaleCurrentHeight * (details.scale)) / containerSize.height;
 
-    final realRotateAngle = currentRotateAngle + details.rotation;
-    final oldWidth = containerSize.width;
-    final oldHeight = containerSize.height;
+    final realRotateAngle =
+        currentRotateAngle + details.rotation; // Calculate new rotation angle
+    final oldWidth = containerSize.width; // Store the old width
+    final oldHeight = containerSize.height; // Store the old height
 
     pointerCount2Change.call(
       null,
@@ -156,6 +167,7 @@ class _StackWidget extends StatelessWidget {
       realRotateAngle,
       null,
     );
+    // Prevent resizing if it goes below the minimum dimensions
     if (containerSize.width * realScale < minimumContainerWidth ||
         containerSize.height * realScale < minimumContainerHeight) {
       return;
@@ -170,9 +182,11 @@ class _StackWidget extends StatelessWidget {
         ),
       );
     }
+    // Update the widget's stack position based on the new size
     final newStackXPosition = stackWidth / 2 - (containerSize.width / 2);
     final newStackYPosition = stackHeight / 2 - (containerSize.height / 2);
 
+    // Call the scale update callback with new position and size
     onScaleUpdate.call(
       position.copyWith(
         x: position.x - (containerSize.width - oldWidth) / 2,
@@ -185,14 +199,18 @@ class _StackWidget extends StatelessWidget {
     );
   }
 
+  // Handles the scaling update when there
+  //is a single pointer interacting with the widget.
   void gestureScaleUpdatePointer1(ScaleUpdateDetails details) {
-    final pos = details.focalPointDelta;
-    final cosAngle = cos(rotateAngle);
-    final sinAngle = sin(rotateAngle);
+    final pos = details.focalPointDelta; // Get the movement of the pointer
+    final cosAngle = cos(rotateAngle); // Calculate cosine of the rotation angle
+    final sinAngle = sin(rotateAngle); // Calculate sine of the rotation angle
 
+    // Calculate the change in position based on the rotation angle
     final deltaX = pos.dx * cosAngle - pos.dy * sinAngle;
     final deltaY = pos.dx * sinAngle + pos.dy * cosAngle;
 
+    // Call the scale update callback with the new position
     onScaleUpdate.call(
       position.copyWith(
         x: position.x + deltaX,

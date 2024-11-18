@@ -289,6 +289,7 @@ class _PainterContainerState extends State<PainterContainer> {
     );
   }
 
+  // Method to calculate the position and size after changes
   void calculateSizeAfterChangedSize(double stackWidth, double stackHeight) {
     setState(() {
       final oldStackXPosition = stackPosition.x;
@@ -323,6 +324,7 @@ class _PainterContainerState extends State<PainterContainer> {
     });
   }
 
+  // Initializes the widget size based on the given width and height
   void initializeWidgetSize(double stackWidth, double stackHeight) {
     void setValue() {
       containerSize = containerSize.copyWith(
@@ -347,6 +349,7 @@ class _PainterContainerState extends State<PainterContainer> {
     }
   }
 
+  // Controls external changes to position and size
   void controlOutsideValues(double stackWidth, double stackHeight) {
     if (calculatingPositionForSize) {
       calculatingPositionForSize = false;
@@ -386,6 +389,7 @@ class _PainterContainerState extends State<PainterContainer> {
     }
   }
 
+  // Handles updates on position, size, and rotation angle changes
   void updateEvents() {
     if (position != oldPosition && !changedSize) {
       WidgetsBinding.instance.addPostFrameCallback((_) {

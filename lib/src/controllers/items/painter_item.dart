@@ -4,29 +4,31 @@ import 'package:flutter_painter/src/helpers/random_service.dart';
 import 'package:flutter_painter/src/models/position_model.dart';
 import 'package:flutter_painter/src/models/size_model.dart';
 
+// Represents a generic item that can be added to the painter canvas.
 class PainterItem extends Equatable {
   PainterItem({
-    required this.position,
-    required this.layer,
-    this.size,
-    this.enabled = true,
-    this.rotation = 0,
-    String? id,
+    required this.position, // The position of the item on the canvas.
+    required this.layer, // The layer settings for the item.
+    this.size, // The size of the item, if applicable.
+    this.enabled =
+        true, // Indicates if the item is enabled (visible and active).
+    this.rotation = 0, // The rotation angle of the item in degrees.
+    String? id, // Unique identifier for the item, generated if not provided.
   }) : id = id ?? RandomService.generateRandomId();
 
-  final String id;
-  final bool enabled;
-  final PositionModel position;
-  final SizeModel? size;
-  final double rotation;
-  final LayerSettings layer;
+  final String id; // Unique identifier for the item.
+  final bool enabled; // Indicates whether the item is active.
+  final PositionModel position; // The item's position on the canvas.
+  final SizeModel? size; // Optional size information for the item.
+  final double rotation; // Rotation angle in degrees.
+  final LayerSettings layer; // Layer settings for the item.
 
   PainterItem copyWith({
-    bool? enabled,
-    PositionModel? position,
-    LayerSettings? layer,
-    SizeModel? size,
-    double? rotation,
+    bool? enabled, // New enabled state, if provided.
+    PositionModel? position, // New position, if provided.
+    LayerSettings? layer, // New layer settings, if provided.
+    SizeModel? size, // New size, if provided.
+    double? rotation, // New rotation angle, if provided.
   }) {
     return PainterItem(
       id: id,

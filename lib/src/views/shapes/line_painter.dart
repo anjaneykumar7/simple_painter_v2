@@ -15,18 +15,18 @@ class LinePainter extends CustomPainter {
       ..color = lineColor
       ..strokeWidth = thickness;
 
-    // Çizginin başlangıç ve bitiş noktaları
+    // Define start and end points of the line
     final startPoint = Offset(0, size.height / 2);
     final endPoint = Offset(size.width, size.height / 2);
 
-    // Çizgiyi çiz
+    // Draw the line
     canvas.drawLine(startPoint, endPoint, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
+    return false; // No need to redraw unless necessary
   }
 
-  Size get size => Size(size.width, size.height);
+  Size get size => Size(size.width, size.height); // Getter for size property
 }

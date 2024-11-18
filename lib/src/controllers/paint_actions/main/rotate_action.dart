@@ -1,15 +1,17 @@
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
 
+// Represents an action to rotate an item.
 class ActionRotation extends PaintAction {
   const ActionRotation({
-    required this.oldRotateAngle,
-    required this.newRotateAngle,
-    required this.item,
-    required super.timestamp,
-    required super.actionType,
+    required this.oldRotateAngle, // The previous rotation angle of the item.
+    required this.newRotateAngle, // The updated rotation angle of the item.
+    required this.item, // The item being rotated.
+    required super.timestamp, // Timestamp of when the action occurred.
+    required super.actionType, // Type of action (rotationItem).
   });
-  final PainterItem item;
-  final double oldRotateAngle;
-  final double newRotateAngle;
+
+  final PainterItem item; // The item being rotated.
+  final double oldRotateAngle; // The previous rotation angle of the item.
+  final double newRotateAngle; // The updated rotation angle of the item.
 }

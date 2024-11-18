@@ -19,76 +19,77 @@ class DoubleArrowPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    // Ok uzunluğu: genişlik ve yükseklikten daha küçük olanın %60'ı kadar
+    // Arrow length: 60% of the smaller dimension (width or height)
     final arrowLength = size.width;
 
-    // Okları çizecek başlangıç noktaları
+    // Starting points for the arrows
     final startPointLeft = Offset(0, size.height / 2);
     final startPointRight = Offset(size.width, size.height / 2);
 
-    // Sağ tarafa olan ok
+    // Right arrow end point
     final endPointRight = Offset(
       startPointLeft.dx + arrowLength * cos(angle),
       startPointLeft.dy + arrowLength * sin(angle),
     );
 
-    // Sol tarafa olan ok
+    // Left arrow end point
     final endPointLeft = Offset(
       startPointRight.dx - arrowLength * cos(angle),
       startPointRight.dy - arrowLength * sin(angle),
     );
 
-    // Sağ tarafa ok gövdesi
+    // Draw the body of the right arrow
     canvas
       ..drawLine(startPointLeft, endPointRight, paint)
-
-      // Sol tarafa ok gövdesi
+      // Draw the body of the left arrow
       ..drawLine(startPointRight, endPointLeft, paint);
 
-    // Ok uçları için baş boyutu ve açı farkı
-    var headHeight = size.height; // Okun başının boyutu, ok yüksekliğine bağlı
-    const angleOffset = pi / 6; // Ok başının açısı
+    // Calculate arrowhead size and angle for both arrows
+    var headHeight = size.height; // The height of the arrowhead
+    //is proportional to the height of the arrow
+    const angleOffset = pi / 6; // Angle for the arrowhead
 
-    // Genişliği hesaplıyoruz.
+    // Calculate width for the arrowhead
     var headWidth = headHeight * cos(angleOffset);
     if (headWidth > arrowLength / 2.1) {
-      // .1 eklenmesi iki okun tamamen birleşmemesi için
+      // Add 0.1 to prevent the arrows from completely overlapping
       headHeight = arrowLength / 2.1 / cos(angleOffset);
       headWidth = arrowLength;
     }
-    // Sağ taraf ok başı
+
+    // Right arrowhead (left part)
     final arrowRightHeadLeft = Offset(
       endPointRight.dx + headHeight * cos(angle + pi - angleOffset),
       endPointRight.dy + headHeight * sin(angle + pi - angleOffset),
     );
+    // Right arrowhead (right part)
     final arrowRightHeadRight = Offset(
       endPointRight.dx + headHeight * cos(angle + pi + angleOffset),
       endPointRight.dy + headHeight * sin(angle + pi + angleOffset),
     );
 
-    // Sol taraf ok başı
+    // Left arrowhead (left part)
     final arrowLeftHeadLeft = Offset(
       endPointLeft.dx - headHeight * cos(angle + pi - angleOffset),
       endPointLeft.dy - headHeight * sin(angle + pi - angleOffset),
     );
+    // Left arrowhead (right part)
     final arrowLeftHeadRight = Offset(
       endPointLeft.dx - headHeight * cos(angle + pi + angleOffset),
       endPointLeft.dy - headHeight * sin(angle + pi + angleOffset),
     );
 
-    // Sağ taraf ok başını çiz
+    // Draw the right arrowhead
     canvas
       ..drawLine(endPointRight, arrowRightHeadLeft, paint)
       ..drawLine(endPointRight, arrowRightHeadRight, paint)
-
-      // Sol taraf ok başını çiz
-
+      // Draw the left arrowhead
       ..drawLine(endPointLeft, arrowLeftHeadLeft, paint)
       ..drawLine(endPointLeft, arrowLeftHeadRight, paint);
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true; // Her durumda yeniden çizer
+    return true; // Always redraw
   }
 }
