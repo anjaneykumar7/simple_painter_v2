@@ -238,8 +238,22 @@ class ActionsService {
 
   // Removes an item from the list based on its ID.
   void _removeItemFromList(String itemId) {
+    // Find the index of the item to remove.
+    final itemIndex = items.indexWhere(
+      (element) => element.id == itemId,
+    );
     // Find and remove the item with the matching ID.
     items.removeWhere((element) => element.id == itemId);
+
+    // Adjust the layer index of the items between
+    //oldIndex and newIndex.
+    if (itemIndex < items.length) {
+      // If the item moved down, update the layer index
+      //of items between oldIndex and newIndex.
+      for (var i = itemIndex; i < items.length; i++) {
+        items[i] = items[i].copyWith(layer: items[i].layer.copyWith(index: i));
+      }
+    }
   }
 
   // Handles rotation actions during redo/undo operations.
