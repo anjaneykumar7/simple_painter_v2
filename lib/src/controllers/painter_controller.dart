@@ -409,10 +409,6 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
           value.items.length - 1 - _getItemIndexFromItem(value.selectedItem!);
     }
     if (index < 0) return;
-    for (var i = 0; i < itemsReversed.length; i++) {
-      if (i == index) {
-      } else {}
-    }
     final item = itemsReversed[index];
     itemsReversed.removeAt(index);
     for (var i = index; i < itemsReversed.length; i++) {

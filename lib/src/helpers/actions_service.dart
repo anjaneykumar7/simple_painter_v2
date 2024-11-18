@@ -159,7 +159,7 @@ class ActionsService {
   void _actionAddItem(ActionAddItem item, bool isRedo) {
     if (isRedo) {
       // For redo, add the item back to the list at the specified index.
-      items.insert(item.listIndex, item.item);
+      items.insert(items.length - item.listIndex, item.item);
     } else {
       // For undo, remove the item from the list.
       final itemValue = items
