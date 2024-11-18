@@ -19,6 +19,9 @@ class LayerService {
     // Set the values from the itemList to the service's items list.
     _setValues(itemList);
 
+    // Reverse the items list to handle the reversed order.
+    items = items.reversed.toList();
+
     // Get the current index of the item to be moved.
     final oldIndex = items.indexOf(item);
 
@@ -29,40 +32,50 @@ class LayerService {
     final updatedItem =
         item.copyWith(layer: item.layer.copyWith(index: newIndex));
 
-    // Ensure the new index is valid by clamping
-    //it between 0 and the length of the items list.
+    // Ensure the new index is valid by clamping it between 0
+    //and the length of the items list.
     final validIndex = newIndex.clamp(0, items.length);
-
     // Insert the updated item at the new index.
     items.insert(validIndex, updatedItem);
 
-    // Adjust the layer index of the items between oldIndex and newIndex.
+    // Get the item that was changed.
+    final changedItem = items[oldIndex];
+    // Adjust the layer index of the items between
+    //oldIndex and newIndex.
     if (oldIndex < newIndex) {
-      // If the item moved down, update the
-      //layer index of items between oldIndex and newIndex.
+      if (newIndex >= items.length) {
+        return;
+      }
+      // If the item moved down, update the layer index
+      //of items between oldIndex and newIndex.
       for (var i = oldIndex; i < newIndex; i++) {
         items[i] = items[i].copyWith(layer: items[i].layer.copyWith(index: i));
       }
     } else {
-      // If the item moved up, update
-      //the layer index of items between newIndex and oldIndex.
+      if (newIndex < 0) {
+        return;
+      }
+      // If the item moved up, update the layer index of
+      //items between newIndex and oldIndex.
       for (var i = newIndex + 1; i <= oldIndex; i++) {
         items[i] = items[i].copyWith(layer: items[i].layer.copyWith(index: i));
       }
     }
 
-    // Call the changedList callback with the updated items list.
-    changedList(items);
+    // Reverse the items list back to its original order.
+    items = items.reversed.toList();
 
+    // Call the callback functions with the updated list and action.
+    changedList(items);
     // Generate and pass the action for the layer change.
     changeAction(
       _getChangeAction(
         item, // The item whose layer was changed.
         oldIndex, // The old index of the item.
-        newIndex, // The new index of the item.
-        updatedItem, // The updated item after the change.
-        oldIndex, // The old index of the changed item.
-        validIndex, // The new valid index of the changed item.
+        validIndex, // The new index of the item.
+        changedItem, // The updated item after the change.
+        validIndex, // The old index of the changed item.
+        oldIndex, // The new valid index of the changed item.
       ),
     );
   }

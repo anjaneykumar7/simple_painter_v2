@@ -63,14 +63,14 @@ class Layers extends StatelessWidget {
               PhosphorIconsRegular.arrowDown,
               Colors.white,
               () {
-                controller.updateLayerIndex(item, item.layer.index + 1);
+                controller.updateLayerIndex(item, item.layer.index - 1);
               },
             ),
             iconButton(
               PhosphorIconsRegular.arrowUp,
               Colors.white,
               () {
-                controller.updateLayerIndex(item, item.layer.index - 1);
+                controller.updateLayerIndex(item, item.layer.index + 1);
               },
             ),
             const SizedBox(

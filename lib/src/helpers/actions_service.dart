@@ -244,34 +244,36 @@ class ActionsService {
     _updateList(itemValue);
   }
 
-  // Handles layer change actions during redo/undo operations.
+// Handles layer change actions during redo/undo operations.
   void _actionLayerChange(ActionLayerChange item, bool isRedo) {
     // Find the item and changed item in the list using their IDs.
-    final itemValue = items
-        .where(
-          (element) => element.id == item.item.id,
-        )
-        .first;
-    final changedItem = items
-        .where(
-          (element) => element.id == item.changedItem.id,
-        )
-        .first;
+    final itemValue = items.firstWhere(
+      (element) => element.id == item.item.id,
+    );
+    final changedItem = items.firstWhere(
+      (element) => element.id == item.changedItem.id,
+    );
+
+    // Compute adjusted indices to account for the reversed logic.
+    final itemNewIndex = items.length - 1 - item.newIndex;
+    final changedItemNewIndex = items.length - 1 - item.changedItemNewIndex;
+    final itemOldIndex = items.length - 1 - item.oldIndex;
+    final changedItemOldIndex = items.length - 1 - item.changedItemOldIndex;
 
     // If it's a redo, move the items to the new positions in the list.
     if (isRedo) {
       items
         ..remove(itemValue)
-        ..insert(item.newIndex, itemValue)
+        ..insert(itemNewIndex.clamp(0, items.length), itemValue)
         ..remove(changedItem)
-        ..insert(item.changedItemNewIndex, changedItem);
+        ..insert(changedItemNewIndex, changedItem);
     } else {
       // If it's an undo, move the items back to their original positions.
       items
         ..remove(itemValue)
-        ..insert(item.oldIndex, itemValue)
+        ..insert(itemOldIndex, itemValue)
         ..remove(changedItem)
-        ..insert(item.changedItemOldIndex, changedItem);
+        ..insert(changedItemOldIndex, changedItem);
     }
   }
 
@@ -282,7 +284,9 @@ class ActionsService {
       _removeItemFromList(item.item.id);
     } else {
       // If it's an undo, add the item back to the list at the specified index.
-      items.insert(item.listIndex, item.item);
+      final itemsReversed = items.reversed.toList()
+        ..insert(item.listIndex, item.item);
+      items = itemsReversed.reversed.toList();
     }
   }
 

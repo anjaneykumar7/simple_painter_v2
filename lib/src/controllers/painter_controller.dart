@@ -400,17 +400,27 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   // removes a painter item from the list based on layer index or selected item
   void removeItem({int? layerIndex}) {
     if (value.selectedItem == null && layerIndex == null) return;
-    final items = value.items.toList();
+    final itemsReversed = value.items.reversed.toList();
     var index = 0;
-    if (layerIndex != null && layerIndex < items.length) {
+    if (layerIndex != null && layerIndex < itemsReversed.length + 1) {
       index = layerIndex;
     } else {
-      index = _getItemIndexFromItem(value.selectedItem!);
+      index =
+          value.items.length - 1 - _getItemIndexFromItem(value.selectedItem!);
     }
     if (index < 0) return;
-    final item = items[index];
-    items.removeAt(index);
-    value = value.copyWith(items: items);
+    for (var i = 0; i < itemsReversed.length; i++) {
+      if (i == index) {
+      } else {}
+    }
+    final item = itemsReversed[index];
+    itemsReversed.removeAt(index);
+    for (var i = index; i < itemsReversed.length; i++) {
+      itemsReversed[i] = itemsReversed[i].copyWith(
+        layer: itemsReversed[i].layer.copyWith(index: i),
+      );
+    }
+    value = value.copyWith(items: itemsReversed.reversed.toList());
     addAction(
       ActionRemoveItem(
         item: item,
