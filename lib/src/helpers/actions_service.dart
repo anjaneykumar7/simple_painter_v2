@@ -1,8 +1,11 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/background_image_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
@@ -26,6 +29,7 @@ class ActionsService {
   // Stores the painting paths for drawing or erasing.
   List<List<DrawModel?>> currentPaintPath = [];
 
+  Uint8List? backgroundImage;
   // Updates actions by determining whether to undo or
   //redo and applies the corresponding actions.
   void updateActionWithChangeActionIndex(
@@ -33,12 +37,14 @@ class ActionsService {
     List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
     int index,
+    Uint8List? backgroundImageValue,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
     void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
+    void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values before performing any action.
-    _setValues(changeActions, paintPath, value);
+    _setValues(changeActions, paintPath, value, backgroundImage);
 
     // Function to undo actions from the current
     // index back to the specified index.
@@ -65,6 +71,11 @@ class ActionsService {
             currentActions[i] is ActionImageChangeValue ||
             currentActions[i] is ActionShapeChangeValue) {
           _actionChangeValue(currentActions[i], false);
+        } else if (currentActions[i] is ActionChangeBackgroundImage) {
+          _actionBackgroundImageChange(
+            currentActions[i] as ActionChangeBackgroundImage,
+            false,
+          );
         }
       }
     }
@@ -93,6 +104,11 @@ class ActionsService {
             currentActions[i] is ActionImageChangeValue ||
             currentActions[i] is ActionShapeChangeValue) {
           _actionChangeValue(currentActions[i], true);
+        } else if (currentActions[i] is ActionChangeBackgroundImage) {
+          _actionBackgroundImageChange(
+            currentActions[i] as ActionChangeBackgroundImage,
+            true,
+          );
         }
       }
     }
@@ -108,6 +124,9 @@ class ActionsService {
     updatedList(items);
     updateIndex(index);
     updatedPaintPath(currentPaintPath);
+    if (backgroundImage != backgroundImageValue) {
+      updateBackgroundImage(backgroundImage);
+    }
   }
 
   // Adds a new action to the list of actions and updates the actions history.
@@ -118,7 +137,7 @@ class ActionsService {
     void Function(List<PaintAction>? items, int index) updatedValues,
   ) {
     // Set values before adding the new action.
-    _setValues(changeActions, currentPaintPath, value);
+    _setValues(changeActions, currentPaintPath, value, backgroundImage);
 
     // If we're not at the end of the action
     //history, trim the redo actions before adding the new action.
@@ -334,18 +353,33 @@ class ActionsService {
     _updateList(itemValue);
   }
 
+  void _actionBackgroundImageChange(
+    ActionChangeBackgroundImage item,
+    bool isRedo,
+  ) {
+    // If it's a redo, update the background image with the new value.
+    if (isRedo) {
+      backgroundImage = item.newImage;
+    } else {
+      // If it's an undo, revert to the last background image value.
+      backgroundImage = item.oldImage;
+    }
+  }
+
   // Handles undo operations by updating
   //the state and applying the previous action.
   void undo(
     ValueNotifier<PaintActions> changeActions,
     List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
+    Uint8List? backgroundImageValue,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
     void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
+    void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(changeActions, paintPath, value);
+    _setValues(changeActions, paintPath, value, backgroundImageValue);
 
     // If there are no actions to undo, return early.
     if (currentIndex < 0) return;
@@ -357,9 +391,11 @@ class ActionsService {
       currentPaintPath,
       value,
       currentIndex - 1,
+      backgroundImage,
       updatedList,
       updateIndex,
       updatedPaintPath,
+      updateBackgroundImage,
     );
   }
 
@@ -368,12 +404,14 @@ class ActionsService {
     ValueNotifier<PaintActions> changeActions,
     List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
+    Uint8List? backgroundImageValue,
     void Function(List<PainterItem> items) updatedList,
     void Function(int index) updateIndex,
     void Function(List<List<DrawModel?>> pathList) updatedPaintPath,
+    void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(changeActions, paintPath, value);
+    _setValues(changeActions, paintPath, value, backgroundImageValue);
 
     // If there are no actions to redo, return early.
     if (currentIndex == currentActions.length - 1) return;
@@ -385,9 +423,11 @@ class ActionsService {
       currentPaintPath,
       value,
       currentIndex + 1,
+      backgroundImage,
       updatedList,
       updateIndex,
       updatedPaintPath,
+      updateBackgroundImage,
     );
   }
 
@@ -396,11 +436,13 @@ class ActionsService {
     ValueNotifier<PaintActions> changeActions,
     List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
+    Uint8List? backgroundImageValue,
   ) {
     // Update the current action values based on the changeActions object.
     currentActions = changeActions.value.changeList;
     currentIndex = changeActions.value.index;
     currentPaintPath = paintPath;
+    backgroundImage = backgroundImageValue;
     items = value.items.toList();
   }
 }

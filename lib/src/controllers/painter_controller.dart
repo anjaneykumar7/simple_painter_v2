@@ -11,6 +11,7 @@ import 'package:flutter_painter/flutter_painter.dart';
 import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
 import 'package:flutter_painter/src/controllers/items/painter_item.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:flutter_painter/src/controllers/paint_actions/main/background_image_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
@@ -204,9 +205,19 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   }
 
   /// Sets a background image for the painter.
-  Future<void> setBackgroundImage(Uint8List imageData) async {
+  Future<void> setBackgroundImage(Uint8List? imageData) async {
+    final oldBackgroundImage = background.image;
     cacheBackgroundImage = null;
     background.image = imageData;
+
+    addAction(
+      ActionChangeBackgroundImage(
+        newImage: imageData,
+        oldImage: oldBackgroundImage,
+        timestamp: DateTime.now(),
+        actionType: ActionType.changeBackgroundImage,
+      ),
+    );
   }
 
   /// Adds a text item to the painting canvas.
@@ -353,34 +364,43 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   // updates the action by changing the action index and updating the state
   void updateActionWithChangeActionIndex(int index) {
     ActionsService().updateActionWithChangeActionIndex(
-        changeActions, value.paintPaths, value, index, (items) {
+        changeActions, value.paintPaths, value, index, background.image,
+        (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
     }, (pathList) {
       value = value.copyWith(paintPaths: pathList);
+    }, (image) {
+      background.image = image;
     });
   }
 
   // undoes the last action and updates the state
   void undo() {
-    ActionsService().undo(changeActions, value.paintPaths, value, (items) {
+    ActionsService().undo(
+        changeActions, value.paintPaths, value, background.image, (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
     }, (pathList) {
       value = value.copyWith(paintPaths: pathList);
+    }, (image) {
+      background.image = image;
     });
   }
 
   // redoes the previously undone action and updates the state
   void redo() {
-    ActionsService().redo(changeActions, value.paintPaths, value, (items) {
+    ActionsService().redo(
+        changeActions, value.paintPaths, value, background.image, (items) {
       value = value.copyWith(items: items);
     }, (index) {
       changeActions.value = changeActions.value.copyWith(index: index);
     }, (pathList) {
       value = value.copyWith(paintPaths: pathList);
+    }, (image) {
+      background.image = image;
     });
   }
 
