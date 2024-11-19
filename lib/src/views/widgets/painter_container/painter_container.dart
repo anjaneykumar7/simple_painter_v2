@@ -181,18 +181,13 @@ class _PainterContainerState extends State<PainterContainer> {
                     currentRotateAngle = rotateAngle;
                     changesFromOutside = true;
                   },
-                  onScaleUpdate: (newPosition, newStackPosition) {
-                    enableItem();
-                    changesFromOutside = false;
-                    setState(() {
-                      if (newPosition != null) {
-                        position = newPosition;
-                      }
-                      if (newStackPosition != null) {
-                        stackPosition = newStackPosition;
-                      }
-                    });
-                  },
+
+                  /// The reason for defining this function inline is that when defined outside,
+                  /// it requires updating the data by providing feedback with `void Function`,
+                  /// which causes a delay in Android. As a result, when swiped quickly, the code
+                  /// does not work properly, and the scrolling operation lags behind.
+                  onScaleUpdate: (details) =>
+                      widgetScaleUpdate(details, stackWidth, stackHeight),
                   handlePanEnd: () {
                     calculateSizeAfterChangedSize(
                       stackWidth,
@@ -262,24 +257,12 @@ class _PainterContainerState extends State<PainterContainer> {
                       calculatingPositionForSize = true;
                       changedSize = true;
                     },
-                    onPanUpdate: (
-                      SizeModel newContainerSize,
-                      PositionModel? newStackPosition,
-                    ) {
-                      changesFromOutside = false;
-                      setState(() {
-                        containerSize = newContainerSize;
-                        if (newStackPosition != null) {
-                          stackPosition = newStackPosition;
-                        }
-                      });
-                    },
-                    onSizeChange: (newPosition, oldSize, newSize) {
-                      if (widget.onSizeChange != null) {
-                        widget.onSizeChange
-                            ?.call(newPosition, oldSize, newSize);
-                      }
-                    },
+
+                    /// The reason for defining this function inline is that when defined outside,
+                    /// it requires updating the data by providing feedback with `void Function`,
+                    /// which causes a delay in Android. As a result, when swiped quickly, the code
+                    /// does not work properly, and the scrolling operation lags behind.
+                    onPanUpdate: handlePanUpdate,
                   ),
               ],
             ),
@@ -289,7 +272,199 @@ class _PainterContainerState extends State<PainterContainer> {
     );
   }
 
+// Updates the widget's scale, rotation, and position based on user interactions
+// This method handles both single-touch and multi-touch gestures.
+  void widgetScaleUpdate(
+    ScaleUpdateDetails details,
+    double stackWidth,
+    double stackHeight,
+  ) {
+    // Handles single-touch gestures for moving the widget
+    void pointerCount1() {
+      final pos = details.focalPointDelta;
+      setState(() {
+        final cosAngle = cos(rotateAngle);
+        final sinAngle = sin(rotateAngle);
+
+        final deltaX = pos.dx * cosAngle - pos.dy * sinAngle;
+        final deltaY = pos.dx * sinAngle + pos.dy * cosAngle;
+        position = position.copyWith(
+          x: position.x + deltaX,
+          y: position.y + deltaY,
+        );
+
+        stackPosition = stackPosition.copyWith(
+          x: stackWidth / 2 - containerSize.width / 2,
+          y: stackHeight / 2 - containerSize.height / 2,
+        );
+      });
+    }
+
+    // Handles multi-touch gestures for scaling and rotating the widget
+    void pointerCount2() {
+      if (scaleCurrentHeight == -1) {
+        scaleCurrentHeight = containerSize.height;
+      }
+      if (currentRotateAngle == -1) {
+        currentRotateAngle = rotateAngle;
+      }
+      final realScale =
+          (scaleCurrentHeight * details.scale) / containerSize.height;
+      final realRotateAngle = currentRotateAngle + details.rotation;
+      final oldWidth = containerSize.width;
+      final oldHeight = containerSize.height;
+      setState(() {
+        rotateAngle = realRotateAngle; // Set rotation
+        if (containerSize.width * realScale < minimumContainerWidth ||
+            containerSize.height * realScale < minimumContainerHeight) {
+          return;
+        } else {
+          containerSize = containerSize.copyWith(
+            width: containerSize.width * realScale,
+            height: containerSize.height * realScale,
+          );
+        }
+        final oldStackXPosition = stackPosition.x;
+        final oldStackYPosition = stackPosition.y;
+        final newStackXPosition = stackWidth / 2 - containerSize.width / 2;
+        final newStackYPosition = stackHeight / 2 - containerSize.height / 2;
+        position = position.copyWith(
+          x: position.x - (containerSize.width - oldWidth) / 2,
+          y: position.y - (containerSize.height - oldHeight) / 2,
+        );
+
+        position = position.copyWith(
+          x: position.x + oldStackXPosition - newStackXPosition,
+          y: position.y + oldStackYPosition - newStackYPosition,
+        );
+
+        stackPosition = stackPosition.copyWith(
+          x: newStackXPosition,
+          y: newStackYPosition,
+        );
+      });
+    }
+
+    enableItem();
+    changesFromOutside = false;
+    if (details.pointerCount == 1) {
+      pointerCount1();
+    } else if (details.pointerCount == 2) {
+      pointerCount2();
+    }
+  }
+
+// Handles drag updates for resizing the widget based on the drag position
+  void handlePanUpdate(
+      DragUpdateDetails details, _HandlePosition handlePosition) {
+    changesFromOutside = false;
+    setState(() {
+      if (handlePosition == _HandlePosition.left) {
+        handleLeft(details);
+      } else if (handlePosition == _HandlePosition.right) {
+        handleRight(details);
+      } else if (handlePosition == _HandlePosition.top) {
+        handleTop(details);
+      } else if (handlePosition == _HandlePosition.bottom) {
+        handleBottom(details);
+      }
+      // Calls an optional callback to notify about size changes
+      if (widget.onSizeChange != null) {
+        widget.onSizeChange?.call(
+          PositionModel(
+            x: position.x,
+            y: position.y,
+          ),
+          SizeModel(
+            width: oldContainerSize.width,
+            height: oldContainerSize.height,
+          ),
+          SizeModel(
+            width: containerSize.width,
+            height: containerSize.height,
+          ),
+        );
+      }
+    });
+  }
+
+// Handles resizing the widget from the bottom handle
+  void handleBottom(DragUpdateDetails details) {
+    if (containerSize.height <= minimumContainerHeight &&
+        details.delta.dy < 0) {
+      // Prevents shrinking below the minimum height when dragging down
+      containerSize = containerSize.copyWith(
+        height: minimumContainerHeight,
+      );
+      return;
+    }
+    if (position.y + containerSize.height + details.delta.dy > widget.height) {
+      // Prevents resizing beyond the widget's maximum height
+      containerSize = containerSize.copyWith(
+        height: widget.height - position.y,
+      );
+    } else {
+      containerSize = containerSize.copyWith(
+        height: containerSize.height + details.delta.dy,
+      );
+    }
+  }
+
+// Handles resizing the widget from the top handle
+  void handleTop(DragUpdateDetails details) {
+    if (containerSize.height <= minimumContainerHeight &&
+        details.delta.dy > 0) {
+      // Prevents shrinking below the minimum height when dragging up
+      containerSize = containerSize.copyWith(
+        height: minimumContainerHeight,
+      );
+      return;
+    } else {
+      containerSize = containerSize.copyWith(
+        height: containerSize.height - details.delta.dy,
+      );
+      stackPosition = stackPosition.copyWith(
+        y: stackPosition.y + details.delta.dy,
+      );
+    }
+  }
+
+// Handles resizing the widget from the right handle
+  void handleRight(DragUpdateDetails details) {
+    if (containerSize.width <= minimumContainerWidth && details.delta.dx < 0) {
+      // Prevents shrinking below the minimum width when dragging right
+      containerSize = containerSize.copyWith(
+        width: minimumContainerWidth,
+      );
+      return;
+    }
+
+    containerSize = containerSize.copyWith(
+      width: containerSize.width + details.delta.dx,
+    );
+  }
+
+// Handles resizing the widget from the left handle
+  void handleLeft(DragUpdateDetails details) {
+    if (containerSize.width <= minimumContainerWidth && details.delta.dx > 0) {
+      // Prevents shrinking below the minimum width when dragging left
+      containerSize = containerSize.copyWith(
+        width: minimumContainerWidth,
+      );
+      return;
+    }
+
+    containerSize = containerSize.copyWith(
+      width: containerSize.width - details.delta.dx,
+    );
+    stackPosition = stackPosition.copyWith(
+      x: stackPosition.x + details.delta.dx,
+    );
+  }
+
   // Method to calculate the position and size after changes
+// This method adjusts the position of the widget when the stack's size changes.
+// It handles both cases where a rotation angle is applied and when it is not.
   void calculateSizeAfterChangedSize(double stackWidth, double stackHeight) {
     setState(() {
       final oldStackXPosition = stackPosition.x;
@@ -298,7 +473,7 @@ class _PainterContainerState extends State<PainterContainer> {
       final newStackYPosition = stackHeight / 2 - containerSize.height / 2;
 
       if (rotateAngle != 0) {
-        // rotateAngle 0'dan farklı olduğunda trigonometrik dönüşümler kullan
+        // Use trigonometric transformations when rotateAngle is not 0
         final deltaX = oldStackXPosition - newStackXPosition;
         final deltaY = oldStackYPosition - newStackYPosition;
         final cosAngle = cos(rotateAngle);
@@ -309,8 +484,7 @@ class _PainterContainerState extends State<PainterContainer> {
           y: position.y + (deltaX * sinAngle + deltaY * cosAngle),
         );
       } else {
-        // rotateAngle 0 olduğunda mevcut hesaplamaları kullan
-
+        // Use standard calculations when rotateAngle is 0
         position = position.copyWith(
           x: position.x + (oldStackXPosition - newStackXPosition),
           y: position.y + (oldStackYPosition - newStackYPosition),
@@ -324,7 +498,9 @@ class _PainterContainerState extends State<PainterContainer> {
     });
   }
 
-  // Initializes the widget size based on the given width and height
+// Initializes the widget size based on the given width and height
+// This method sets the initial size and position of the widget based on
+// the provided stack dimensions and optional minimum width/height.
   void initializeWidgetSize(double stackWidth, double stackHeight) {
     void setValue() {
       containerSize = containerSize.copyWith(

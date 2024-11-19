@@ -32,8 +32,10 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .packages
 .pub-cache/
+.metadata
 .pub/
 /build/
+pubspec.lock
 
 # Symbolication related
 app.*.symbols

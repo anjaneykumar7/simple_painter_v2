@@ -74,7 +74,7 @@ class _StackWidget extends StatelessWidget {
   final void Function() onTap;
   final void Function() onScaleStart;
   final void Function(ScaleEndDetails) onScaleEnd;
-  final void Function(PositionModel?, PositionModel?) onScaleUpdate;
+  final void Function(ScaleUpdateDetails details) onScaleUpdate;
   final Color? dragHandleColor;
   final void Function() handlePanEnd;
   final void Function(SizeModel containerSize, PositionModel? stackPosition)
@@ -97,15 +97,7 @@ class _StackWidget extends StatelessWidget {
           onTap: onTap, // Handle tap events
           onScaleStart: (details) => onScaleStart.call(), // Handle scale start
           onScaleEnd: onScaleEnd.call, // Handle scale end
-          onScaleUpdate: (details) {
-            if (details.pointerCount == 1) {
-              gestureScaleUpdatePointer1(
-                details,
-              ); // Handle single-pointer scaling
-            } else if (details.pointerCount == 2) {
-              gestureScaleUpdatePointer2(details); // Handle two-pointer scaling
-            }
-          },
+          onScaleUpdate: onScaleUpdate.call,
           child: Container(
             width: containerSize.width, // Set the container width
             height: containerSize.height, // Set the container height
@@ -130,7 +122,7 @@ class _StackWidget extends StatelessWidget {
     );
   }
 
-  // Handles the scaling update when there
+  /* // Handles the scaling update when there
   //are two pointers interacting with the widget.
   void gestureScaleUpdatePointer2(ScaleUpdateDetails details) {
     if (scaleCurrentHeight == -1) {
@@ -221,5 +213,5 @@ class _StackWidget extends StatelessWidget {
         y: stackHeight / 2 - containerSize.height / 2,
       ),
     );
-  }
+  }*/
 }
