@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
+import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/options/brush_options.dart';
 import 'package:fullstack_example/widgets/options/erase_options.dart';
 import 'package:fullstack_example/widgets/options/image_options.dart';

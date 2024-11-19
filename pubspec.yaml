@@ -1,7 +1,7 @@
-name: flutter_painter
+name: simple_painter
 description: A Flutter widget that enables drawing, adding text, shapes, and images on a customizable background with layer management, undo/redo functionality, and interactive item styling.
 version: 1.0.0
-homepage: https://github.com/CanArslanDev/flutter_painter
+homepage: https://github.com/CanArslanDev/simple_painter
 
 environment:
   sdk: '>=3.4.3 <4.0.0'

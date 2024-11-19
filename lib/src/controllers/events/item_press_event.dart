@@ -1,5 +1,5 @@
-import 'package:flutter_painter/src/controllers/events/controller_event.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/events/controller_event.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
 
 /// An event triggered when an item is pressed in the painter controller.
 class ItemPressEvent extends ControllerEvent {

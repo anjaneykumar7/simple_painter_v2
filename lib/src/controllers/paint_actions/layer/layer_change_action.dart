@@ -1,5 +1,5 @@
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 
 class ActionLayerChange extends PaintAction {
   const ActionLayerChange({

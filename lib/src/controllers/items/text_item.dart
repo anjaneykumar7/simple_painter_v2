@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
-import 'package:flutter_painter/src/models/position_model.dart';
-import 'package:flutter_painter/src/models/size_model.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/settings/layer_settings.dart';
+import 'package:simple_painter/src/models/position_model.dart';
+import 'package:simple_painter/src/models/size_model.dart';
 
 // Represents a text item that can be drawn on
 //a canvas with customizable properties.

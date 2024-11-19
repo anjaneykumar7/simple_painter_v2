@@ -1,8 +1,8 @@
 // ignore_for_file: depend_on_referenced_packages, implementation_imports
 
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Layers extends StatelessWidget {

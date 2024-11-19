@@ -1,5 +1,5 @@
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
-import 'package:flutter_painter/src/models/brush_model.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/models/brush_model.dart';
 
 // Represents an action to draw on the canvas.
 class ActionDraw extends PaintAction {

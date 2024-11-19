@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   very_good_analysis: ^6.0.0
   phosphor_flutter: ^2.1.0
-  flutter_painter:
+  simple_painter:
     path: ../..
 
 dev_dependencies:

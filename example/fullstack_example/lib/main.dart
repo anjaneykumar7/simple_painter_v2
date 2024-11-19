@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
+import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/helpers/listener_service.dart';
 import 'package:fullstack_example/pages/add_edit_text_page.dart';
 import 'package:fullstack_example/pages/result_page.dart';

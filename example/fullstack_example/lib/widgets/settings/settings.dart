@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
+import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/select_image.dart';
 import 'package:fullstack_example/widgets/settings/layers.dart';
 import 'package:fullstack_example/widgets/settings/shapes.dart';

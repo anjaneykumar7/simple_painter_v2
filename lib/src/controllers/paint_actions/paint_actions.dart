@@ -1,4 +1,4 @@
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 
 // Represents a collection of paint actions with
 //an index for tracking the current state.

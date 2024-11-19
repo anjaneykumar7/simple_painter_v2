@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/action_type_enum.dart';
+import 'package:simple_painter/src/controllers/paint_actions/action_type_enum.dart';
 
 // Represents a single paint action, with a specific action type and timestamp.
 class PaintAction extends Equatable {

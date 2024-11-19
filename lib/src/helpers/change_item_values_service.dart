@@ -1,9 +1,9 @@
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
 
 class ChangeItemValuesService {
   // A list to store PainterItem objects.

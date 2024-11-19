@@ -3,8 +3,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/src/models/position_model.dart';
-import 'package:flutter_painter/src/models/size_model.dart';
+import 'package:simple_painter/src/models/position_model.dart';
+import 'package:simple_painter/src/models/size_model.dart';
 part 'widgets/painter_container_handle_widget.dart';
 part 'widgets/painter_container_handle_position_enum.dart';
 part 'widgets/painter_container_functions.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/src/controllers/settings/brush_settings.dart';
-import 'package:flutter_painter/src/controllers/settings/erase_settings.dart';
-import 'package:flutter_painter/src/controllers/settings/text_settings.dart';
+import 'package:simple_painter/src/controllers/settings/brush_settings.dart';
+import 'package:simple_painter/src/controllers/settings/erase_settings.dart';
+import 'package:simple_painter/src/controllers/settings/text_settings.dart';
 
 /// A class containing global settings for the painter,
 /// including brush and eraser configurations.

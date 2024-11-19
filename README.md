@@ -35,7 +35,7 @@ To start using **Painter Widget**, add it to your project's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  flutter_painter: ^1.0.0
+  simple_painter: ^1.0.0
 ```
 
 Then, run the following command in your terminal:
@@ -50,7 +50,7 @@ flutter pub get
 1. Import the package in your Dart file:
 
 ```dart
-import 'package:painter_widget/flutter_painter.dart';
+import 'package:painter_widget/simple_painter.dart';
 ```
 
 2. Create a `PainterController` to manage the drawing and interactions:
@@ -75,7 +75,7 @@ Here’s how to set up a basic painting widget with a simple controller:
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:painter_widget/flutter_painter.dart';
+import 'package:painter_widget/simple_painter.dart';
 
 void main() {
   runApp(MyApp());
@@ -151,7 +151,7 @@ backgroundImage: imageUint8List,
 );
 ```
 
-**NOTE:** For more detailed information and to test features like layer management, state handling, and element styling, please visit the [Painter Full Stack Example](https://github.com/CanArslanDev/flutter_painter/tree/main/example/fullstack_example).
+**NOTE:** For more detailed information and to test features like layer management, state handling, and element styling, please visit the [Painter Full Stack Example](https://github.com/CanArslanDev/simple_painter/tree/main/example/fullstack_example).
 
 ---
 

@@ -1,5 +1,5 @@
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 
 // Represents a specific action where the value of a text item has changed.
 class ActionTextChangeValue extends PaintAction {

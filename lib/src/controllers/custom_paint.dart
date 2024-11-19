@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/src/models/brush_model.dart';
+import 'package:simple_painter/src/models/brush_model.dart';
 
 /// A custom painter class used to render paths, points,
 /// and an optional background image on a canvas.

@@ -7,23 +7,23 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/drawables/background/painter_background.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/background_image_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
-import 'package:flutter_painter/src/controllers/settings/layer_settings.dart';
-import 'package:flutter_painter/src/helpers/actions_service.dart';
-import 'package:flutter_painter/src/helpers/change_item_values_service.dart';
-import 'package:flutter_painter/src/helpers/layer_service.dart';
-import 'package:flutter_painter/src/models/brush_model.dart';
-import 'package:flutter_painter/src/models/position_model.dart';
-import 'package:flutter_painter/src/models/size_model.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/drawables/background/painter_background.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/draw_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/erase_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/remove_item_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:simple_painter/src/controllers/settings/layer_settings.dart';
+import 'package:simple_painter/src/helpers/actions_service.dart';
+import 'package:simple_painter/src/helpers/change_item_values_service.dart';
+import 'package:simple_painter/src/helpers/layer_service.dart';
+import 'package:simple_painter/src/models/brush_model.dart';
+import 'package:simple_painter/src/models/position_model.dart';
+import 'package:simple_painter/src/models/size_model.dart';
 
 /// Controller class for managing painter-related functionalities.
 /// This class handles state management, drawing operations, erasing,

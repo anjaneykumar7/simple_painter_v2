@@ -1,23 +1,23 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/add_item_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/background_image_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/draw_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/erase_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/remove_item_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_actions.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
-import 'package:flutter_painter/src/models/brush_model.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/add_item_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/draw_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/erase_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/remove_item_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/rotate_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/size_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:simple_painter/src/controllers/paint_actions/text_actions/text_change_value_action.dart';
+import 'package:simple_painter/src/models/brush_model.dart';
 
 class ActionsService {
   // Keeps track of the list of actions performed.

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 
 /// A paint action that represents changing the background image.
 ///

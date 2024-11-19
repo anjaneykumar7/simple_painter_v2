@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_painter/flutter_painter.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/position_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/rotate_action.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/main/size_action.dart';
-import 'package:flutter_painter/src/models/position_model.dart';
-import 'package:flutter_painter/src/models/size_model.dart';
-import 'package:flutter_painter/src/views/widgets/measure_size.dart';
-import 'package:flutter_painter/src/views/widgets/painter_container/painter_container.dart';
+import 'package:simple_painter/simple_painter.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/position_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/rotate_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/size_action.dart';
+import 'package:simple_painter/src/models/position_model.dart';
+import 'package:simple_painter/src/models/size_model.dart';
+import 'package:simple_painter/src/views/widgets/measure_size.dart';
+import 'package:simple_painter/src/views/widgets/painter_container/painter_container.dart';
 
 // StatefulWidget that manages the display and interaction with an image item
 class ImageItemWidget extends StatefulWidget {

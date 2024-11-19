@@ -1,5 +1,5 @@
-import 'package:flutter_painter/src/controllers/items/painter_item.dart';
-import 'package:flutter_painter/src/controllers/paint_actions/paint_action.dart';
+import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 
 // Represents an action to add a new item to the list.
 class ActionAddItem extends PaintAction {
