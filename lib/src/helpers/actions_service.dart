@@ -262,7 +262,8 @@ class ActionsService {
       //of items between oldIndex and newIndex.
       for (var i = index; i < items.length; i++) {
         items[i] = items[i].copyWith(
-            layer: items[i].layer.copyWith(index: items.length - 1 - i));
+          layer: items[i].layer.copyWith(index: items.length - 1 - i),
+        );
       }
     }
   }
