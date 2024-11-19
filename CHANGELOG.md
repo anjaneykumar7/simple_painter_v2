@@ -1,6 +1,10 @@
+# 1.0.0+2
+
+- Fixed android slow dragging bug.
+
 # 1.0.0+1
 
-- added example.md file for pub.dev
+- Added example.md file for pub.dev.
 
 # 1.0.0
 
