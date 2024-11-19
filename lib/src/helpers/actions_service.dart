@@ -178,7 +178,7 @@ class ActionsService {
   void _actionAddItem(ActionAddItem item, bool isRedo) {
     if (isRedo) {
       // For redo, add the item back to the list at the specified index.
-      items.insert(items.length - item.listIndex, item.item);
+      _addItem(item.item, items.length - item.listIndex);
     } else {
       // For undo, remove the item from the list.
       final itemValue = items
@@ -245,13 +245,24 @@ class ActionsService {
     // Find and remove the item with the matching ID.
     items.removeWhere((element) => element.id == itemId);
 
+    _checkLayerIndex(itemIndex);
+  }
+
+  void _addItem(PainterItem item, int index) {
+    //Insert item at the specified index.
+    items.insert(index, item);
+    _checkLayerIndex(index);
+  }
+
+  void _checkLayerIndex(int index) {
     // Adjust the layer index of the items between
     //oldIndex and newIndex.
-    if (itemIndex < items.length) {
+    if (index < items.length) {
       // If the item moved down, update the layer index
       //of items between oldIndex and newIndex.
-      for (var i = itemIndex; i < items.length; i++) {
-        items[i] = items[i].copyWith(layer: items[i].layer.copyWith(index: i));
+      for (var i = index; i < items.length; i++) {
+        items[i] = items[i].copyWith(
+            layer: items[i].layer.copyWith(index: items.length - 1 - i));
       }
     }
   }
@@ -295,18 +306,16 @@ class ActionsService {
 
     // If it's a redo, move the items to the new positions in the list.
     if (isRedo) {
-      items
-        ..remove(itemValue)
-        ..insert(itemNewIndex.clamp(0, items.length), itemValue)
-        ..remove(changedItem)
-        ..insert(changedItemNewIndex, changedItem);
+      _removeItemFromList(itemValue.id);
+      _addItem(itemValue, itemNewIndex.clamp(0, items.length));
+      _removeItemFromList(changedItem.id);
+      _addItem(changedItem, changedItemNewIndex);
     } else {
       // If it's an undo, move the items back to their original positions.
-      items
-        ..remove(itemValue)
-        ..insert(itemOldIndex, itemValue)
-        ..remove(changedItem)
-        ..insert(changedItemOldIndex, changedItem);
+      _removeItemFromList(itemValue.id);
+      _addItem(itemValue, itemOldIndex);
+      _removeItemFromList(changedItem.id);
+      _addItem(changedItem, changedItemOldIndex);
     }
   }
 
@@ -317,9 +326,7 @@ class ActionsService {
       _removeItemFromList(item.item.id);
     } else {
       // If it's an undo, add the item back to the list at the specified index.
-      final itemsReversed = items.reversed.toList()
-        ..insert(item.listIndex, item.item);
-      items = itemsReversed.reversed.toList();
+      _addItem(item.item, items.length - item.listIndex);
     }
   }
 
