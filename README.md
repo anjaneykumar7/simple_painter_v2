@@ -1,46 +1,173 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
+# Painter Widget
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
+**Flutter Painter** is a Flutter package that lets users create and manipulate a drawing canvas with layers. It supports adding and styling text, images, and shapes, along with freehand drawing tools, customizable brush sizes, and colors. The package also includes undo/redo functionality and custom background support.
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+<img src="https://github.com/user-attachments/assets/fff50318-1383-4edc-98c1-5fab99cb6cd7" height="500" style="display: inline-block; margin-right: 10px;">
+<img src="https://github.com/user-attachments/assets/dec54c47-97df-42c9-a380-9907f1e760be" height="500" style="display: inline-block;">
 
-## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+### Features
 
-## Getting started
+- **Drawing Tools**
+  - Freehand drawing with customizable brush size and color.
+  - Eraser tool for removing strokes.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- **State Management**
+  - Undo and redo functionality for actions.
+  - Export final design as an image.
+    
+- **Interactive Elements**
+  - Add, move, resize, rotate, and delete text, images, or shapes.
+  - Edit styles of added elements, such as font size, color, or shape properties.
+  - Layer-based organization of elements.
 
-## Usage
+- **Custom Background**
+  - Load custom images as the background.
+  - Preserve aspect ratio for responsive designs.
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
 
-```dart
-const like = 'sample';
+---
+
+## Installation
+
+To start using **Painter Widget**, add it to your project's `pubspec.yaml` file:
+
+```yaml
+dependencies:
+  flutter_painter: ^1.0.0
 ```
 
-## Additional information
+Then, run the following command in your terminal:
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+```bash
+flutter pub get
+```
 
-## Önemli
- - painter settingse göre ana constlar belirlenecek 
- - ekleyebilirsen resimin bir yerini seçip silmeyi de ekle
 
-## Future updates 
- - Memory optimization (for drawing and erasing) 
+### Getting Started
+
+1. Import the package in your Dart file:
+
+```dart
+import 'package:painter_widget/flutter_painter.dart';
+```
+
+2. Create a `PainterController` to manage the drawing and interactions:
+
+```dart
+final PainterController controller = PainterController();
+```
+
+3. Add the `PainterWidget` to your widget tree:
+
+```dart
+PainterWidget(controller: controller);
+```
+
+---
+
+## Usage Examples
+
+### Basic Implementation
+
+Here’s how to set up a basic painting widget with a simple controller:
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:painter_widget/flutter_painter.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final controller = PainterController();
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(title: Text('Painter Widget Example')),
+        body: PainterWidget(controller: controller),
+      ),
+    );
+  }
+}
+```
+
+### Drawing and Erasing
+
+Enable drawing and erasing with these configurations:
+
+```dart
+controller.toggleDrawing();;  // Enable freehand drawing
+
+controller.changeBrushValues( // Edit brush options
+size: 15
+color: Color(0xFFFFFF),
+;
+
+controller.toggleErasing();  // Enable eraser mode
+```
+
+### Adding Interactive Items
+
+Add text, shapes, or images dynamically:
+
+```dart
+await controller.addText(text); // Add text item
+
+controller.changeTextValues( // Change text style
+item,
+textStyle: TextStyle(),
+textAlign: TextAlign.center,
+enableGradientColor: false,
+...
+)
+
+controller.addImageUint8List(imageUint8List); // Add image item
+
+controller.changeImageValues(  // Change image style
+item,
+boxFit: BoxFit.fill,
+borderRadius: BorderRadius.circular(intValue.toDouble()),
+borderColr: Color(0xFFFFFF),
+...
+)
+
+```
+
+### Custom Background Image
+
+Set a background image while maintaining aspect ratio:
+
+```dart
+await controller.setBackgroundImage(imageUint8List);
+
+// or
+
+controller = PainterController(
+backgroundImage: imageUint8List,
+);
+```
+
+**NOTE:** For more detailed information and to test features like layer management, state handling, and element styling, please visit the [Painter Full Stack Example](https://github.com/CanArslanDev/flutter_painter/tree/main/example/fullstack_example).
+
+---
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature-name`).
+3. Commit your changes (`git commit -m 'Add feature'`).
+4. Push to your branch (`git push origin feature-name`).
+5. Open a pull request.
+
+---
+
+## License
+
+This package is distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
