@@ -1,9 +1,10 @@
 // ignore_for_file: depend_on_referenced_packages, implementation_imports
 
 import 'package:flutter/material.dart';
+import 'package:fullstack_example/pages/result_page.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class Layers extends StatelessWidget {
   const Layers({
@@ -57,6 +58,21 @@ class Layers extends StatelessWidget {
               Colors.red,
               () {
                 controller.removeItem(layerIndex: item.layer.index);
+              },
+            ),
+            iconButton(
+              PhosphorIconsRegular.image,
+              Colors.blue,
+              () async {
+                final image = await controller.renderItem(item);
+                if (image != null && context.mounted) {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute<dynamic>(
+                      builder: (context) => ResultPage(image: image),
+                    ),
+                  );
+                }
               },
             ),
             iconButton(

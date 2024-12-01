@@ -35,7 +35,7 @@ To start using **Painter Widget**, add it to your project's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  simple_painter: ^1.0.0
+  simple_painter: ^1.1.0
 ```
 
 Then, run the following command in your terminal:
@@ -125,7 +125,7 @@ enableGradientColor: false,
 ...
 )
 
-controller.addImageUint8List(imageUint8List); // Add image item
+controller.addImage(imageUint8List); // Add image item
 
 controller.changeImageValues(  // Change image style
 item,

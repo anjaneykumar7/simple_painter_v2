@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/options/options.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 class ShapeOptions extends StatelessWidget {
   const ShapeOptions({required this.controller, required this.item, super.key});

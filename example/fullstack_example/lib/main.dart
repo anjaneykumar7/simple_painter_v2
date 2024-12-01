@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/helpers/listener_service.dart';
 import 'package:fullstack_example/pages/add_edit_text_page.dart';
 import 'package:fullstack_example/pages/result_page.dart';
@@ -11,6 +10,7 @@ import 'package:fullstack_example/widgets/options/options.dart';
 import 'package:fullstack_example/widgets/select_image.dart';
 import 'package:fullstack_example/widgets/settings/settings.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +61,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade800.withOpacity(0.6),
       appBar: appBar,
@@ -285,7 +286,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                   ),
                 );
                 if (imageUint8List == null) return;
-                controller.addImageUint8List(imageUint8List);
+                controller.addImage(imageUint8List);
                 setState(() {});
               },
             ),

@@ -81,7 +81,10 @@ class _MainWidget extends StatelessWidget {
         children: controller.value.items
             // For each item in the controller's value, create
             //an ItemWidget to display it.
-            .map((item) => _ItemWidget(item: item, controller: controller))
+            .map(
+              (item) =>
+                  PainterWidgetItemWidget(item: item, controller: controller),
+            )
             .toList()
             .reversed
             .toList(), // Reverse the list of items to layer

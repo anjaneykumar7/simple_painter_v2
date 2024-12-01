@@ -14,6 +14,9 @@ part 'widgets/painter_widget_item_widget.dart';
 part 'widgets/painter_widget_drawing_widget.dart';
 part 'widgets/painter_widget_main_widget.dart';
 part 'widgets/painter_widget_viewer_widget.dart';
+part 'items/painter_widget_image_item.dart';
+part 'items/painter_widget_shape_item.dart';
+part 'items/painter_widget_text_item.dart';
 
 // A StatelessWidget that listens to changes in
 //the PainterController and rebuilds its child

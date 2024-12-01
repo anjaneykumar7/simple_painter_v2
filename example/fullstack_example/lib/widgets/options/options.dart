@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/options/brush_options.dart';
 import 'package:fullstack_example/widgets/options/erase_options.dart';
 import 'package:fullstack_example/widgets/options/image_options.dart';
 import 'package:fullstack_example/widgets/options/shape_options.dart';
 import 'package:fullstack_example/widgets/options/text_options.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 class Options extends StatelessWidget {
   const Options({required this.controller, super.key});

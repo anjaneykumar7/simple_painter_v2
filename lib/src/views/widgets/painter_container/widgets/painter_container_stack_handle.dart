@@ -78,7 +78,10 @@ class _StackHandle extends StatelessWidget {
                   onPanEnd: (details) =>
                       onPanEnd.call(), // Call onPanEnd when drag ends
                   onPanUpdate: (details) => onPanUpdate(
-                      details, handlePosition), // Handle updates while dragging
+                    details,
+                    handlePosition,
+                  ), // Handle updates
+                  //while dragging
                   child: _HandleWidget(
                     handlePosition: handlePosition, // Position of the handle
                     height: _getHandleWidgetHeight(

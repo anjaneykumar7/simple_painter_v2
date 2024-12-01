@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/select_image.dart';
 import 'package:fullstack_example/widgets/settings/layers.dart';
 import 'package:fullstack_example/widgets/settings/shapes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 class Settings extends StatelessWidget {
   const Settings({

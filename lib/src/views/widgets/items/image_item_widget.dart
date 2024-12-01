@@ -161,6 +161,14 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
           dragHandleColor:
               widget.painterController.value.settings.itemDragHandleColor,
 
+          // Checks if the item should be rendered
+          renderItem: widget.painterController.itemRender.copyWith(
+            containerItemId: widget.item.id,
+          ),
+          // Assigns the rendered image to the painterController
+          onRenderImage: (item) {
+            widget.painterController.itemRender = item;
+          },
           // Child widget that wraps the image
           child: MeasureSize(
             // Measure the size of the child and

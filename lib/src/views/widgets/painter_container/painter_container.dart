@@ -1,9 +1,14 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:simple_painter/src/models/position_model.dart';
+import 'package:simple_painter/src/models/render_item_model.dart';
 import 'package:simple_painter/src/models/size_model.dart';
 part 'widgets/painter_container_handle_widget.dart';
 part 'widgets/painter_container_handle_position_enum.dart';
@@ -35,6 +40,8 @@ class PainterContainer extends StatefulWidget {
     this.rotateAngle,
     this.size,
     this.centerChild,
+    this.renderItem,
+    this.onRenderImage,
   });
   final double height;
   final Color? dragHandleColor;
@@ -71,42 +78,66 @@ class PainterContainer extends StatefulWidget {
   final double? rotateAngle;
   final SizeModel? size;
   final bool?
-      centerChild; //text widgetı ve diğer widgetlar çağırıldığında ortalamak için kullanılıyor
+      centerChild; // Used to center text widget and other widgets when called
+  // RenderItem object used to render the widget's content
+  final RenderItem? renderItem;
+  // Callback function triggered when the widget needs to render an image
+  final void Function(
+    RenderItem item,
+  )? onRenderImage;
   @override
   State<PainterContainer> createState() => _PainterContainerState();
 }
 
 class _PainterContainerState extends State<PainterContainer> {
+  // Position model representing the current position of the widget
   PositionModel position = const PositionModel();
+  // Position model representing the previous position of the widget
   PositionModel oldPosition = const PositionModel();
+  // Position model representing the position within the stack
   PositionModel stackPosition = const PositionModel();
+  // Size model representing the current container dimensions
   SizeModel containerSize = const SizeModel(width: 100, height: 100);
+  // Size model representing the previous container dimensions
   SizeModel oldContainerSize = const SizeModel(width: 100, height: 100);
+  // Current rotation angle of the widget
   double rotateAngle = 0;
+  // Previous rotation angle of the widget
   double oldRotateAngle = 0;
+  // Width of the handle widget used for resizing
   final handleWidgetWidth = 15.0;
+  // Height of the handle widget used for resizing
   final handleWidgetHeight = 15.0;
+  // Minimum allowed width for the container
   double minimumContainerWidth = 50;
+  // Minimum allowed height for the container
   double minimumContainerHeight = 50;
+  // Current height during scaling operations, -1 indicates no active scaling
   double scaleCurrentHeight = -1;
+  // Current rotation angle during rotation operations, -1 indicates no active rotation
   double currentRotateAngle = -1;
   bool initializeSize =
-      false; //bir defaya mahsus widgetın boyutunu ayarlamak için kullanılıyor, örneğin metin boyutunu measuresize ile alıp set etmek için
+      false; //used to set the widget size once, for example to get and set the text size with measuresize
   bool changesFromOutside =
-      true; //dışarıdan gelen değişikliklerin çalışmasını sağlayan değişken, false olduğu durumda dışarıdan genel değişiklikleri kabul etmiyor
+      true; //variable that allows changes from outside to work, when false it does not accept general changes from outside
   bool calculatingPositionForSize =
-      false; //position değişkeninin widgetın boyutu değiştiğinde çalışması için kullanılıyor, bu değişken olmadığı takdirde widget, size için değişen pozisyonu dışarıdand gelen yeni pozisyon sanıyor ve pozisyonu bozuyor
+      false; //used to make the position variable work when the widget size changes, without this variable the widget thinks the position changing for size is a new position from outside and breaks the position
   bool changedSize =
-      false; //bu değişken size değiştiğinde updateEvents fonksiyonunda ki position ve rotateAngle anlık olarak değişmesini engelliyor, çünkü o sırada position ve rotation hesaplanmamış oluyor
+      false; //this variable prevents position and rotateAngle from changing instantly in the updateEvents function when size changes, because position and rotation have not been calculated at that time
 
   @override
   Widget build(BuildContext context) {
+    // Get the screen width from MediaQuery
     final screenWidth = MediaQuery.of(context).size.width;
 
+    // Set stack dimensions based on screen width
     final stackHeight = screenWidth;
     final stackWidth = screenWidth;
+    // Initialize widget size based on stack dimensions
     initializeWidgetSize(stackWidth, stackHeight);
+    // Check and handle any external value changes
     controlOutsideValues(stackWidth, stackHeight);
+    // Update widget state based on current events
     updateEvents();
     return Positioned(
       left: position.x,
@@ -211,27 +242,8 @@ class _PainterContainerState extends State<PainterContainer> {
                       widget.onSizeChange?.call(newPosition, oldSize, newSize);
                     }
                   },
-                  pointerCount2Change: (
-                    newScaleCurrentHeight,
-                    newCurrentRotateAngle,
-                    newRotateAngle,
-                    newContainerSize,
-                  ) {
-                    setState(() {
-                      if (newScaleCurrentHeight != null) {
-                        scaleCurrentHeight = newScaleCurrentHeight;
-                      }
-                      if (newCurrentRotateAngle != null) {
-                        currentRotateAngle = newCurrentRotateAngle;
-                      }
-                      if (newRotateAngle != null) {
-                        rotateAngle = newRotateAngle;
-                      }
-                      if (newContainerSize != null) {
-                        containerSize = newContainerSize;
-                      }
-                    });
-                  },
+                  renderItem: widget.renderItem,
+                  onRenderImage: widget.onRenderImage,
                   child: widget.child,
                 ),
                 if (widget.selectedItem)
@@ -356,7 +368,9 @@ class _PainterContainerState extends State<PainterContainer> {
 
 // Handles drag updates for resizing the widget based on the drag position
   void handlePanUpdate(
-      DragUpdateDetails details, _HandlePosition handlePosition) {
+    DragUpdateDetails details,
+    _HandlePosition handlePosition,
+  ) {
     changesFromOutside = false;
     setState(() {
       if (handlePosition == _HandlePosition.left) {
@@ -567,7 +581,10 @@ class _PainterContainerState extends State<PainterContainer> {
 
   // Handles updates on position, size, and rotation angle changes
   void updateEvents() {
-    if (position != oldPosition && !changedSize) {
+    if (position != oldPosition &&
+        !changedSize &&
+        ((position.x - oldPosition.x).abs() > 0.0001 ||
+            (position.y - oldPosition.y).abs() > 0.0001)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (widget.onPositionChangeEnd != null && changesFromOutside) {
           widget.onPositionChangeEnd?.call(

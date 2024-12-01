@@ -128,6 +128,15 @@ class _TextItemWidgetState extends State<TextItemWidget> {
           dragHandleColor: widget.painterController.value.settings
               .itemDragHandleColor, // The color of the drag handle
           centerChild: true, // Centers the child widget
+
+          // Checks if the item should be rendered
+          renderItem: widget.painterController.itemRender.copyWith(
+            containerItemId: widget.item.id,
+          ),
+          // Assigns the rendered image to the painterController
+          onRenderImage: (item) {
+            widget.painterController.itemRender = item;
+          },
           child: MeasureSize(
             onChange: (size) {
               if (widgetHeight != null) {

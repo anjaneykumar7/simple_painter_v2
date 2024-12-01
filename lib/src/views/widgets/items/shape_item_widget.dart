@@ -156,6 +156,14 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
           // Centers the child widget inside the container.
           centerChild: true,
 
+          // Checks if the item should be rendered
+          renderItem: widget.painterController.itemRender.copyWith(
+            containerItemId: widget.item.id,
+          ),
+          // Assigns the rendered image to the painterController
+          onRenderImage: (item) {
+            widget.painterController.itemRender = item;
+          },
           child: MeasureSize(
             // Measures the size of the widget and
             //sets the height if it's not already set.

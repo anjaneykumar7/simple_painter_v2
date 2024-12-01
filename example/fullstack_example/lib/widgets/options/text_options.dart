@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:simple_painter/simple_painter.dart';
 import 'package:fullstack_example/widgets/options/options.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 class TextOptions extends StatelessWidget {
   const TextOptions({required this.controller, required this.item, super.key});

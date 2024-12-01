@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'package:simple_painter/simple_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:simple_painter/simple_painter.dart';
 
 class Shapes extends StatelessWidget {
   const Shapes({

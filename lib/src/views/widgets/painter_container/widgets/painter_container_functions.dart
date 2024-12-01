@@ -64,3 +64,17 @@ double _getHandleWidgetHeight(
           : size; // Return the calculated height or a minimum height of 15.
   }
 }
+
+Future<Uint8List?> renderWidget(
+  GlobalKey repaintBoundaryKey,
+) async {
+  try {
+    final boundary = repaintBoundaryKey.currentContext!.findRenderObject()!
+        as RenderRepaintBoundary;
+    final image = await boundary.toImage();
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    return byteData?.buffer.asUint8List();
+  } catch (e) {
+    return null; // Return null if rendering fails.
+  }
+}

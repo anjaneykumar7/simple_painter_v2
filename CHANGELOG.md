@@ -1,3 +1,9 @@
+# 1.1.0
+
+- Added item image rendering to the painter container.
+- Fixed item position bugs.
+- Added custom item widget.
+
 # 1.0.0+2
 
 - Fixed android slow dragging bug.
