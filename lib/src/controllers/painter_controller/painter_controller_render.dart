@@ -24,6 +24,8 @@ extension PainterControllerRender on PainterController {
     itemRender = RenderItem(itemId: item.id, enableRotation: enableRotation);
     refreshValue();
     await Future.delayed(const Duration(milliseconds: 100), () {});
-    return itemRender.image;
+    final image = itemRender.image;
+    itemRender.image = null;
+    return image;
   }
 }

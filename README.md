@@ -110,6 +110,14 @@ color: Color(0xFFFFFF),
 controller.toggleErasing();  // Enable eraser mode
 ```
 
+### Rendering Canvas And Items As Images
+
+```dart
+controller.renderImage(); // Render canvas as image
+
+controller.renderItem(item, enableRotation: true); // Render items as image
+```
+
 ### Adding Interactive Items
 
 Add text, shapes, or images dynamically:

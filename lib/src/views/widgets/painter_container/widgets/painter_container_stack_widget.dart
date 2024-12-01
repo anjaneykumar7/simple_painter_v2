@@ -92,9 +92,13 @@ class _StackWidget extends StatelessWidget {
         renderItem!.isEqualToContainerItemId) {
       unawaited(
         Future(() async {
+          var image = await renderWidget(repaintBoundaryKey!);
+          if (renderItem!.enableRotation && image != null) {
+            //rotate image
+            image = await ImageService.rotateImage(image, rotateAngle);
+          }
           onRenderImage?.call(
-            renderItem!
-                .copyWith(image: await renderWidget(repaintBoundaryKey!)),
+            renderItem!.copyWith(image: image),
           );
         }),
       );

@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:simple_painter/src/helpers/image_service.dart';
 import 'package:simple_painter/src/models/position_model.dart';
 import 'package:simple_painter/src/models/render_item_model.dart';
 import 'package:simple_painter/src/models/size_model.dart';

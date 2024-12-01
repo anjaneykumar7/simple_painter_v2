@@ -64,7 +64,8 @@ class Layers extends StatelessWidget {
               PhosphorIconsRegular.image,
               Colors.blue,
               () async {
-                final image = await controller.renderItem(item);
+                final image =
+                    await controller.renderItem(item, enableRotation: true);
                 if (image != null && context.mounted) {
                   await Navigator.push(
                     context,
