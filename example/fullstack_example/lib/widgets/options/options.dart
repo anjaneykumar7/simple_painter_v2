@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fullstack_example/widgets/options/brush_options.dart';
+import 'package:fullstack_example/widgets/options/custom_widget_options.dart';
 import 'package:fullstack_example/widgets/options/erase_options.dart';
 import 'package:fullstack_example/widgets/options/image_options.dart';
 import 'package:fullstack_example/widgets/options/shape_options.dart';
@@ -34,6 +35,11 @@ class Options extends StatelessWidget {
           return ShapeOptions(
             controller: controller,
             item: value.selectedItem! as ShapeItem,
+          );
+        } else if (value.selectedItem is CustomWidgetItem) {
+          return CustomWidgetOptions(
+            controller: controller,
+            item: value.selectedItem! as CustomWidgetItem,
           );
         } else {
           return const SizedBox.shrink();

@@ -32,6 +32,13 @@ class PainterWidgetItemWidget extends StatelessWidget {
         controller: controller,
       );
     }
+    // Check if the item is a CustomWidgetItem
+    else if (item is CustomWidgetItem) {
+      return PainterWidgetCustomWidgetItem(
+        item: item as CustomWidgetItem,
+        controller: controller,
+      );
+    }
     // If the item type is not recognized, return an empty container
     else {
       return const SizedBox.shrink();

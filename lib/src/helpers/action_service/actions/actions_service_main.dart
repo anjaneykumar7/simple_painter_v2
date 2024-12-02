@@ -41,7 +41,8 @@ extension ActionsServiceMain on ActionsService {
           _actionErese(currentActions[i] as ActionErase, false);
         } else if (currentActions[i] is ActionTextChangeValue ||
             currentActions[i] is ActionImageChangeValue ||
-            currentActions[i] is ActionShapeChangeValue) {
+            currentActions[i] is ActionShapeChangeValue ||
+            currentActions[i] is ActionCustomWidgetChangeValue) {
           _actionChangeValue(currentActions[i], false);
         } else if (currentActions[i] is ActionChangeBackgroundImage) {
           _actionBackgroundImageChange(
@@ -74,7 +75,8 @@ extension ActionsServiceMain on ActionsService {
           _actionErese(currentActions[i] as ActionErase, true);
         } else if (currentActions[i] is ActionTextChangeValue ||
             currentActions[i] is ActionImageChangeValue ||
-            currentActions[i] is ActionShapeChangeValue) {
+            currentActions[i] is ActionShapeChangeValue ||
+            currentActions[i] is ActionCustomWidgetChangeValue) {
           _actionChangeValue(currentActions[i], true);
         } else if (currentActions[i] is ActionChangeBackgroundImage) {
           _actionBackgroundImageChange(

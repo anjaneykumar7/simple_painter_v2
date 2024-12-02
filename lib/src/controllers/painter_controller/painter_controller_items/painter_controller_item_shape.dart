@@ -2,12 +2,13 @@ part of '../painter_controller.dart';
 
 extension PainterControllerItemShape on PainterController {
   // adds a new shape to the canvas
-  void addShape(ShapeType shapeType) {
+  void addShape(ShapeType shapeType, {String? layerTitle}) {
     final shapeItem = ShapeItem(
       shapeType: shapeType,
       position: const PositionModel(),
       layer: LayerSettings(
-        title: 'Shape (${value.items.whereType<ShapeItem>().length})',
+        title: layerTitle ??
+            'Shape (${value.items.whereType<ShapeItem>().length})',
         index: value.items.length,
       ),
       size: ShapeItem.defaultSize(shapeType),

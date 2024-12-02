@@ -1,5 +1,6 @@
 export 'src/controllers/events/controller_event.dart';
 export 'src/controllers/events/item_press_event.dart';
+export 'src/controllers/items/custom_widget_item.dart';
 export 'src/controllers/items/image_item.dart';
 export 'src/controllers/items/shape_item.dart';
 export 'src/controllers/items/shapes/shape_type_enum.dart';

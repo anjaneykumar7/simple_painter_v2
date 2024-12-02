@@ -69,6 +69,8 @@ class ChangesList extends StatelessWidget {
         return 'Added image';
       case ActionType.positionItem:
         return 'Changed position';
+      case ActionType.addedCustomWidgetItem:
+        return 'Added custom widget';
       case ActionType.sizeItem:
         return 'Changed size';
       case ActionType.rotationItem:
@@ -89,6 +91,8 @@ class ChangesList extends StatelessWidget {
         return 'Change shape options';
       case ActionType.addedShapeItem:
         return 'Added shape';
+      case ActionType.changeCustomWidgetValue:
+        return 'Change custom widget options';
       case ActionType.changeBackgroundImage:
         return 'Change background image';
     }

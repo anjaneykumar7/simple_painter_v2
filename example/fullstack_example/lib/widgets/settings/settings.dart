@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:fullstack_example/widgets/select_image.dart';
+import 'package:fullstack_example/widgets/settings/custom_widget.dart';
 import 'package:fullstack_example/widgets/settings/layers.dart';
 import 'package:fullstack_example/widgets/settings/shapes.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -81,6 +82,11 @@ class Settings extends StatelessWidget {
               );
               if (imageUint8List == null) return;
               await controller.setBackgroundImage(imageUint8List);
+              setNewState();
+            }),
+            buttons(PhosphorIconsRegular.cubeTransparent, 'Custom Widget',
+                () async {
+              controller.addCustomWidget(const CustomWidget());
               setNewState();
             }),
           ],

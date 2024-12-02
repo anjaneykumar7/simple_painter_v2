@@ -1,5 +1,6 @@
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/custom_widget_actions/custom_widget_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/shape_actions/shape_change_value_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
@@ -65,13 +66,23 @@ class ChangeItemValuesService {
       );
     }
     // Otherwise, create a change action for a shape item.
-    else {
+    else if (item is ShapeItem && lastItem is ShapeItem) {
       return ActionShapeChangeValue(
-        currentItem: item as ShapeItem, // Cast the item to ShapeItem.
-        lastItem: lastItem as ShapeItem, // Cast the last item to ShapeItem.
+        currentItem: item, // Cast the item to ShapeItem.
+        lastItem: lastItem, // Cast the last item to ShapeItem.
         timestamp: DateTime.now(), // Timestamp for the action.
         actionType:
             ActionType.changeShapeValue, // Action type: change shape value.
+      );
+    }
+    // If the item is a CustomWidgetItem, create a change action for custom widget.
+    else {
+      return ActionCustomWidgetChangeValue(
+        currentItem: item as CustomWidgetItem,
+        lastItem: lastItem as CustomWidgetItem,
+        timestamp: DateTime.now(), // Timestamp for the action.
+        actionType: ActionType
+            .changeCustomWidgetValue, // Action type: change custom widget value.
       );
     }
   }

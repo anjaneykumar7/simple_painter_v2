@@ -427,6 +427,7 @@ class _PainterContainerState extends State<PainterContainer> {
 
 // Handles resizing the widget from the top handle
   void handleTop(DragUpdateDetails details) {
+    print('${containerSize.height} ${minimumContainerHeight}');
     if (containerSize.height <= minimumContainerHeight &&
         details.delta.dy > 0) {
       // Prevents shrinking below the minimum height when dragging up
@@ -461,6 +462,7 @@ class _PainterContainerState extends State<PainterContainer> {
 
 // Handles resizing the widget from the left handle
   void handleLeft(DragUpdateDetails details) {
+    print('${containerSize.width} ${minimumContainerWidth}');
     if (containerSize.width <= minimumContainerWidth && details.delta.dx > 0) {
       // Prevents shrinking below the minimum width when dragging left
       containerSize = containerSize.copyWith(

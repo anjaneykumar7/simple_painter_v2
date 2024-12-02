@@ -2,13 +2,14 @@ part of '../painter_controller.dart';
 
 extension PainterControllerItemText on PainterController {
   /// Adds a text item to the painting canvas.
-  Future<void> addText(String text) async {
+  Future<void> addText(String text, {String? layerTitle}) async {
     if (text.isNotEmpty) {
       final painterItem = TextItem(
         position: const PositionModel(),
         text: text,
         layer: LayerSettings(
-          title: text,
+          title: layerTitle ??
+              'Text (${value.items.whereType<TextItem>().length})',
           index: value.items.length,
         ),
       ).copyWith(

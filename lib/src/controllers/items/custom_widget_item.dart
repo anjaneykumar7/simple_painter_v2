@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/controllers/settings/layer_settings.dart';
@@ -7,9 +5,9 @@ import 'package:simple_painter/src/models/position_model.dart';
 import 'package:simple_painter/src/models/size_model.dart';
 
 // Represents an image item that can be added to the canvas in the painter tool.
-class ImageItem extends PainterItem {
-  ImageItem({
-    required this.image, // The image data in Uint8List format.
+class CustomWidgetItem extends PainterItem {
+  CustomWidgetItem({
+    required this.widget, // The child widget.
     required super.position, // The position of the image on the canvas.
     required super.layer, // The layer settings for the image.
     this.enableGradientColor = false, // Determines if a gradient
@@ -21,8 +19,6 @@ class ImageItem extends PainterItem {
     this.gradientEnd =
         Alignment.centerRight, // The alignment for the end of the gradient.
     this.gradientOpacity = 0.5, // The opacity of the gradient overlay.
-    this.fit =
-        BoxFit.contain, // How the image should be fitted inside its container.
     this.borderRadius =
         BorderRadius.zero, // The border radius for the image container.
     this.borderColor =
@@ -35,7 +31,7 @@ class ImageItem extends PainterItem {
     super.rotation, // The rotation angle of the image in degrees.
   });
 
-  final Uint8List image; // The actual image data.
+  final Widget widget; // The actual child widget.
   final bool
       enableGradientColor; // If true, applies a gradient overlay to the image.
   final Color gradientStartColor; // Gradient start color.
@@ -43,14 +39,13 @@ class ImageItem extends PainterItem {
   final AlignmentGeometry gradientBegin; // Starting alignment for the gradient.
   final AlignmentGeometry gradientEnd; // Ending alignment for the gradient.
   final double gradientOpacity; // Opacity value for the gradient overlay.
-  final BoxFit fit; // BoxFit option for scaling the image.
   final BorderRadius borderRadius; // Border radius for the image container.
   final Color borderColor; // Color of the image border.
   final double borderWidth; // Width of the image border.
 
   @override
-  ImageItem copyWith({
-    Uint8List? image, // New image data, if provided.
+  CustomWidgetItem copyWith({
+    Widget? widget, // New image data, if provided.
     TextStyle? textStyle, // New text style, if provided.
     TextAlign? textAlign, // New text alignment, if provided.
     bool? enableGradientColor, // New gradient enable setting, if provided.
@@ -70,16 +65,15 @@ class ImageItem extends PainterItem {
     double? rotation, // New rotation angle, if provided.
     bool? enabled, // New enabled state, if provided.
   }) {
-    return ImageItem(
+    return CustomWidgetItem(
       id: id,
-      image: image ?? this.image,
+      widget: widget ?? this.widget,
       enableGradientColor: enableGradientColor ?? this.enableGradientColor,
       gradientStartColor: gradientStartColor ?? this.gradientStartColor,
       gradientEndColor: gradientEndColor ?? this.gradientEndColor,
       gradientBegin: gradientBegin ?? this.gradientBegin,
       gradientEnd: gradientEnd ?? this.gradientEnd,
       gradientOpacity: gradientOpacity ?? this.gradientOpacity,
-      fit: fit ?? this.fit,
       borderRadius: borderRadius ?? this.borderRadius,
       borderColor: borderColor ?? this.borderColor,
       borderWidth: borderWidth ?? this.borderWidth,

@@ -6,6 +6,7 @@ import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/controllers/paint_actions/layer/layer_change_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/custom_widget_actions/custom_widget_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';

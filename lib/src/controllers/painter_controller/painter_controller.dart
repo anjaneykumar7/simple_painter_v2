@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/drawables/background/painter_background.dart';
+import 'package:simple_painter/src/controllers/items/custom_widget_item.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
@@ -34,6 +35,8 @@ part 'painter_controller_items/values/painter_controller_item_shape_values.dart'
 part 'painter_controller_items/values/painter_controller_item_text_values.dart';
 part 'painter_controller_items/values/painter_controller_item_values.dart';
 part 'painter_controller_items/values/painter_controller_paint_values.dart';
+part 'painter_controller_items/values/painter_controller_item_custom_widget_values.dart';
+part 'painter_controller_items/painter_controller_item_custom_widget.dart';
 part 'painter_controller_layer.dart';
 part 'painter_controller_main.dart';
 part 'painter_controller_paint.dart';

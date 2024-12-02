@@ -7,6 +7,7 @@ import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/custom_paint.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/models/brush_model.dart';
+import 'package:simple_painter/src/views/widgets/items/custom_widget_item_widget.dart';
 import 'package:simple_painter/src/views/widgets/items/image_item_widget.dart';
 import 'package:simple_painter/src/views/widgets/items/shape_item_widget.dart';
 import 'package:simple_painter/src/views/widgets/items/text_item_widget.dart';
@@ -17,6 +18,7 @@ part 'widgets/painter_widget_viewer_widget.dart';
 part 'items/painter_widget_image_item.dart';
 part 'items/painter_widget_shape_item.dart';
 part 'items/painter_widget_text_item.dart';
+part 'items/painter_widget_custom_widget_item.dart';
 
 // A StatelessWidget that listens to changes in
 //the PainterController and rebuilds its child
