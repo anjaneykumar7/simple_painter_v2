@@ -143,6 +143,10 @@ borderColr: Color(0xFFFFFF),
 ...
 )
 
+controller.addShape(shape); // Add shape item
+
+controller.addCustomWidget(widget); // Add custom widget item
+
 ```
 
 ### Custom Background Image
