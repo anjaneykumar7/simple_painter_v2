@@ -3,6 +3,9 @@
 
 **Flutter Painter** is a Flutter package that lets users create and manipulate a drawing canvas with layers. It supports adding and styling text, images, and shapes, along with freehand drawing tools, customizable brush sizes, and colors. The package also includes undo/redo functionality and custom background support.
 
+
+![simple_painter_ps](https://github.com/user-attachments/assets/f4bba725-2b8f-4431-9762-11ef65a97354)
+
 <img src="https://github.com/user-attachments/assets/fff50318-1383-4edc-98c1-5fab99cb6cd7" height="500" style="display: inline-block; margin-right: 10px;">
 <img src="https://github.com/user-attachments/assets/dec54c47-97df-42c9-a380-9907f1e760be" height="500" style="display: inline-block;">
 
