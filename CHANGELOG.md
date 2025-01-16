@@ -1,9 +1,14 @@
+# 1.1.0+1
+
+- Replaced dart:io in example_project with universal_io package.
+
 # 1.1.0
 
 - Added item image rendering to the painter container.
 - Fixed item position bugs.
 - Added custom item widget.
 - Added layer title while item adding.
+
 # 1.0.0+2
 
 - Fixed android slow dragging bug.

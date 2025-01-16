@@ -38,7 +38,7 @@ To start using **Painter Widget**, add it to your project's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  simple_painter: ^1.1.0
+  simple_painter: ^1.1.0+1
 ```
 
 Then, run the following command in your terminal:
