@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fullstack_example/helpers/listener_service.dart';
@@ -11,6 +9,7 @@ import 'package:fullstack_example/widgets/select_image.dart';
 import 'package:fullstack_example/widgets/settings/settings.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:simple_painter/simple_painter.dart';
+import 'package:universal_io/io.dart';
 
 void main() {
   runApp(const MyApp());
