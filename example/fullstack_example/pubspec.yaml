@@ -39,6 +39,7 @@ dependencies:
   phosphor_flutter: ^2.1.0
   simple_painter:
     path: ../..
+  universal_io: ^2.2.2
 
 dev_dependencies:
   flutter_test:
