@@ -10,7 +10,7 @@ extension PainterControllerItemCustomWidget on PainterController {
       widget: widget,
       layer: LayerSettings(
         title: layerTitle ??
-            'Custom Widget (${value.items.whereType<CustomWidgetItem>().length})',
+            '''Custom Widget (${value.items.whereType<CustomWidgetItem>().length})''',
         index: value.items.length,
       ),
       size: const SizeModel(width: 100, height: 100),

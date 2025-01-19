@@ -12,7 +12,6 @@ extension PainterControllerItemValues on PainterController {
           selectedItem: selectedItem as PainterItem,
         );
         addAction(action);
-        print(action.actionType);
       },
     );
   }

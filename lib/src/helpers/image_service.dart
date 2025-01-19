@@ -5,7 +5,9 @@ import 'dart:ui';
 
 class ImageService {
   static Future<Uint8List> rotateImage(
-      Uint8List imageBytes, double angle) async {
+    Uint8List imageBytes,
+    double angle,
+  ) async {
     final codec = await ui.instantiateImageCodec(imageBytes);
     final frameInfo = await codec.getNextFrame();
     final image = frameInfo.image;

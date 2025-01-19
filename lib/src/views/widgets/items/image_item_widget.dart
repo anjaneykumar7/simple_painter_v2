@@ -13,6 +13,7 @@ class ImageItemWidget extends StatefulWidget {
   const ImageItemWidget({
     required this.item,
     required this.height,
+    required this.canvasSize,
     required this.painterController,
     super.key,
     this.onPositionChange,
@@ -26,6 +27,8 @@ class ImageItemWidget extends StatefulWidget {
   // The height of the widget
   final double height;
   // Optional callback when the position of the item changes
+  final Size canvasSize;
+  // The size of the canvas
   final void Function(PositionModel)? onPositionChange;
   // Optional callback when the size of the item changes
   final void Function(PositionModel, SizeModel)? onSizeChange;
@@ -70,6 +73,8 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
 
           // Height of the painter container
           height: widget.height,
+          canvasSize:
+              widget.canvasSize, // Passes the canvas size to the container.
           minimumContainerHeight: widgetHeight,
 
           // Position of the image item
@@ -194,18 +199,6 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
         children: [
           // Positioned image as the background
           Positioned.fill(child: image),
-          // Positioned container with a border around the image
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: widget.item.borderRadius,
-                border: Border.all(
-                  color: widget.item.borderColor,
-                  width: widget.item.borderWidth,
-                ),
-              ),
-            ),
-          ),
           // Apply gradient overlay if enabled
           if (widget.item.gradientOpacity > 0 &&
               widget.item.enableGradientColor)
@@ -229,6 +222,18 @@ class _ImageItemWidgetState extends State<ImageItemWidget> {
                 ),
               ),
             ),
+          // Positioned container with a border around the image
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: widget.item.borderRadius,
+                border: Border.all(
+                  color: widget.item.borderColor,
+                  width: widget.item.borderWidth,
+                ),
+              ),
+            ),
+          ),
         ],
       );
 

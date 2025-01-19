@@ -40,10 +40,8 @@ class PainterCustomPaint extends CustomPainter {
     final backgroundPaint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
-
     // Defines the area to be painted as the canvas size.
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
-
     // Draws the background image if available.
     if (backgroundImage != null) {
       canvas.drawImageRect(

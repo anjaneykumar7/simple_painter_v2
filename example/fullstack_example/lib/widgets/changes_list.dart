@@ -13,7 +13,7 @@ class ChangesList extends StatelessWidget {
       width: 190,
       margin: const EdgeInsets.only(left: 5),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withValues(alpha: 0.7),
         borderRadius: const BorderRadius.only(
           bottomRight: Radius.circular(7),
           bottomLeft: Radius.circular(7),

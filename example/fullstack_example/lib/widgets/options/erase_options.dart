@@ -19,26 +19,13 @@ class EraseOptions extends StatelessWidget {
   }
 
   Widget get size {
-    final sliderValue = ValueNotifier(controller.value.brushSize / 100);
-    return ValueListenableBuilder(
-      valueListenable: sliderValue,
-      builder: (context, sliderVal, child) {
-        return Row(
-          children: [
-            title('Size (${(sliderVal * 100).toStringAsFixed(0)}px)'),
-            const Spacer(),
-            Slider(
-              value: sliderVal,
-              onChanged: (value) {
-                sliderValue.value = value;
-              },
-              onChangeEnd: (value) {
-                controller.changeBrushValues(
-                  size: value * 100,
-                );
-              },
-            ),
-          ],
+    return doubleSwitch(
+      'Size (${(controller.value.brushSize / 100).toStringAsFixed(0)}px)',
+      controller.value.brushSize / 100,
+      1,
+      (value) {
+        controller.changeBrushValues(
+          size: value * 100,
         );
       },
     );

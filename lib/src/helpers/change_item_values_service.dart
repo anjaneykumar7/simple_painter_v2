@@ -75,14 +75,16 @@ class ChangeItemValuesService {
             ActionType.changeShapeValue, // Action type: change shape value.
       );
     }
-    // If the item is a CustomWidgetItem, create a change action for custom widget.
+    // If the item is a CustomWidgetItem, create a change action
+    //for custom widget.
     else {
       return ActionCustomWidgetChangeValue(
         currentItem: item as CustomWidgetItem,
         lastItem: lastItem as CustomWidgetItem,
         timestamp: DateTime.now(), // Timestamp for the action.
-        actionType: ActionType
-            .changeCustomWidgetValue, // Action type: change custom widget value.
+        actionType:
+            ActionType.changeCustomWidgetValue, // Action type: change custom
+        //widget value.
       );
     }
   }

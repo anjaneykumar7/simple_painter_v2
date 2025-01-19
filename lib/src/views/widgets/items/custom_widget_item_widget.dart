@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:simple_painter/simple_painter.dart';
-import 'package:simple_painter/src/controllers/items/custom_widget_item.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/rotate_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/size_action.dart';
@@ -14,6 +13,7 @@ class CustomWidgetItemWidget extends StatefulWidget {
   const CustomWidgetItemWidget({
     required this.item,
     required this.height,
+    required this.canvasSize,
     required this.painterController,
     super.key,
     this.onPositionChange,
@@ -26,6 +26,8 @@ class CustomWidgetItemWidget extends StatefulWidget {
   final CustomWidgetItem item;
   // The height of the widget
   final double height;
+  // The size of the canvas
+  final Size canvasSize;
   // Optional callback when the position of the item changes
   final void Function(PositionModel)? onPositionChange;
   // Optional callback when the size of the item changes
@@ -71,6 +73,9 @@ class _CustomWidgetItemWidgetState extends State<CustomWidgetItemWidget> {
 
           // Height of the painter container
           height: widget.height,
+
+          canvasSize:
+              widget.canvasSize, // Passes the canvas size to the container.
           minimumContainerHeight: 10,
           minimumContainerWidth: 10,
 
@@ -196,18 +201,6 @@ class _CustomWidgetItemWidgetState extends State<CustomWidgetItemWidget> {
         children: [
           // Positioned image as the background
           Positioned.fill(child: childWidget),
-          // Positioned container with a border around the image
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: widget.item.borderRadius,
-                border: Border.all(
-                  color: widget.item.borderColor,
-                  width: widget.item.borderWidth,
-                ),
-              ),
-            ),
-          ),
           // Apply gradient overlay if enabled
           if (widget.item.gradientOpacity > 0 &&
               widget.item.enableGradientColor)
@@ -231,6 +224,18 @@ class _CustomWidgetItemWidgetState extends State<CustomWidgetItemWidget> {
                 ),
               ),
             ),
+          // Positioned container with a border around the image
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: widget.item.borderRadius,
+                border: Border.all(
+                  color: widget.item.borderColor,
+                  width: widget.item.borderWidth,
+                ),
+              ),
+            ),
+          ),
         ],
       );
 

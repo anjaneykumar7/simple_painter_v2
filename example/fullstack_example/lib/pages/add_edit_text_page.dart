@@ -21,7 +21,7 @@ class _AddEditTextPageState extends State<AddEditTextPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade900.withOpacity(0.9),
+      backgroundColor: Colors.grey.shade900.withValues(alpha: 0.9),
       body: Stack(
         children: [
           GestureDetector(
@@ -46,7 +46,7 @@ class _AddEditTextPageState extends State<AddEditTextPage> {
                           style: const TextStyle(color: Colors.white),
                           cursorColor: Colors.white,
                           decoration: InputDecoration(
-                            fillColor: Colors.black.withOpacity(0.2),
+                            fillColor: Colors.black.withValues(alpha: 0.2),
                             filled: true,
                             border: InputBorder.none,
                           ),
@@ -88,17 +88,4 @@ class _AddEditTextPageState extends State<AddEditTextPage> {
       ),
     );
   }
-
-  Widget get sliderMenu => Row(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 16),
-            child: Text(
-              'Size:',
-              style: TextStyle(color: Colors.white, fontSize: 18),
-            ),
-          ),
-          Slider(value: 0, onChanged: (value) {}),
-        ],
-      );
 }

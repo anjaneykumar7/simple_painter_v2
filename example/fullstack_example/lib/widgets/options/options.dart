@@ -64,3 +64,95 @@ Widget title(String text) => Align(
         style: const TextStyle(color: Colors.white, fontSize: 16),
       ),
     );
+
+Widget boolSwitch(
+  String text, {
+  bool value = false,
+  void Function({bool value})? onChanged,
+}) {
+  return Row(
+    children: [
+      title(text),
+      const Spacer(),
+      Switch(
+        value: value,
+        onChanged: (bool newValue) {
+          if (onChanged != null) {
+            onChanged(value: newValue);
+          }
+        },
+      ),
+    ],
+  );
+}
+
+Widget colorSwitch(
+  String text,
+  Color color,
+  void Function(double value) onChanged, {
+  bool opacityCondition = false,
+}) {
+  final notifierColor = ValueNotifier<double>(
+    (((color.r * 255).toInt() << 16) | // Red kanalını int'e çeviriyoruz
+            ((color.g * 255).toInt() << 8) | // Green kanalını int'e çeviriyoruz
+            ((color.b * 255).toInt())) // Blue kanalını int'e çeviriyoruz
+        .toDouble(),
+  );
+  return IgnorePointer(
+    ignoring: opacityCondition,
+    child: Opacity(
+      opacity: opacityCondition ? 0.5 : 1,
+      child: Row(
+        children: [
+          title(text),
+          const Spacer(),
+          ValueListenableBuilder(
+            valueListenable: notifierColor,
+            builder: (context, colorVal, child) => Slider(
+              value: colorVal,
+              max: 0xFFFFFF.toDouble(),
+              thumbColor: Color(colorVal.toInt()).withValues(alpha: 1),
+              onChanged: (value) {
+                notifierColor.value = value;
+              },
+              onChangeEnd: onChanged,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget doubleSwitch(
+  String text,
+  double doubleValue,
+  double maxDoubleValue,
+  void Function(double value) onChanged, {
+  bool opacityCondition = false,
+}) {
+  final notifierDouble = ValueNotifier<double>(doubleValue);
+  return IgnorePointer(
+    ignoring: opacityCondition,
+    child: Opacity(
+      opacity: opacityCondition ? 0.5 : 1,
+      child: Row(
+        children: [
+          title(text),
+          const Spacer(),
+          ValueListenableBuilder(
+            valueListenable: notifierDouble,
+            builder: (context, colorVal, child) => Slider(
+              value: colorVal,
+              max: maxDoubleValue,
+              onChanged: (value) {
+                notifierDouble.value = value;
+              },
+              onChangeEnd: onChanged,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}

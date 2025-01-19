@@ -4,8 +4,11 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:simple_painter/simple_painter.dart';
 
 class CustomWidgetOptions extends StatelessWidget {
-  const CustomWidgetOptions(
-      {required this.controller, required this.item, super.key});
+  const CustomWidgetOptions({
+    required this.controller,
+    required this.item,
+    super.key,
+  });
   final PainterController controller;
   final CustomWidgetItem item;
   @override
@@ -24,112 +27,53 @@ class CustomWidgetOptions extends StatelessWidget {
   }
 
   Widget get borderRadius {
-    final borderRadius = ValueNotifier(
+    return doubleSwitch(
+      'Border Radius',
       item.borderRadius.topLeft.x,
-    );
-    return Row(
-      children: [
-        title('Border Radius'),
-        const Spacer(),
-        ValueListenableBuilder(
-          valueListenable: borderRadius,
-          builder: (context, colorVal, child) => Slider(
-            value: colorVal,
-            max: 100,
-            onChanged: (value) {
-              borderRadius.value = value;
-            },
-            onChangeEnd: (value) {
-              final intValue = value.toInt();
-              controller.changeCustomWidgetValues(
-                item,
-                borderRadius: BorderRadius.circular(intValue.toDouble()),
-              );
-            },
-          ),
-        ),
-      ],
+      100,
+      (value) {
+        final intValue = value.toInt();
+        controller.changeCustomWidgetValues(
+          item,
+          borderRadius: BorderRadius.circular(intValue.toDouble()),
+        );
+      },
     );
   }
 
   Widget get border {
-    final borderColor = ValueNotifier(
-      (item.borderColor.red << 16 |
-              item.borderColor.green << 8 |
-              item.borderColor.blue)
-          .toDouble(),
-    );
-    final borderWidth = ValueNotifier<double>(item.borderWidth);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            title('Border Width'),
-            const Spacer(),
-            ValueListenableBuilder(
-              valueListenable: borderWidth,
-              builder: (context, colorVal, child) => Slider(
-                value: colorVal,
-                max: 10,
-                onChanged: (value) {
-                  borderWidth.value = value;
-                },
-                onChangeEnd: (value) {
-                  final intValue = value.toInt();
-                  controller.changeCustomWidgetValues(
-                    item,
-                    borderWidth: intValue.toDouble(),
-                  );
-                },
-              ),
-            ),
-          ],
+        doubleSwitch(
+          'Border Width',
+          item.borderWidth,
+          10,
+          (value) {
+            final intValue = value.toInt();
+            controller.changeCustomWidgetValues(
+              item,
+              borderWidth: intValue.toDouble(),
+            );
+          },
         ),
-        Row(
-          children: [
-            title('Border Color'),
-            const Spacer(),
-            ValueListenableBuilder(
-              valueListenable: borderColor,
-              builder: (context, colorVal, child) => Slider(
-                value: colorVal,
-                max: 0xFFFFFF.toDouble(),
-                thumbColor: Color(colorVal.toInt())
-                    .withOpacity(item.borderColor.opacity),
-                onChanged: (value) {
-                  borderColor.value = value;
-                },
-                onChangeEnd: (value) {
-                  final intValue = value.toInt();
-                  controller.changeCustomWidgetValues(
-                    item,
-                    borderColor:
-                        Color(intValue).withOpacity(item.borderColor.opacity),
-                  );
-                },
-              ),
-            ),
-          ],
+        colorSwitch(
+          'Border Color',
+          item.borderColor,
+          (value) {
+            final intValue = value.toInt();
+            controller.changeCustomWidgetValues(
+              item,
+              borderColor:
+                  Color(intValue).withValues(alpha: item.borderColor.a),
+            );
+          },
         ),
       ],
     );
   }
 
   Widget get gradient {
-    final gradientStartColor = ValueNotifier(
-      (item.gradientStartColor.red << 16 |
-              item.gradientStartColor.green << 8 |
-              item.gradientStartColor.blue)
-          .toDouble(),
-    );
-    final gradientEndColor = ValueNotifier(
-      (item.gradientEndColor.red << 16 |
-              item.gradientEndColor.green << 8 |
-              item.gradientEndColor.blue)
-          .toDouble(),
-    );
-    final gradientOpacity = ValueNotifier(item.gradientOpacity);
     Widget arrow(IconData icon, Alignment begin, Alignment end) {
       return IconButton(
         onPressed: () {
@@ -148,97 +92,54 @@ class CustomWidgetOptions extends StatelessWidget {
 
     return Column(
       children: [
-        Row(
-          children: [
-            title('Gradient'),
-            const Spacer(),
-            Switch(
-              value: item.enableGradientColor,
-              onChanged: (value) {
-                controller.changeCustomWidgetValues(
-                  item,
-                  enableGradientColor: value,
-                );
-              },
-            ),
-          ],
+        boolSwitch(
+          'Gradient',
+          value: item.enableGradientColor,
+          onChanged: ({bool? value}) {
+            controller.changeCustomWidgetValues(
+              item,
+              enableGradientColor: value,
+            );
+          },
         ),
         Opacity(
           opacity: item.enableGradientColor ? 1 : 0.5,
           child: Column(
             children: [
-              Row(
-                children: [
-                  title('Gradient Start Color'),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: gradientStartColor,
-                    builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      max: 0xFFFFFF.toDouble(),
-                      thumbColor: Color(colorVal.toInt())
-                          .withOpacity(item.gradientStartColor.opacity),
-                      onChanged: (value) {
-                        gradientStartColor.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        final intValue = value.toInt();
-                        controller.changeCustomWidgetValues(
-                          item,
-                          gradientStartColor: Color(intValue)
-                              .withOpacity(item.gradientStartColor.opacity),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              colorSwitch(
+                'Gradient Start Color',
+                item.gradientStartColor,
+                (value) {
+                  final intValue = value.toInt();
+                  controller.changeCustomWidgetValues(
+                    item,
+                    gradientStartColor: Color(intValue)
+                        .withValues(alpha: item.gradientStartColor.a),
+                  );
+                },
               ),
-              Row(
-                children: [
-                  title('Gradient End Color'),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: gradientEndColor,
-                    builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      max: 0xFFFFFF.toDouble(),
-                      thumbColor: Color(colorVal.toInt())
-                          .withOpacity(item.gradientEndColor.opacity),
-                      onChanged: (value) {
-                        gradientEndColor.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        final intValue = value.toInt();
-                        controller.changeCustomWidgetValues(
-                          item,
-                          gradientEndColor: Color(intValue)
-                              .withOpacity(item.gradientEndColor.opacity),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              colorSwitch(
+                'Gradient End Color',
+                item.gradientEndColor,
+                (value) {
+                  final intValue = value.toInt();
+                  controller.changeCustomWidgetValues(
+                    item,
+                    gradientEndColor: Color(intValue)
+                        .withValues(alpha: item.gradientEndColor.a),
+                  );
+                },
               ),
-              Row(
-                children: [
-                  title('Gradient Opacity'),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: gradientOpacity,
-                    builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      onChanged: (value) {
-                        gradientOpacity.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        controller.changeCustomWidgetValues(
-                          item,
-                          gradientOpacity: value,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+              doubleSwitch(
+                'Gradient Opacity',
+                item.gradientOpacity,
+                1,
+                (value) {
+                  controller.changeCustomWidgetValues(
+                    item,
+                    gradientOpacity: value,
+                  );
+                },
               ),
               SizedBox(
                 height: 60,

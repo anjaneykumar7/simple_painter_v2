@@ -10,9 +10,11 @@ class PainterSettings {
     this.text,
     this.brush,
     this.erase,
-    Size? scale,
+    @Deprecated('Use size instead') Size? scale,
+    Size? size,
     Color? itemDragHandleColor,
-  })  : scale = scale ?? const Size(800, 800),
+  })  : scale = scale ?? const Size(400, 400),
+        size = size ?? const Size(400, 400),
         itemDragHandleColor = itemDragHandleColor ?? Colors.blue;
 
   /// Settings related to text, such as style and alignment.
@@ -20,6 +22,8 @@ class PainterSettings {
 
   /// The default canvas scale size.
   final Size? scale;
+
+  final Size size;
 
   /// Color of the handles used to drag items on the canvas.
   final Color itemDragHandleColor;

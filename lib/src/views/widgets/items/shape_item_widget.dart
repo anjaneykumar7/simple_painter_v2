@@ -20,6 +20,7 @@ class ShapeItemWidget extends StatefulWidget {
   const ShapeItemWidget({
     required this.item, // The shape item to be displayed.
     required this.height, // The height of the widget.
+    required this.canvasSize, // The size of the canvas.
     required this.painterController, // The controller responsible
     // for managing the painter state.
     super.key,
@@ -31,6 +32,7 @@ class ShapeItemWidget extends StatefulWidget {
 
   final ShapeItem item; // The shape item that is being rendered.
   final double height; // The height of the widget.
+  final Size canvasSize;
   final void Function(PositionModel)?
       onPositionChange; // Callback for position change.
   final void Function(PositionModel, SizeModel)?
@@ -61,8 +63,10 @@ class _ShapeItemWidgetState extends State<ShapeItemWidget> {
           selectedItem: widget.painterController.value.selectedItem != null &&
               widget.painterController.value.selectedItem?.id == widget.item.id,
           height: widget.height, // Passes the widget height to the container.
-          minimumContainerHeight: 1, // Sets the minimum container height.
-          minimumContainerWidth: 1, // Sets the minimum container width.
+          canvasSize:
+              widget.canvasSize, // Passes the canvas size to the container.
+          minimumContainerHeight: 10, // Sets the minimum container height.
+          minimumContainerWidth: 10, // Sets the minimum container width.
           position: widget.item.position, // The position of the shape.
           rotateAngle: widget.item.rotation, // The rotation angle of the shape.
           size: widget.item.size, // The size of the shape.

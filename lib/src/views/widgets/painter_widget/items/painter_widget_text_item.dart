@@ -13,6 +13,7 @@ class PainterWidgetTextItem extends StatelessWidget {
     return TextItemWidget(
       item: item,
       height: controller.background.height,
+      canvasSize: controller.value.settings.size,
       painterController: controller,
       onPositionChange: (position) {
         // When the position or size changes, the old item comes back.

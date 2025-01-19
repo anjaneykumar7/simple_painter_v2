@@ -26,11 +26,12 @@ part 'items/painter_widget_custom_widget_item.dart';
 class PainterWidget extends StatelessWidget {
   // Constructor for the PainterWidget, which
   //requires a PainterController instance.
-  const PainterWidget({required this.controller, super.key});
+  const PainterWidget(
+      {required this.controller, this.boundaryMargin, super.key});
 
   // The PainterController that manages the painting logic and state.
   final PainterController controller;
-
+  final double? boundaryMargin;
   // Builds the widget tree by listening to
   //changes in the PainterController's value.
   @override
@@ -42,7 +43,10 @@ class PainterWidget extends StatelessWidget {
       builder: (context, value, child) {
         // Builds and returns the _ViewerWidget, which likely
         //renders the painting or drawing based on the controller's state.
-        return _ViewerWidget(controller: controller);
+        return _ViewerWidget(
+          controller: controller,
+          boundaryMargin: boundaryMargin,
+        );
       },
     );
   }

@@ -49,11 +49,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   @override
   void initState() {
     super.initState();
-    controller = PainterController(
-      settings: const PainterSettings(
-        scale: Size(1600, 1600),
-      ),
-    );
+    controller = PainterController();
     ListenerService().listen(controller, context);
   }
 
@@ -62,7 +58,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
     final height = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade800.withOpacity(0.6),
+      backgroundColor: Colors.grey.shade800.withValues(alpha: 0.6),
       appBar: appBar,
       bottomNavigationBar: bottomBar,
       body: Stack(

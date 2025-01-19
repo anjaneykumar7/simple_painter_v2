@@ -20,6 +20,7 @@ part 'widgets/painter_container_stack_widget.dart';
 class PainterContainer extends StatefulWidget {
   const PainterContainer({
     required this.height,
+    required this.canvasSize,
     required this.selectedItem,
     super.key,
     this.dragHandleColor,
@@ -45,6 +46,7 @@ class PainterContainer extends StatefulWidget {
     this.onRenderImage,
   });
   final double height;
+  final Size canvasSize;
   final Color? dragHandleColor;
   final bool selectedItem;
   final void Function({bool tapItem})? onTapItem;
@@ -128,18 +130,18 @@ class _PainterContainerState extends State<PainterContainer> {
 
   @override
   Widget build(BuildContext context) {
-    // Get the screen width from MediaQuery
-    final screenWidth = MediaQuery.of(context).size.width;
-
     // Set stack dimensions based on screen width
-    final stackHeight = screenWidth;
-    final stackWidth = screenWidth;
+    // final stackHeight = widget.canvasSize.height;
+    // final stackWidth = widget.canvasSize.width;
+    final stackHeight = widget.canvasSize.height;
+    final stackWidth = widget.canvasSize.width;
     // Initialize widget size based on stack dimensions
     initializeWidgetSize(stackWidth, stackHeight);
     // Check and handle any external value changes
     controlOutsideValues(stackWidth, stackHeight);
     // Update widget state based on current events
     updateEvents();
+
     return Positioned(
       left: position.x,
       top: position.y,
@@ -427,7 +429,6 @@ class _PainterContainerState extends State<PainterContainer> {
 
 // Handles resizing the widget from the top handle
   void handleTop(DragUpdateDetails details) {
-    print('${containerSize.height} ${minimumContainerHeight}');
     if (containerSize.height <= minimumContainerHeight &&
         details.delta.dy > 0) {
       // Prevents shrinking below the minimum height when dragging up
@@ -462,7 +463,6 @@ class _PainterContainerState extends State<PainterContainer> {
 
 // Handles resizing the widget from the left handle
   void handleLeft(DragUpdateDetails details) {
-    print('${containerSize.width} ${minimumContainerWidth}');
     if (containerSize.width <= minimumContainerWidth && details.delta.dx > 0) {
       // Prevents shrinking below the minimum width when dragging left
       containerSize = containerSize.copyWith(

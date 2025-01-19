@@ -27,100 +27,38 @@ class ShapeOptions extends StatelessWidget {
       item.shapeType != ShapeType.doubleArrow;
 
   Widget get lineColor {
-    final color = ValueNotifier(
-      (item.lineColor.red << 16 |
-              item.lineColor.green << 8 |
-              item.lineColor.blue)
-          .toDouble(),
-    );
-    return Row(
-      children: [
-        title('Line Color'),
-        const Spacer(),
-        ValueListenableBuilder(
-          valueListenable: color,
-          builder: (context, colorVal, child) => Slider(
-            value: colorVal,
-            max: 0xFFFFFF.toDouble(),
-            thumbColor:
-                Color(colorVal.toInt()).withOpacity(item.lineColor.opacity),
-            onChanged: (value) {
-              color.value = value;
-            },
-            onChangeEnd: (value) {
-              final intValue = value.toInt();
-              controller.changeShapeValues(
-                item,
-                lineColor: Color(intValue).withOpacity(item.lineColor.opacity),
-              );
-            },
-          ),
-        ),
-      ],
+    return colorSwitch(
+      'Line Color',
+      item.lineColor,
+      (value) {
+        controller.changeShapeValues(
+          item,
+          lineColor: Color(value.toInt()).withValues(alpha: 1),
+        );
+      },
     );
   }
 
   Widget get thickness {
-    final thickness = ValueNotifier<double>(item.thickness);
-    return Row(
-      children: [
-        title('Thickness'),
-        const Spacer(),
-        ValueListenableBuilder(
-          valueListenable: thickness,
-          builder: (context, colorVal, child) => Slider(
-            value: colorVal,
-            max: 10,
-            onChanged: (value) {
-              thickness.value = value;
-            },
-            onChangeEnd: (value) {
-              final intValue = value.toInt();
-              controller.changeShapeValues(
-                item,
-                thickness: intValue.toDouble(),
-              );
-            },
-          ),
-        ),
-      ],
+    return doubleSwitch(
+      'Thickness',
+      item.thickness,
+      10,
+      (value) {
+        controller.changeShapeValues(
+          item,
+          thickness: value,
+        );
+      },
     );
   }
 
   Widget get backgroundColor {
-    final color = ValueNotifier(
-      (item.backgroundColor.red << 16 |
-              item.backgroundColor.green << 8 |
-              item.backgroundColor.blue)
-          .toDouble(),
-    );
-    return Opacity(
-      opacity: isShapeNotLineOrArrow ? 1 : 0.5,
-      child: Row(
-        children: [
-          title('Background Color'),
-          const Spacer(),
-          ValueListenableBuilder(
-            valueListenable: color,
-            builder: (context, colorVal, child) => Slider(
-              value: colorVal,
-              max: 0xFFFFFF.toDouble(),
-              thumbColor: Color(colorVal.toInt())
-                  .withOpacity(item.backgroundColor.opacity),
-              onChanged: (value) {
-                color.value = value;
-              },
-              onChangeEnd: (value) {
-                final intValue = value.toInt();
-                controller.changeShapeValues(
-                  item,
-                  backgroundColor: Color(intValue).withOpacity(1),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    return colorSwitch('Background Color', item.backgroundColor, (value) {
+      controller.changeShapeValues(
+        item,
+        backgroundColor: Color(value.toInt()).withValues(alpha: 1),
+      );
+    }, opacityCondition: !isShapeNotLineOrArrow);
   }
 }

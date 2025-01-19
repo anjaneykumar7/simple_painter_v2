@@ -1,3 +1,14 @@
+# 1.2.0
+
+- Fixed shape widget box BoxConstraints error.
+- Added boundryMargin for PainterWidget.
+- Scale in PainterSettings is deprecated, use size instead.
+- Canvas size fixed.
+- example_projects sliders updated.
+- withOpacity values ​​replaced with withValues.
+- Variables in example projects have been updated according to the current version of Flutter.
+- Fixed Border overlapping gradient issue.
+
 # 1.1.0+1
 
 - Replaced dart:io in example_project with universal_io package.

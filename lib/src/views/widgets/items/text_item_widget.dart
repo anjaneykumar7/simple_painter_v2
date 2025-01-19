@@ -14,6 +14,7 @@ class TextItemWidget extends StatefulWidget {
   const TextItemWidget({
     required this.item, // The text item to display
     required this.height, // The height of the widget
+    required this.canvasSize, // The size of the canvas
     required this.painterController, // The painter controller
     //or managing the painter's state
     super.key, // Key for the widget, used for managing widget state
@@ -26,6 +27,7 @@ class TextItemWidget extends StatefulWidget {
 
   final TextItem item; // The text item that will be rendered
   final double height; // Height of the widget
+  final Size canvasSize;
   final void Function(PositionModel)?
       onPositionChange; // Callback for position change
   final void Function(PositionModel, SizeModel)?
@@ -58,6 +60,8 @@ class _TextItemWidgetState extends State<TextItemWidget> {
               widget.painterController.value.selectedItem?.id ==
                   widget.item.id, // Checks if the item is selected
           height: widget.height, // Passes the height of the widget
+          canvasSize:
+              widget.canvasSize, // Passes the canvas size to the container.
           minimumContainerHeight:
               widgetHeight, // Minimum height of the container
           position: widget.item.position, // The position of the item

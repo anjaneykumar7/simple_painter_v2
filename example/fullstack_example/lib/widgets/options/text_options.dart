@@ -52,123 +52,44 @@ class TextOptions extends StatelessWidget {
   }
 
   Widget get fontSize {
-    final sliderValue = ValueNotifier(item.textStyle.fontSize! / 100);
-    return ValueListenableBuilder(
-      valueListenable: sliderValue,
-      builder: (context, sliderVal, child) {
-        return Row(
-          children: [
-            title('Font Size (${(sliderVal * 100).toStringAsFixed(0)}px)'),
-            const Spacer(),
-            Slider(
-              value: sliderVal,
-              onChanged: (value) {
-                sliderValue.value = value;
-              },
-              onChangeEnd: (value) {
-                controller.changeTextValues(
-                  item,
-                  textStyle: item.textStyle.copyWith(fontSize: value * 100),
-                );
-              },
-            ),
-          ],
+    return doubleSwitch(
+      'Font Size (${(item.textStyle.fontSize!).toStringAsFixed(0)}px)',
+      item.textStyle.fontSize! / 100,
+      1,
+      (value) {
+        controller.changeTextValues(
+          item,
+          textStyle: item.textStyle.copyWith(fontSize: value * 100),
         );
       },
     );
   }
 
   Widget get color {
-    final color = ValueNotifier(
-      (item.textStyle.color!.red << 16 |
-              item.textStyle.color!.green << 8 |
-              item.textStyle.color!.blue)
-          .toDouble(),
-    );
-    return Opacity(
-      opacity: item.enableGradientColor ? 0.5 : 1,
-      child: Row(
-        children: [
-          title('Color'),
-          const Spacer(),
-          ValueListenableBuilder(
-            valueListenable: color,
-            builder: (context, colorVal, child) => Slider(
-              value: colorVal,
-              max: 0xFFFFFF.toDouble(),
-              thumbColor: Color(colorVal.toInt())
-                  .withOpacity(item.textStyle.color!.opacity),
-              onChanged: (value) {
-                color.value = value;
-              },
-              onChangeEnd: (value) {
-                final intValue = value.toInt();
-                controller.changeTextValues(
-                  item,
-                  textStyle: item.textStyle.copyWith(
-                    color: Color(intValue)
-                        .withOpacity(item.textStyle.color!.opacity),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    return colorSwitch('Color', item.textStyle.color!, (value) {
+      controller.changeTextValues(
+        item,
+        textStyle: item.textStyle.copyWith(
+          color:
+              Color(value.toInt()).withValues(alpha: item.textStyle.color!.a),
+        ),
+      );
+    }, opacityCondition: item.enableGradientColor);
   }
 
   Widget get bgColor {
-    final bgColor = ValueNotifier(
-      (item.textStyle.backgroundColor!.red << 16 |
-              item.textStyle.backgroundColor!.green << 8 |
-              item.textStyle.backgroundColor!.blue)
-          .toDouble(),
-    );
-    return Opacity(
-      opacity: item.enableGradientColor ? 0.5 : 1,
-      child: Row(
-        children: [
-          title('Background Color'),
-          const Spacer(),
-          ValueListenableBuilder(
-            valueListenable: bgColor,
-            builder: (context, colorVal, child) => Slider(
-              value: colorVal,
-              max: 0xFFFFFF.toDouble(),
-              thumbColor: Color(colorVal.toInt()).withOpacity(1),
-              onChanged: (value) {
-                bgColor.value = value;
-              },
-              onChangeEnd: (value) {
-                final intValue = value.toInt();
-                controller.changeTextValues(
-                  item,
-                  textStyle: item.textStyle.copyWith(
-                    backgroundColor: Color(intValue).withOpacity(1),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+    return colorSwitch('Background Color', item.textStyle.backgroundColor!,
+        (value) {
+      controller.changeTextValues(
+        item,
+        textStyle: item.textStyle.copyWith(
+          backgroundColor: Color(value.toInt()).withValues(alpha: 1),
+        ),
+      );
+    }, opacityCondition: item.enableGradientColor);
   }
 
   Widget get gradient {
-    final gradientStartColor = ValueNotifier(
-      (item.gradientStartColor.red << 16 |
-              item.gradientStartColor.green << 8 |
-              item.gradientStartColor.blue)
-          .toDouble(),
-    );
-    final gradientEndColor = ValueNotifier(
-      (item.gradientEndColor.red << 16 |
-              item.gradientEndColor.green << 8 |
-              item.gradientEndColor.blue)
-          .toDouble(),
-    );
     Widget arrow(IconData icon, Alignment begin, Alignment end) {
       return IconButton(
         onPressed: () {
@@ -202,112 +123,72 @@ class TextOptions extends StatelessWidget {
             ),
           ],
         ),
-        Opacity(
-          opacity: item.enableGradientColor ? 1 : 0.5,
-          child: Column(
-            children: [
-              Row(
+        Column(
+          children: [
+            colorSwitch('Gradient Start Color', item.gradientStartColor,
+                (value) {
+              controller.changeTextValues(
+                item,
+                gradientStartColor: Color(value.toInt())
+                    .withValues(alpha: item.gradientStartColor.a),
+              );
+            }, opacityCondition: !item.enableGradientColor),
+            colorSwitch('Gradient End Color', item.gradientEndColor, (value) {
+              controller.changeTextValues(
+                item,
+                gradientEndColor: Color(value.toInt())
+                    .withValues(alpha: item.gradientEndColor.a),
+              );
+            }, opacityCondition: !item.enableGradientColor),
+            SizedBox(
+              height: 60,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
-                  title('Gradient Start Color'),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: gradientStartColor,
-                    builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      max: 0xFFFFFF.toDouble(),
-                      thumbColor: Color(colorVal.toInt())
-                          .withOpacity(item.gradientStartColor.opacity),
-                      onChanged: (value) {
-                        gradientStartColor.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        final intValue = value.toInt();
-                        controller.changeTextValues(
-                          item,
-                          gradientStartColor: Color(intValue)
-                              .withOpacity(item.gradientStartColor.opacity),
-                        );
-                      },
-                    ),
+                  arrow(
+                    PhosphorIconsRegular.arrowLeft,
+                    Alignment.centerRight,
+                    Alignment.centerLeft,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowRight,
+                    Alignment.centerLeft,
+                    Alignment.centerRight,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowUp,
+                    Alignment.bottomCenter,
+                    Alignment.topCenter,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowDown,
+                    Alignment.topCenter,
+                    Alignment.bottomCenter,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowUpRight,
+                    Alignment.bottomLeft,
+                    Alignment.topRight,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowUpLeft,
+                    Alignment.bottomRight,
+                    Alignment.topLeft,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowDownRight,
+                    Alignment.topLeft,
+                    Alignment.bottomRight,
+                  ),
+                  arrow(
+                    PhosphorIconsRegular.arrowDownLeft,
+                    Alignment.topRight,
+                    Alignment.bottomLeft,
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  title('Gradient End Color'),
-                  const Spacer(),
-                  ValueListenableBuilder(
-                    valueListenable: gradientEndColor,
-                    builder: (context, colorVal, child) => Slider(
-                      value: colorVal,
-                      max: 0xFFFFFF.toDouble(),
-                      thumbColor: Color(colorVal.toInt())
-                          .withOpacity(item.gradientEndColor.opacity),
-                      onChanged: (value) {
-                        gradientEndColor.value = value;
-                      },
-                      onChangeEnd: (value) {
-                        final intValue = value.toInt();
-                        controller.changeTextValues(
-                          item,
-                          gradientEndColor: Color(intValue)
-                              .withOpacity(item.gradientEndColor.opacity),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 60,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    arrow(
-                      PhosphorIconsRegular.arrowLeft,
-                      Alignment.centerRight,
-                      Alignment.centerLeft,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowRight,
-                      Alignment.centerLeft,
-                      Alignment.centerRight,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowUp,
-                      Alignment.bottomCenter,
-                      Alignment.topCenter,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowDown,
-                      Alignment.topCenter,
-                      Alignment.bottomCenter,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowUpRight,
-                      Alignment.bottomLeft,
-                      Alignment.topRight,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowUpLeft,
-                      Alignment.bottomRight,
-                      Alignment.topLeft,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowDownRight,
-                      Alignment.topLeft,
-                      Alignment.bottomRight,
-                    ),
-                    arrow(
-                      PhosphorIconsRegular.arrowDownLeft,
-                      Alignment.topRight,
-                      Alignment.bottomLeft,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );

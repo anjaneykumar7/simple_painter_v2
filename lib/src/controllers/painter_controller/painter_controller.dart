@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/drawables/background/painter_background.dart';
-import 'package:simple_painter/src/controllers/items/custom_widget_item.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/add_item_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
@@ -68,10 +66,8 @@ class PainterController extends ValueNotifier<PainterControllerValue> {
   PainterController.fromValue(super.value, {Uint8List? backgroundImage})
       : background = PainterBackground(
           image: backgroundImage,
-          height: value.settings.scale?.height ??
-              0, // Height scaling for background
-          width:
-              value.settings.scale?.width ?? 0, // Width scaling for background
+          height: value.settings.size.height, // Height scaling for background
+          width: value.settings.size.width, // Width scaling for background
         );
 
   /// GlobalKey used to identify the repaint boundary for rendering images.

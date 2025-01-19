@@ -14,6 +14,6 @@ class ActionCustomWidgetChangeValue extends PaintAction {
 
   final CustomWidgetItem
       currentItem; // The updated version of the custom widget item.
-  final CustomWidgetItem
-      lastItem; // The previous version of the custom widget item before the change.
+  final CustomWidgetItem lastItem; // The previous version of the custom widget
+  //item before the change.
 }

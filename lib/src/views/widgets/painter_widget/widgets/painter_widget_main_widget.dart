@@ -15,16 +15,16 @@ class _MainWidget extends StatelessWidget {
   // Builds the widget tree for displaying the main canvas content.
   @override
   Widget build(BuildContext context) {
-    // RepaintBoundary is used to isolate the drawing
-    //area from the rest of the widget tree, enabling efficient repaints.
     return RepaintBoundary(
-      key: controller.repaintBoundaryKey, // A key to access the
-      //RepaintBoundary and trigger repainting when needed.
+      key: controller.repaintBoundaryKey,
       child: GestureDetector(
-        onTap: controller.clearSelectedItem, // When the canvas is
-        //tapped, clear the currently selected item.
-        child: _buildMainWidget(), // Calls the helper
-        //method to build the main widget content.
+        onTap: controller.clearSelectedItem,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SingleChildScrollView(
+            child: _buildMainWidget(),
+          ),
+        ),
       ),
     );
   }
@@ -67,28 +67,34 @@ class _MainWidget extends StatelessWidget {
   // A helper method to create a CustomPaint widget,
   //which draws the paths and items.
   Widget customPaint({ui.Image? backgroundImage}) {
-    return CustomPaint(
-      painter: PainterCustomPaint(
-        isErasing: false, // Set the state to not erasing for now.
-        paths: controller.value.paintPaths
-            .toList(), // The list of paths to be drawn.
-        points: controller.value.currentPaintPath
-            .toList(), // The current path being drawn.
-        backgroundImage:
-            backgroundImage, // The background image (if any) to be drawn.
-      ),
-      child: Stack(
-        children: controller.value.items
-            // For each item in the controller's value, create
-            //an ItemWidget to display it.
-            .map(
-              (item) =>
-                  PainterWidgetItemWidget(item: item, controller: controller),
-            )
-            .toList()
-            .reversed
-            .toList(), // Reverse the list of items to layer
-        //them properly (back to front).
+    return SizedBox(
+      width: controller.value.settings.size.width,
+      height: controller.value.settings.size.height,
+      child: CustomPaint(
+        size: controller.value.settings.size, // The size of the canvas.
+        willChange: true,
+        painter: PainterCustomPaint(
+          isErasing: false, // Set the state to not erasing for now.
+          paths: controller.value.paintPaths
+              .toList(), // The list of paths to be drawn.
+          points: controller.value.currentPaintPath
+              .toList(), // The current path being drawn.
+          backgroundImage:
+              backgroundImage, // The background image (if any) to be drawn.
+        ),
+        child: Stack(
+          children: controller.value.items
+              // For each item in the controller's value, create
+              //an ItemWidget to display it.
+              .map(
+                (item) =>
+                    PainterWidgetItemWidget(item: item, controller: controller),
+              )
+              .toList()
+              .reversed
+              .toList(), // Reverse the list of items to layer
+          //them properly (back to front).
+        ),
       ),
     );
   }

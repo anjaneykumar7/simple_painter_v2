@@ -7,7 +7,6 @@ class PainterControllerValue {
   /// Constructor to initialize the controller's values.
   PainterControllerValue({
     required this.settings,
-    this.scale,
     this.paintPaths = const <List<DrawModel?>>[],
     this.currentPaintPath = const <DrawModel?>[],
     this.paintPathsBeforeErasing = const <List<DrawModel?>>[],
@@ -20,9 +19,6 @@ class PainterControllerValue {
 
   /// General painter settings.
   final PainterSettings settings;
-
-  /// The scale of the canvas.
-  final Size? scale;
 
   /// List of all paint paths (each path is a list of draw models).
   List<List<DrawModel?>> paintPaths = <List<DrawModel?>>[];
@@ -51,7 +47,6 @@ class PainterControllerValue {
   /// Creates a copy of the current controller value with optional changes.
   PainterControllerValue copyWith({
     PainterSettings? settings,
-    Size? scale,
     List<List<DrawModel?>>? paintPaths,
     List<DrawModel?>? currentPaintPath,
     List<List<DrawModel?>>? paintPathsBeforeErasing,
@@ -63,7 +58,6 @@ class PainterControllerValue {
   }) {
     return PainterControllerValue(
       settings: settings ?? this.settings,
-      scale: scale ?? this.scale,
       paintPaths: paintPaths ?? this.paintPaths,
       currentPaintPath: currentPaintPath ?? this.currentPaintPath,
       paintPathsBeforeErasing:
