@@ -157,7 +157,7 @@ controller.addCustomWidget(widget); // Add custom widget item
 Modify the position, size, and rotation of any item dynamically using the changeItemProperties function:
 
 ```dart
-ontroller.changeItemProperties(
+controller.changeItemProperties(
   item,
   position: PositionModel(
     x: item.position.x + 10,
