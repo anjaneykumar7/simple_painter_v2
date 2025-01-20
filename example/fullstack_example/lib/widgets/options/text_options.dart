@@ -66,27 +66,36 @@ class TextOptions extends StatelessWidget {
   }
 
   Widget get color {
-    return colorSwitch('Color', item.textStyle.color!, (value) {
-      controller.changeTextValues(
-        item,
-        textStyle: item.textStyle.copyWith(
-          color:
-              Color(value.toInt()).withValues(alpha: item.textStyle.color!.a),
-        ),
-      );
-    }, opacityCondition: item.enableGradientColor);
+    return colorSwitch(
+      'Color',
+      item.textStyle.color!,
+      (value) {
+        controller.changeTextValues(
+          item,
+          textStyle: item.textStyle.copyWith(
+            color:
+                Color(value.toInt()).withValues(alpha: item.textStyle.color!.a),
+          ),
+        );
+      },
+      opacityCondition: item.enableGradientColor,
+    );
   }
 
   Widget get bgColor {
-    return colorSwitch('Background Color', item.textStyle.backgroundColor!,
-        (value) {
-      controller.changeTextValues(
-        item,
-        textStyle: item.textStyle.copyWith(
-          backgroundColor: Color(value.toInt()).withValues(alpha: 1),
-        ),
-      );
-    }, opacityCondition: item.enableGradientColor);
+    return colorSwitch(
+      'Background Color',
+      item.textStyle.backgroundColor!,
+      (value) {
+        controller.changeTextValues(
+          item,
+          textStyle: item.textStyle.copyWith(
+            backgroundColor: Color(value.toInt()).withValues(alpha: 1),
+          ),
+        );
+      },
+      opacityCondition: item.enableGradientColor,
+    );
   }
 
   Widget get gradient {
@@ -125,21 +134,30 @@ class TextOptions extends StatelessWidget {
         ),
         Column(
           children: [
-            colorSwitch('Gradient Start Color', item.gradientStartColor,
-                (value) {
-              controller.changeTextValues(
-                item,
-                gradientStartColor: Color(value.toInt())
-                    .withValues(alpha: item.gradientStartColor.a),
-              );
-            }, opacityCondition: !item.enableGradientColor),
-            colorSwitch('Gradient End Color', item.gradientEndColor, (value) {
-              controller.changeTextValues(
-                item,
-                gradientEndColor: Color(value.toInt())
-                    .withValues(alpha: item.gradientEndColor.a),
-              );
-            }, opacityCondition: !item.enableGradientColor),
+            colorSwitch(
+              'Gradient Start Color',
+              item.gradientStartColor,
+              (value) {
+                controller.changeTextValues(
+                  item,
+                  gradientStartColor: Color(value.toInt())
+                      .withValues(alpha: item.gradientStartColor.a),
+                );
+              },
+              opacityCondition: !item.enableGradientColor,
+            ),
+            colorSwitch(
+              'Gradient End Color',
+              item.gradientEndColor,
+              (value) {
+                controller.changeTextValues(
+                  item,
+                  gradientEndColor: Color(value.toInt())
+                      .withValues(alpha: item.gradientEndColor.a),
+                );
+              },
+              opacityCondition: !item.enableGradientColor,
+            ),
             SizedBox(
               height: 60,
               child: ListView(

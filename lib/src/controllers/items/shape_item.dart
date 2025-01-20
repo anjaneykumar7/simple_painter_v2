@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/controllers/settings/layer_settings.dart';
-import 'package:simple_painter/src/models/position_model.dart';
-import 'package:simple_painter/src/models/size_model.dart';
 
 // Represents a shape item (e.g., circle, rectangle)
 //that can be drawn on a canvas.

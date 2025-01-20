@@ -4,6 +4,10 @@ import 'package:equatable/equatable.dart';
 class SizeModel extends Equatable {
   // Constructor to initialize the width and height with default values of 0.
   const SizeModel({this.width = 0, this.height = 0});
+  // Method to create an empty SizeModel with width and height set to 0.
+  factory SizeModel.empty() {
+    return const SizeModel();
+  }
 
   final double height; // The height of the element.
   final double width; // The width of the element.

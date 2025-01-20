@@ -152,6 +152,25 @@ controller.addCustomWidget(widget); // Add custom widget item
 
 ```
 
+### Set Items Properties
+
+Modify the position, size, and rotation of any item dynamically using the changeItemProperties function:
+
+```dart
+ontroller.changeItemProperties(
+  item,
+  position: PositionModel(
+    x: item.position.x + 10,
+    y: item.position.y + 10,
+  ),
+  size: SizeModel(
+    width: item.size!.width + 100,
+    height: item.size!.height + 100,
+  ),
+  rotation: 0,
+);
+```
+
 ### Custom Background Image
 
 Set a background image while maintaining aspect ratio:

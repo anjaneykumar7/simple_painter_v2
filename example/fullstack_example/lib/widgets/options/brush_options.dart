@@ -21,7 +21,7 @@ class BrushOptions extends StatelessWidget {
 
   Widget get size {
     return doubleSwitch(
-        'Size (${(controller.value.brushSize).toStringAsFixed(0)}px)',
+        'Size (${controller.value.brushSize.toStringAsFixed(0)}px)',
         controller.value.brushSize / 100,
         1, (value) {
       controller.changeBrushValues(

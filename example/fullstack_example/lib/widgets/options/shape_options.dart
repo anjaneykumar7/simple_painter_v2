@@ -54,11 +54,16 @@ class ShapeOptions extends StatelessWidget {
   }
 
   Widget get backgroundColor {
-    return colorSwitch('Background Color', item.backgroundColor, (value) {
-      controller.changeShapeValues(
-        item,
-        backgroundColor: Color(value.toInt()).withValues(alpha: 1),
-      );
-    }, opacityCondition: !isShapeNotLineOrArrow);
+    return colorSwitch(
+      'Background Color',
+      item.backgroundColor,
+      (value) {
+        controller.changeShapeValues(
+          item,
+          backgroundColor: Color(value.toInt()).withValues(alpha: 1),
+        );
+      },
+      opacityCondition: !isShapeNotLineOrArrow,
+    );
   }
 }

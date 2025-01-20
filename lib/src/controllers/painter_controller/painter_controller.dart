@@ -19,9 +19,7 @@ import 'package:simple_painter/src/helpers/action_service/actions_service.dart';
 import 'package:simple_painter/src/helpers/change_item_values_service.dart';
 import 'package:simple_painter/src/helpers/layer_service.dart';
 import 'package:simple_painter/src/models/brush_model.dart';
-import 'package:simple_painter/src/models/position_model.dart';
 import 'package:simple_painter/src/models/render_item_model.dart';
-import 'package:simple_painter/src/models/size_model.dart';
 
 part 'painter_controller_actions.dart';
 part 'painter_controller_items/painter_controller_item_image.dart';
@@ -32,6 +30,7 @@ part 'painter_controller_items/values/painter_controller_item_image_values.dart'
 part 'painter_controller_items/values/painter_controller_item_shape_values.dart';
 part 'painter_controller_items/values/painter_controller_item_text_values.dart';
 part 'painter_controller_items/values/painter_controller_item_values.dart';
+part 'painter_controller_items/values/painter_controller_item_properties.dart';
 part 'painter_controller_items/values/painter_controller_paint_values.dart';
 part 'painter_controller_items/values/painter_controller_item_custom_widget_values.dart';
 part 'painter_controller_items/painter_controller_item_custom_widget.dart';

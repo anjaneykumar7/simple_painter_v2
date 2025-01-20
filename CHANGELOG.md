@@ -8,6 +8,8 @@
 - withOpacity values ​​replaced with withValues.
 - Variables in example projects have been updated according to the current version of Flutter.
 - Fixed Border overlapping gradient issue.
+- Added changeItemProperties function.
+- Fixed package problems.
 
 # 1.1.0+1
 

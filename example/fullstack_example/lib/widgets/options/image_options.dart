@@ -120,34 +120,46 @@ class ImageOptions extends StatelessWidget {
 
     return Column(
       children: [
-        boolSwitch('Gradient', value: item.enableGradientColor,
-            onChanged: ({bool? value}) {
-          controller.changeImageValues(
-            item,
-            enableGradientColor: value,
-          );
-        }),
+        boolSwitch(
+          'Gradient',
+          value: item.enableGradientColor,
+          onChanged: ({bool? value}) {
+            controller.changeImageValues(
+              item,
+              enableGradientColor: value,
+            );
+          },
+        ),
         Opacity(
           opacity: item.enableGradientColor ? 1 : 0.5,
           child: Column(
             children: [
-              colorSwitch('Gradient Start Color', item.gradientStartColor,
-                  (value) {
-                final intValue = value.toInt();
-                controller.changeImageValues(
-                  item,
-                  gradientStartColor: Color(intValue)
-                      .withValues(alpha: item.gradientStartColor.a),
-                );
-              }, opacityCondition: !item.enableGradientColor),
-              colorSwitch('Gradient End Color', item.gradientEndColor, (value) {
-                final intValue = value.toInt();
-                controller.changeImageValues(
-                  item,
-                  gradientEndColor: Color(intValue)
-                      .withValues(alpha: item.gradientEndColor.a),
-                );
-              }, opacityCondition: !item.enableGradientColor),
+              colorSwitch(
+                'Gradient Start Color',
+                item.gradientStartColor,
+                (value) {
+                  final intValue = value.toInt();
+                  controller.changeImageValues(
+                    item,
+                    gradientStartColor: Color(intValue)
+                        .withValues(alpha: item.gradientStartColor.a),
+                  );
+                },
+                opacityCondition: !item.enableGradientColor,
+              ),
+              colorSwitch(
+                'Gradient End Color',
+                item.gradientEndColor,
+                (value) {
+                  final intValue = value.toInt();
+                  controller.changeImageValues(
+                    item,
+                    gradientEndColor: Color(intValue)
+                        .withValues(alpha: item.gradientEndColor.a),
+                  );
+                },
+                opacityCondition: !item.enableGradientColor,
+              ),
               doubleSwitch('Gradient Opacity', item.gradientOpacity, 1,
                   (value) {
                 controller.changeImageValues(

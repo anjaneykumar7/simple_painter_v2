@@ -16,43 +16,46 @@ class _ViewerWidget extends StatelessWidget {
   //viewer with interactive capabilities.
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      final widgetBoundaryMargin = boundaryMargin ?? 20.0;
-      final totalHorizontalMargin =
-          widgetBoundaryMargin * 2; // Sağ ve sol margin
-      final totalVerticalMargin = widgetBoundaryMargin * 2; // Üst ve alt margin
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final widgetBoundaryMargin = boundaryMargin ?? 20.0;
+        final totalHorizontalMargin =
+            widgetBoundaryMargin * 2; // Sağ ve sol margin
+        final totalVerticalMargin =
+            widgetBoundaryMargin * 2; // Üst ve alt margin
 
-      final screenWidth = constraints.maxWidth - totalHorizontalMargin;
-      final screenHeight = constraints.maxHeight - totalVerticalMargin;
+        final screenWidth = constraints.maxWidth - totalHorizontalMargin;
+        final screenHeight = constraints.maxHeight - totalVerticalMargin;
 
-      return InteractiveViewer(
-        boundaryMargin: EdgeInsets.all(widgetBoundaryMargin),
-        minScale: 0.1,
-        maxScale: 10,
-        child: Center(
-          child: (controller.background.width == 0 ||
-                  controller.background.height == 0)
-              ? null
-              : SizedBox(
-                  width: screenWidth,
-                  height: screenHeight,
-                  child: FittedBox(
-                    child: SizedBox(
-                      width: controller.background.width,
-                      height: controller.background.height,
-                      child: (!(controller.isDrawing || controller.isErasing))
-                          ? _MainWidget(controller: controller)
-                          : _DrawingWidget(
-                              controller: controller,
-                              child: _MainWidget(
+        return InteractiveViewer(
+          boundaryMargin: EdgeInsets.all(widgetBoundaryMargin),
+          minScale: 0.1,
+          maxScale: 10,
+          child: Center(
+            child: (controller.background.width == 0 ||
+                    controller.background.height == 0)
+                ? null
+                : SizedBox(
+                    width: screenWidth,
+                    height: screenHeight,
+                    child: FittedBox(
+                      child: SizedBox(
+                        width: controller.background.width,
+                        height: controller.background.height,
+                        child: (!(controller.isDrawing || controller.isErasing))
+                            ? _MainWidget(controller: controller)
+                            : _DrawingWidget(
                                 controller: controller,
+                                child: _MainWidget(
+                                  controller: controller,
+                                ),
                               ),
-                            ),
+                      ),
                     ),
                   ),
-                ),
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
 }
