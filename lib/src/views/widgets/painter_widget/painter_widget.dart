@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:simple_painter/simple_painter.dart';
 import 'package:simple_painter/src/controllers/custom_paint.dart';
@@ -15,6 +16,7 @@ part 'widgets/painter_widget_item_widget.dart';
 part 'widgets/painter_widget_drawing_widget.dart';
 part 'widgets/painter_widget_main_widget.dart';
 part 'widgets/painter_widget_viewer_widget.dart';
+part 'widgets/pan_gesture_detector_widget.dart';
 part 'items/painter_widget_image_item.dart';
 part 'items/painter_widget_shape_item.dart';
 part 'items/painter_widget_text_item.dart';
