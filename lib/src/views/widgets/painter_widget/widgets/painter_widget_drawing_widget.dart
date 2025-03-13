@@ -14,7 +14,10 @@ class _DrawingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     // GestureDetector is used to handle touch
     //interactions for drawing and erasing.
-    return GestureDetector(
+    return PanGestureDetector(
+      // The touchSlop property is set to 0 to
+      //allow for more precise touch interactions.
+      touchSlop: 0,
       // The onPanUpdate method is triggered
       //when the user moves their finger or stylus.
       onPanUpdate: (details) {
