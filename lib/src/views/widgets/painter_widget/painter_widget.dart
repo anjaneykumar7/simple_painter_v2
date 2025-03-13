@@ -16,7 +16,7 @@ part 'widgets/painter_widget_item_widget.dart';
 part 'widgets/painter_widget_drawing_widget.dart';
 part 'widgets/painter_widget_main_widget.dart';
 part 'widgets/painter_widget_viewer_widget.dart';
-part 'widgets/pan_gesture_detector_widget.dart';
+part 'widgets/painter_widget_pan_gesture_detector_widget.dart';
 part 'items/painter_widget_image_item.dart';
 part 'items/painter_widget_shape_item.dart';
 part 'items/painter_widget_text_item.dart';
