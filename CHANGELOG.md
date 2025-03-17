@@ -1,3 +1,7 @@
+# 1.3.0
+- Fixed brush & erase delay.
+- Added pixel ratio for renderImage().
+
 # 1.2.0
 
 - Fixed shape widget box BoxConstraints error.
