@@ -42,18 +42,55 @@ extension ActionsServiceItem on ActionsService {
     }
   }
 
+  void _actionImportPainter(
+    ActionImportPainter item,
+    bool isRedo,
+  ) {
+    if (isRedo) {
+      // Set the values before performing any action.
+      _setValues(
+          item.newSnapshot.paintPaths,
+          PainterControllerValue(
+            settings: item.newSnapshot.settings,
+            paintPaths: item.newSnapshot.paintPaths,
+            items: item.newSnapshot.items,
+            brushSize: item.newSnapshot.brushSize,
+            eraseSize: item.newSnapshot.eraseSize,
+            brushColor: item.newSnapshot.brushColor,
+          ),
+          item.newSnapshot.backgroundImage,
+          itemsValue: item.newSnapshot.items);
+    } else {
+      _setValues(
+          item.oldSnapshot.paintPaths,
+          PainterControllerValue(
+            settings: item.oldSnapshot.settings,
+            paintPaths: item.oldSnapshot.paintPaths,
+            items: item.oldSnapshot.items,
+            brushSize: item.oldSnapshot.brushSize,
+            eraseSize: item.oldSnapshot.eraseSize,
+            brushColor: item.oldSnapshot.brushColor,
+          ),
+          item.oldSnapshot.backgroundImage,
+          itemsValue: item.oldSnapshot.items);
+    }
+  }
+
   // Helper function for setting values for state updates.
   void _setValues(
-    ValueNotifier<PaintActions> changeActions,
     List<List<DrawModel?>> paintPath,
     PainterControllerValue value,
-    Uint8List? backgroundImageValue,
-  ) {
+    Uint8List? backgroundImageValue, {
+    ValueNotifier<PaintActions>? changeActions,
+    List<PainterItem>? itemsValue,
+  }) {
     // Update the current action values based on the changeActions object.
-    currentActions = changeActions.value.changeList;
-    currentIndex = changeActions.value.index;
+    if (changeActions != null) {
+      currentActions = changeActions.value.changeList;
+      currentIndex = changeActions.value.index;
+    }
     currentPaintPath = paintPath;
     backgroundImage = backgroundImageValue;
-    items = value.items.toList();
+    items = itemsValue ?? value.items.toList();
   }
 }

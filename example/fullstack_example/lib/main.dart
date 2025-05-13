@@ -46,6 +46,7 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
   bool openSettings = false;
   bool openLayers = false;
   bool openShapes = false;
+  Map<String, dynamic> painterData = {};
   @override
   void initState() {
     super.initState();
@@ -209,6 +210,34 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
                   ),
                 ),
               ),
+            ),
+
+            IconButton(
+              icon: Icon(
+                PhosphorIconsRegular.arrowClockwise,
+                color: (controller.changeActions.value.index ==
+                        controller.changeActions.value.changeList.length - 1)
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+              onPressed: () async {
+                final painter = await controller.exportPainter();
+                setState(() {
+                  painterData = painter;
+                });
+              },
+            ),
+            IconButton(
+              icon: Icon(
+                PhosphorIconsRegular.arrowClockwise,
+                color: (controller.changeActions.value.index ==
+                        controller.changeActions.value.changeList.length - 1)
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+              onPressed: () async {
+                await controller.importPainter(painterData);
+              },
             ),
           ],
         ),

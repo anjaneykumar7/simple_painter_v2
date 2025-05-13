@@ -16,7 +16,8 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values before performing any action.
-    _setValues(changeActions, paintPath, value, backgroundImage);
+    _setValues(paintPath, value, backgroundImageValue,
+        changeActions: changeActions);
 
     // Function to undo actions from the current
     // index back to the specified index.
@@ -47,6 +48,11 @@ extension ActionsServiceMain on ActionsService {
         } else if (currentActions[i] is ActionChangeBackgroundImage) {
           _actionBackgroundImageChange(
             currentActions[i] as ActionChangeBackgroundImage,
+            false,
+          );
+        } else if (currentActions[i] is ActionImportPainter) {
+          _actionImportPainter(
+            currentActions[i] as ActionImportPainter,
             false,
           );
         }
@@ -83,6 +89,11 @@ extension ActionsServiceMain on ActionsService {
             currentActions[i] as ActionChangeBackgroundImage,
             true,
           );
+        } else if (currentActions[i] is ActionImportPainter) {
+          _actionImportPainter(
+            currentActions[i] as ActionImportPainter,
+            true,
+          );
         }
       }
     }
@@ -116,7 +127,8 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(changeActions, paintPath, value, backgroundImageValue);
+    _setValues(paintPath, value, backgroundImageValue,
+        changeActions: changeActions);
 
     // If there are no actions to undo, return early.
     if (currentIndex < 0) return;
@@ -148,7 +160,8 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(changeActions, paintPath, value, backgroundImageValue);
+    _setValues(paintPath, value, backgroundImageValue,
+        changeActions: changeActions);
 
     // If there are no actions to redo, return early.
     if (currentIndex == currentActions.length - 1) return;

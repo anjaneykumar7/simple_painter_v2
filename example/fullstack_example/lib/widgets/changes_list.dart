@@ -95,6 +95,8 @@ class ChangesList extends StatelessWidget {
         return 'Change custom widget options';
       case ActionType.changeBackgroundImage:
         return 'Change background image';
+      case ActionType.importPainter:
+        return 'Import painter';
     }
   }
 }

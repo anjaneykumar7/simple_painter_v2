@@ -10,6 +10,7 @@ import 'package:simple_painter/src/controllers/paint_actions/main/custom_widget_
 import 'package:simple_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/erase_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/image_actions/image_change_value_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/import_paint_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/position_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/rotate_action.dart';

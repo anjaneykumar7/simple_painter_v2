@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -11,14 +12,18 @@ import 'package:simple_painter/src/controllers/paint_actions/main/add_item_actio
 import 'package:simple_painter/src/controllers/paint_actions/main/background_image_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/draw_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/erase_action.dart';
+import 'package:simple_painter/src/controllers/paint_actions/main/import_paint_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/main/remove_item_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/paint_action.dart';
 import 'package:simple_painter/src/controllers/paint_actions/paint_actions.dart';
+import 'package:simple_painter/src/controllers/settings/brush_settings.dart';
+import 'package:simple_painter/src/controllers/settings/erase_settings.dart';
 import 'package:simple_painter/src/controllers/settings/layer_settings.dart';
 import 'package:simple_painter/src/helpers/action_service/actions_service.dart';
 import 'package:simple_painter/src/helpers/change_item_values_service.dart';
 import 'package:simple_painter/src/helpers/layer_service.dart';
 import 'package:simple_painter/src/models/brush_model.dart';
+import 'package:simple_painter/src/models/import_painter_snapshot_model.dart';
 import 'package:simple_painter/src/models/render_item_model.dart';
 
 part 'painter_controller_actions.dart';
@@ -38,6 +43,7 @@ part 'painter_controller_layer.dart';
 part 'painter_controller_main.dart';
 part 'painter_controller_paint.dart';
 part 'painter_controller_render.dart';
+part 'painter_controller_import_export.dart';
 part 'painter_controller_value.dart';
 
 /// Controller class for managing painter-related functionalities.

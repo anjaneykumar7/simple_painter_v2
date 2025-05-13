@@ -93,9 +93,9 @@ Widget colorSwitch(
   bool opacityCondition = false,
 }) {
   final notifierColor = ValueNotifier<double>(
-    (((color.r * 255).toInt() << 16) | // Red kanalını int'e çeviriyoruz
-            ((color.g * 255).toInt() << 8) | // Green kanalını int'e çeviriyoruz
-            ((color.b * 255).toInt())) // Blue kanalını int'e çeviriyoruz
+    (((color.r * 255).toInt() << 16) |
+            ((color.g * 255).toInt() << 8) |
+            ((color.b * 255).toInt()))
         .toDouble(),
   );
   return IgnorePointer(

@@ -17,4 +17,5 @@ enum ActionType {
   changeCustomWidgetValue, // Action to change the value of a
   //custom widget item.
   changeBackgroundImage, // Action to change the value of a background image.
+  importPainter, // Action to import a painter.
 }

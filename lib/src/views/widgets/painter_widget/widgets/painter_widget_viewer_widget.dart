@@ -20,9 +20,9 @@ class _ViewerWidget extends StatelessWidget {
       builder: (context, constraints) {
         final widgetBoundaryMargin = boundaryMargin ?? 20.0;
         final totalHorizontalMargin =
-            widgetBoundaryMargin * 2; // Sağ ve sol margin
+            widgetBoundaryMargin * 2; // Right and left margin
         final totalVerticalMargin =
-            widgetBoundaryMargin * 2; // Üst ve alt margin
+            widgetBoundaryMargin * 2; // Top and bottom margin
 
         final screenWidth = constraints.maxWidth - totalHorizontalMargin;
         final screenHeight = constraints.maxHeight - totalVerticalMargin;
