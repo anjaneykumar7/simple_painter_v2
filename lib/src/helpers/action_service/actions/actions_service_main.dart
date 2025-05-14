@@ -16,8 +16,12 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values before performing any action.
-    _setValues(paintPath, value, backgroundImageValue,
-        changeActions: changeActions);
+    _setValues(
+      paintPath,
+      value,
+      backgroundImageValue,
+      changeActions: changeActions,
+    );
 
     // Function to undo actions from the current
     // index back to the specified index.
@@ -127,8 +131,12 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(paintPath, value, backgroundImageValue,
-        changeActions: changeActions);
+    _setValues(
+      paintPath,
+      value,
+      backgroundImageValue,
+      changeActions: changeActions,
+    );
 
     // If there are no actions to undo, return early.
     if (currentIndex < 0) return;
@@ -160,8 +168,12 @@ extension ActionsServiceMain on ActionsService {
     void Function(Uint8List? image) updateBackgroundImage,
   ) {
     // Set the values for the current action state.
-    _setValues(paintPath, value, backgroundImageValue,
-        changeActions: changeActions);
+    _setValues(
+      paintPath,
+      value,
+      backgroundImageValue,
+      changeActions: changeActions,
+    );
 
     // If there are no actions to redo, return early.
     if (currentIndex == currentActions.length - 1) return;

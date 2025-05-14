@@ -213,30 +213,49 @@ class _FlutterPainterExampleState extends State<FlutterPainterExample> {
             ),
 
             IconButton(
-              icon: Icon(
-                PhosphorIconsRegular.arrowClockwise,
-                color: (controller.changeActions.value.index ==
-                        controller.changeActions.value.changeList.length - 1)
-                    ? Colors.grey
-                    : Colors.white,
+              icon: const Icon(
+                Icons.more_vert,
+                color: Colors.white,
               ),
-              onPressed: () async {
-                final painter = await controller.exportPainter();
-                setState(() {
-                  painterData = painter;
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                PhosphorIconsRegular.arrowClockwise,
-                color: (controller.changeActions.value.index ==
-                        controller.changeActions.value.changeList.length - 1)
-                    ? Colors.grey
-                    : Colors.white,
-              ),
-              onPressed: () async {
-                await controller.importPainter(painterData);
+              onPressed: () {
+                showMenu(
+                  context: context,
+                  position: const RelativeRect.fromLTRB(1000, 80, 0, 0),
+                  items: [
+                    PopupMenuItem<void>(
+                      child: const Row(
+                        children: [
+                          Icon(PhosphorIconsRegular.downloadSimple, size: 20),
+                          SizedBox(width: 8),
+                          Text('Import Painter'),
+                        ],
+                      ),
+                      onTap: () async {
+                        // İmport işlemi için gerekli kodu ekleyebilirsiniz
+                        // Örnek olarak bir map alıp import edebilirsiniz
+                        if (painterData.isNotEmpty) {
+                          await controller.importPainter(painterData);
+                          setState(() {});
+                        }
+                      },
+                    ),
+                    PopupMenuItem<void>(
+                      child: const Row(
+                        children: [
+                          Icon(PhosphorIconsRegular.uploadSimple, size: 20),
+                          SizedBox(width: 8),
+                          Text('Export Painter'),
+                        ],
+                      ),
+                      onTap: () async {
+                        final painter = await controller.exportPainter();
+                        setState(() {
+                          painterData = painter;
+                        });
+                      },
+                    ),
+                  ],
+                );
               },
             ),
           ],

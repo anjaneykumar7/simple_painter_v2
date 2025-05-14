@@ -6,10 +6,10 @@ import 'package:simple_painter/src/controllers/items/painter_item.dart';
 import 'package:simple_painter/src/models/brush_model.dart';
 
 /// Stores essential painter data without reference to the original controller
-class ImportPainterSnapshotModel {
-  /// Creates an immutable snapshot of painter
-  ///  data with deep copies of all collections
-  ImportPainterSnapshotModel({
+class ImportPainterSnapshot {
+  /// Creates an immutable snapshot of painter data
+  ///  with deep copies of all collections
+  ImportPainterSnapshot({
     required List<List<DrawModel?>> paintPaths,
     required List<PainterItem> items,
     required this.settings,

@@ -17,7 +17,8 @@ extension PainterControllerImportExport on PainterController {
           brush: value.settings.brush != null
               ? BrushSettings(
                   color: value.settings.brush!.color,
-                  size: value.settings.brush!.size)
+                  size: value.settings.brush!.size,
+                )
               : null,
           erase: value.settings.erase != null
               ? EraseSettings(size: value.settings.erase!.size)
@@ -47,12 +48,14 @@ extension PainterControllerImportExport on PainterController {
             brush: settingsData.containsKey('brush') &&
                     settingsData['brush'] != null
                 ? _createBrushSettings(
-                    settingsData['brush'] as Map<String, dynamic>)
+                    settingsData['brush'] as Map<String, dynamic>,
+                  )
                 : null,
             erase: settingsData.containsKey('erase') &&
                     settingsData['erase'] != null
                 ? _createEraseSettings(
-                    settingsData['erase'] as Map<String, dynamic>)
+                    settingsData['erase'] as Map<String, dynamic>,
+                  )
                 : null,
           );
 
@@ -121,7 +124,8 @@ extension PainterControllerImportExport on PainterController {
           brush: value.settings.brush != null
               ? BrushSettings(
                   color: value.settings.brush!.color,
-                  size: value.settings.brush!.size)
+                  size: value.settings.brush!.size,
+                )
               : null,
           erase: value.settings.erase != null
               ? EraseSettings(size: value.settings.erase!.size)
@@ -163,7 +167,7 @@ extension PainterControllerImportExport on PainterController {
   }
 
   // Paint paths deserialize
-  List<List<DrawModel?>> _deserializePaintPaths(List pathsData) {
+  List<List<DrawModel?>> _deserializePaintPaths(List<dynamic> pathsData) {
     return pathsData.map<List<DrawModel?>>((path) {
       return (path as List).map<DrawModel?>((point) {
         final pointData = point as Map<String, dynamic>;
@@ -182,7 +186,7 @@ extension PainterControllerImportExport on PainterController {
   }
 
   // Items deserialize
-  List<PainterItem> _deserializeItems(List itemsData) {
+  List<PainterItem> _deserializeItems(List<dynamic> itemsData) {
     return itemsData.map<PainterItem>((item) {
       final data = item as Map<String, dynamic>;
       final type = data['type'] as String?;
@@ -216,24 +220,32 @@ extension PainterControllerImportExport on PainterController {
       final id = data['id'] as String;
 
       // Parse alignment values for gradients
-      AlignmentGeometry _parseAlignment(String alignmentStr) {
-        if (alignmentStr.contains('Alignment.topLeft'))
+      AlignmentGeometry parseAlignment(String alignmentStr) {
+        if (alignmentStr.contains('Alignment.topLeft')) {
           return Alignment.topLeft;
-        if (alignmentStr.contains('Alignment.topCenter'))
+        }
+        if (alignmentStr.contains('Alignment.topCenter')) {
           return Alignment.topCenter;
-        if (alignmentStr.contains('Alignment.topRight'))
+        }
+        if (alignmentStr.contains('Alignment.topRight')) {
           return Alignment.topRight;
-        if (alignmentStr.contains('Alignment.centerLeft'))
+        }
+        if (alignmentStr.contains('Alignment.centerLeft')) {
           return Alignment.centerLeft;
+        }
         if (alignmentStr.contains('Alignment.center')) return Alignment.center;
-        if (alignmentStr.contains('Alignment.centerRight'))
+        if (alignmentStr.contains('Alignment.centerRight')) {
           return Alignment.centerRight;
-        if (alignmentStr.contains('Alignment.bottomLeft'))
+        }
+        if (alignmentStr.contains('Alignment.bottomLeft')) {
           return Alignment.bottomLeft;
-        if (alignmentStr.contains('Alignment.bottomCenter'))
+        }
+        if (alignmentStr.contains('Alignment.bottomCenter')) {
           return Alignment.bottomCenter;
-        if (alignmentStr.contains('Alignment.bottomRight'))
+        }
+        if (alignmentStr.contains('Alignment.bottomRight')) {
           return Alignment.bottomRight;
+        }
         return Alignment.centerLeft; // Default
       }
 
@@ -243,6 +255,7 @@ extension PainterControllerImportExport on PainterController {
         final textStyleData = data['textStyle'] as Map<String, dynamic>;
 
         // Get gradient properties with defaults
+        // ignore: avoid_bool_literals_in_conditional_expressions
         final enableGradientColor = data.containsKey('enableGradientColor')
             ? data['enableGradientColor'] as bool
             : false;
@@ -253,14 +266,14 @@ extension PainterControllerImportExport on PainterController {
             ? _hexToColor(data['gradientEndColor'] as String)
             : Colors.white;
         final gradientBegin = data.containsKey('gradientBegin')
-            ? _parseAlignment(data['gradientBegin'] as String)
+            ? parseAlignment(data['gradientBegin'] as String)
             : Alignment.centerLeft;
         final gradientEnd = data.containsKey('gradientEnd')
-            ? _parseAlignment(data['gradientEnd'] as String)
+            ? parseAlignment(data['gradientEnd'] as String)
             : Alignment.centerRight;
 
         // TextAlign parsing
-        TextAlign _parseTextAlign(String alignStr) {
+        TextAlign parseTextAlign(String alignStr) {
           if (alignStr.contains('TextAlign.left')) return TextAlign.left;
           if (alignStr.contains('TextAlign.center')) return TextAlign.center;
           if (alignStr.contains('TextAlign.right')) return TextAlign.right;
@@ -271,7 +284,7 @@ extension PainterControllerImportExport on PainterController {
         }
 
         final textAlign = data.containsKey('textAlign')
-            ? _parseTextAlign(data['textAlign'] as String)
+            ? parseTextAlign(data['textAlign'] as String)
             : TextAlign.center;
 
         return TextItem(
@@ -303,6 +316,7 @@ extension PainterControllerImportExport on PainterController {
         }
 
         // Get gradient properties with defaults
+        // ignore: avoid_bool_literals_in_conditional_expressions
         final enableGradientColor = data.containsKey('enableGradientColor')
             ? data['enableGradientColor'] as bool
             : false;
@@ -313,10 +327,10 @@ extension PainterControllerImportExport on PainterController {
             ? _hexToColor(data['gradientEndColor'] as String)
             : Colors.white;
         final gradientBegin = data.containsKey('gradientBegin')
-            ? _parseAlignment(data['gradientBegin'] as String)
+            ? parseAlignment(data['gradientBegin'] as String)
             : Alignment.centerLeft;
         final gradientEnd = data.containsKey('gradientEnd')
-            ? _parseAlignment(data['gradientEnd'] as String)
+            ? parseAlignment(data['gradientEnd'] as String)
             : Alignment.centerRight;
         final gradientOpacity = data.containsKey('gradientOpacity')
             ? (data['gradientOpacity'] as num).toDouble()
@@ -367,6 +381,7 @@ extension PainterControllerImportExport on PainterController {
         );
       } else if (type == 'customWidget') {
         // Get gradient properties with defaults
+        // ignore: avoid_bool_literals_in_conditional_expressions
         final enableGradientColor = data.containsKey('enableGradientColor')
             ? data['enableGradientColor'] as bool
             : false;
@@ -377,10 +392,10 @@ extension PainterControllerImportExport on PainterController {
             ? _hexToColor(data['gradientEndColor'] as String)
             : Colors.white;
         final gradientBegin = data.containsKey('gradientBegin')
-            ? _parseAlignment(data['gradientBegin'] as String)
+            ? parseAlignment(data['gradientBegin'] as String)
             : Alignment.centerLeft;
         final gradientEnd = data.containsKey('gradientEnd')
-            ? _parseAlignment(data['gradientEnd'] as String)
+            ? parseAlignment(data['gradientEnd'] as String)
             : Alignment.centerRight;
         final gradientOpacity = data.containsKey('gradientOpacity')
             ? (data['gradientOpacity'] as num).toDouble()
@@ -388,8 +403,8 @@ extension PainterControllerImportExport on PainterController {
 
         return CustomWidgetItem(
           id: id,
-          widget:
-              const SizedBox(), // Widget cannot be recreated, return empty widget
+          widget: const SizedBox(), // Widget cannot be recreated,
+          // return empty widget
           position: position,
           layer: layer,
           size: size,
@@ -426,7 +441,8 @@ extension PainterControllerImportExport on PainterController {
   }
 
   Map<String, dynamic> _toJson() {
-    // Convert PainterController's value and properties to a JSON serializable Map
+    // Convert PainterController's value
+    // and properties to a JSON serializable Map
     final result = <String, dynamic>{
       'settings': _serializeSettings(value.settings),
       'background': _serializeBackground(background),
@@ -479,15 +495,18 @@ extension PainterControllerImportExport on PainterController {
 
   // Serialize paint paths
   List<List<Map<String, dynamic>>> _serializePaintPaths(
-      List<List<DrawModel?>> paintPaths) {
+    List<List<DrawModel?>> paintPaths,
+  ) {
     return paintPaths.map((path) {
       return path
           .where((point) => point != null)
-          .map((point) => {
-                'offset': {'x': point!.offset.dx, 'y': point.offset.dy},
-                'color': _colorToHex(point.color),
-                'strokeWidth': point.strokeWidth,
-              })
+          .map(
+            (point) => {
+              'offset': {'x': point!.offset.dx, 'y': point.offset.dy},
+              'color': _colorToHex(point.color),
+              'strokeWidth': point.strokeWidth,
+            },
+          )
           .toList();
     }).toList();
   }
@@ -495,7 +514,7 @@ extension PainterControllerImportExport on PainterController {
   // Serialize items
   List<Map<String, dynamic>> _serializeItems(List<PainterItem> items) {
     return items.map((item) {
-      final Map<String, dynamic> baseItem = {
+      final baseItem = <String, dynamic>{
         'id': item.id,
         'enabled': item.enabled,
         'position': {
@@ -580,16 +599,16 @@ extension PainterControllerImportExport on PainterController {
 
   // Helper to convert Color to hex string
   String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).padLeft(8, '0')}';
+    return '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}';
   }
 
   // Helper to convert hex string to Color
   Color _hexToColor(String hexString) {
-    hexString = hexString.toUpperCase().replaceAll('#', '');
-    if (hexString.length == 6) {
-      hexString = 'FF$hexString';
+    var colorString = hexString.toUpperCase().replaceAll('#', '');
+    if (colorString.length == 6) {
+      colorString = 'FF$colorString';
     }
-    return Color(int.parse(hexString, radix: 16));
+    return Color(int.parse(colorString, radix: 16));
   }
 
   // Helper to convert Uint8List to base64 string

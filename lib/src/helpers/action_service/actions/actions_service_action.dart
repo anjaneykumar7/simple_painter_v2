@@ -9,8 +9,12 @@ extension ActionsServiceAction on ActionsService {
     void Function(List<PaintAction>? items, int index) updatedValues,
   ) {
     // Set values before adding the new action.
-    _setValues(currentPaintPath, value, backgroundImage,
-        changeActions: changeActions);
+    _setValues(
+      currentPaintPath,
+      value,
+      backgroundImage,
+      changeActions: changeActions,
+    );
 
     // If we're not at the end of the action
     //history, trim the redo actions before adding the new action.

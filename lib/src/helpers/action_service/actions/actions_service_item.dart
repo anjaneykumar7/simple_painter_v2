@@ -49,30 +49,32 @@ extension ActionsServiceItem on ActionsService {
     if (isRedo) {
       // Set the values before performing any action.
       _setValues(
-          item.newSnapshot.paintPaths,
-          PainterControllerValue(
-            settings: item.newSnapshot.settings,
-            paintPaths: item.newSnapshot.paintPaths,
-            items: item.newSnapshot.items,
-            brushSize: item.newSnapshot.brushSize,
-            eraseSize: item.newSnapshot.eraseSize,
-            brushColor: item.newSnapshot.brushColor,
-          ),
-          item.newSnapshot.backgroundImage,
-          itemsValue: item.newSnapshot.items);
+        item.newSnapshot.paintPaths,
+        PainterControllerValue(
+          settings: item.newSnapshot.settings,
+          paintPaths: item.newSnapshot.paintPaths,
+          items: item.newSnapshot.items,
+          brushSize: item.newSnapshot.brushSize,
+          eraseSize: item.newSnapshot.eraseSize,
+          brushColor: item.newSnapshot.brushColor,
+        ),
+        item.newSnapshot.backgroundImage,
+        itemsValue: item.newSnapshot.items,
+      );
     } else {
       _setValues(
-          item.oldSnapshot.paintPaths,
-          PainterControllerValue(
-            settings: item.oldSnapshot.settings,
-            paintPaths: item.oldSnapshot.paintPaths,
-            items: item.oldSnapshot.items,
-            brushSize: item.oldSnapshot.brushSize,
-            eraseSize: item.oldSnapshot.eraseSize,
-            brushColor: item.oldSnapshot.brushColor,
-          ),
-          item.oldSnapshot.backgroundImage,
-          itemsValue: item.oldSnapshot.items);
+        item.oldSnapshot.paintPaths,
+        PainterControllerValue(
+          settings: item.oldSnapshot.settings,
+          paintPaths: item.oldSnapshot.paintPaths,
+          items: item.oldSnapshot.items,
+          brushSize: item.oldSnapshot.brushSize,
+          eraseSize: item.oldSnapshot.eraseSize,
+          brushColor: item.oldSnapshot.brushColor,
+        ),
+        item.oldSnapshot.backgroundImage,
+        itemsValue: item.oldSnapshot.items,
+      );
     }
   }
 
