@@ -1,3 +1,7 @@
+# 1.4.0
+- Added import & export feature for painter.
+- Code optimization increased.
+
 # 1.3.0
 - Fixed brush & erase delay.
 - Added pixel ratio for renderImage().

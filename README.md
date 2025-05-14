@@ -1,7 +1,10 @@
-
 # Painter Widget
 
 **Flutter Painter** is a Flutter package that lets users create and manipulate a drawing canvas with layers. It supports adding and styling text, images, and shapes, along with freehand drawing tools, customizable brush sizes, and colors. The package also includes undo/redo functionality and custom background support.
+
+## Support me to maintain this plugin continously with a cup of coffee.
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](http://buymeacoffee.com/canarslandev)
 
 
 ![simple_painter_ps](https://github.com/user-attachments/assets/f4bba725-2b8f-4431-9762-11ef65a97354)
@@ -19,6 +22,7 @@
 - **State Management**
   - Undo and redo functionality for actions.
   - Export final design as an image.
+  - Import and export functionality to save and restore canvas state with all items and their properties.
     
 - **Interactive Elements**
   - Add, move, resize, rotate, and delete text, images, or shapes.
@@ -74,7 +78,7 @@ PainterWidget(controller: controller);
 
 ### Basic Implementation
 
-Here’s how to set up a basic painting widget with a simple controller:
+Here's how to set up a basic painting widget with a simple controller:
 
 ```dart
 import 'package:flutter/material.dart';
