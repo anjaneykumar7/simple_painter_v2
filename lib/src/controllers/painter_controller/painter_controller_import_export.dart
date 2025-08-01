@@ -599,7 +599,7 @@ extension PainterControllerImportExport on PainterController {
 
   // Helper to convert Color to hex string
   String _colorToHex(Color color) {
-    return '#${color.toARGB32().toRadixString(16).padLeft(8, '0')}';
+    return '#${color.value.toRadixString(16).padLeft(8, '0')}';
   }
 
   // Helper to convert hex string to Color
