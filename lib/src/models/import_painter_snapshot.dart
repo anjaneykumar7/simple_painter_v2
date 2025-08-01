@@ -26,7 +26,7 @@ class ImportPainterSnapshot {
                   (point) => point != null
                       ? DrawModel(
                           offset: Offset(point.offset.dx, point.offset.dy),
-                          color: Color(point.color.toARGB32()),
+                          color: Color(point.color),
                           strokeWidth: point.strokeWidth,
                         )
                       : null,
@@ -58,7 +58,7 @@ class ImportPainterSnapshot {
             (point) => point != null
                 ? DrawModel(
                     offset: Offset(point.offset.dx, point.offset.dy),
-                    color: Color(point.color.toARGB32()),
+                    color: Color(point.color),
                     strokeWidth: point.strokeWidth,
                   )
                 : null,
